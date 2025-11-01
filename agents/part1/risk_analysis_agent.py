@@ -10,7 +10,7 @@ from groq import Groq
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 TRANSACTIONS_CSV = os.path.join(DATA_DIR, "transactions_mock_1000_for_participants.csv")
-RULES_PATH = os.path.join(os.path.dirname(__file__), "rulestemp.json")
+RULES_PATH = os.path.join(DATA_DIR, "mas.json")
 # Output directory (new) - place analysis outputs here
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 OUTPUT_CSV = os.path.join(OUTPUT_DIR, "transactions_analysis_results.csv")
