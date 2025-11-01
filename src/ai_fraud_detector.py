@@ -27,7 +27,6 @@ class AIFraudDetector:
     
     def __init__(
         self,
-        groq_api_key: Optional[str] = "None",
         model: str = "llama-3.3-70b-versatile"
     ):
         """
@@ -40,9 +39,9 @@ class AIFraudDetector:
         # Load .env file
 
         env_path = Path(__file__).resolve().parent.parent / ".env"  # adjust if needed
-        load_dotenv(dotenv_path=env_path)
+        load_dotenv()
 
-        self.api_key = groq_api_key or os.environ.get("GROQ_API_KEY")
+        self.api_key = os.environ.get("GROQ_API_KEY")
         if not self.api_key:
             raise ValueError(
                 "Groq API key required!\n"
@@ -584,7 +583,7 @@ Set as: export GROQ_API_KEY='your-key'
     
     try:
         # Initialize detector
-        detector = AIFraudDetector(groq_api_key=args.api_key, model=args.model)
+        detector = AIFraudDetector(model=args.model)
         
         # Analyze document
         results = detector.analyze_document(args.document, args.output_dir)
