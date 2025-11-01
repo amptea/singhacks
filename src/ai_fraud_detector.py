@@ -27,7 +27,7 @@ class AIFraudDetector:
     
     def __init__(
         self,
-        groq_api_key: Optional[str] = None,
+        groq_api_key: Optional[str] = "None",
         model: str = "llama-3.3-70b-versatile"
     ):
         """
