@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "High Customer Risk Rating"
-  ],
-  "explanation": "The transaction triggers only the High Customer Risk Rating rule. No other red\u2011flag conditions (high amount, sanctions hit, EDD gap, structuring, or incomplete travel rule data) are present. The cash withdrawal amount is below the high\u2011amount threshold and the daily cash total is negligible. Consequently, the transaction is assessed as medium risk."
-}

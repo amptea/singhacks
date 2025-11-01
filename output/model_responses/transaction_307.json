@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 85,
-  "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and involves a customer with a \u2018High\u2019 risk rating and PEP status. Although EDD was performed and sanctions screening returned \u2018none\u2019, the combination of a very large FX conversion, expired KYC, and high customer risk warrants a high\u2011risk assessment."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 203,632.69 CNY exceeds the high transaction threshold of 17,343.58, which is a key indicator of suspicious activity. No other AML rules are triggered, but the large amount alone warrants a high risk assessment."
-}

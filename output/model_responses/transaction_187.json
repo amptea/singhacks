@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit, which is a significant red flag. However, the amount is below the high-transaction threshold, the customer has a low risk rating, and all required due diligence was performed. These mitigating factors reduce the overall risk to a medium level."
-}

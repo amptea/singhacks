@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 65,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold, which is a strong indicator of potential money\u2011laundering activity. However, other risk factors such as customer risk rating, sanctions screening, EDD, daily cash totals, and travel rule compliance are all within acceptable limits, reducing the overall risk to a medium level."
-}

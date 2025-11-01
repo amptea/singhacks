@@ -1,5 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": ["High Daily Cash Total for Customer"],
-  "explanation": "The transaction exceeds the daily cash threshold of $10,000, indicating potential structuring, but other risk factors

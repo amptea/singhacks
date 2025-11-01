@@ -1,7 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount (CHF 1,037,551.09) exceeds the high transaction threshold of 17,343.58, which is a strong indicator of potential money‑laundering activity. No other risk factors (high customer risk rating, sanctions hit, EDD gap, high daily cash total, or incomplete travel rule information) are present, so the overall risk is assessed as medium."

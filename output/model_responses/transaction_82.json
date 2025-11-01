@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 45,
-  "matched_rules": [
-    "High Customer Risk Rating"
-  ],
-  "explanation": "The transaction triggers the High Customer Risk Rating rule, indicating the customer is classified as high risk. However, the transaction amount is low, there are no sanctions hits, no daily cash structuring, and EDD was performed. These factors moderate the overall risk, leading to a Medium risk assessment."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 85,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount (\u00a31,494,302.75) far exceeds the high\u2011amount threshold of \u00a317,343.58, which is a key indicator of suspicious activity. No other red\u2011flag rules are triggered (customer risk is medium, no sanctions hit, EDD not required, daily cash total is zero, and travel rule data is complete). However, the sheer size of the transaction alone warrants a high risk assessment."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 50,
-  "matched_rules": [
-    "High Customer Risk Rating"
-  ],
-  "explanation": "The transaction triggers only the High Customer Risk Rating rule. The amount is below the high\u2011value threshold, sanctions screening is clear, EDD was performed, and travel rule data is complete. While the customer is rated High risk, the transaction itself is modest and lacks other red flags, leading to a medium risk assessment."
-}

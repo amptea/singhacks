@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggers the High Daily Cash Total for Customer rule (daily cash total of CHF 21,163.06 exceeds the 10,000 threshold), indicating a potential structuring pattern. However, the amount is below the high\u2011transaction threshold, the customer risk rating is medium, there are no sanctions hits, and all other controls (travel rule, EDD, KYC) are satisfied. These mitigating factors suggest a moderate risk rather than a high\u2011risk money\u2011laundering scenario."
-}

@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 75,
-  "matched_rules": [
-    "Potential Sanctions Hit",
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit and the customer\u2019s daily cash total far exceeds the structuring threshold, indicating possible structuring and regulatory concern. Combined with an expired KYC and cash deposit channel, the risk is assessed as high."
-}

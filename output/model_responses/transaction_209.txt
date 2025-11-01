@@ -1,1 +1,0 @@
-{"risk_label":"High","score":85,"matched_rules":["High Transaction Amount","Potential Sanctions Hit"],"explanation":"The transaction exceeds the high‑amount threshold (CHF 20,000) and triggered a potential sanctions hit. Combined with an overdue KYC, originator from Iran and

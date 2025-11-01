@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount",
-    "Incomplete Travel Rule Information"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and lacks complete travel rule information, both of which are strong indicators of potential money\u2011laundering activity. Although the customer risk rating is low, the combination of a large transfer and missing regulatory data warrants a high risk assessment."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 85,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 1,486,472.1 SGD far exceeds the high transaction threshold of 17,343.58, triggering the \"High Transaction Amount\" rule. All other controls (PEP status, sanctions screening, EDD, daily cash total, travel rule completeness) are satisfied or not applicable, but the large amount alone indicates a high likelihood of money laundering activity."
-}

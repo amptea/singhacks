@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Customer Risk Rating",
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggers two significant AML indicators: the customer is rated as 'High' risk and the daily cash total exceeds the $10,000 threshold, suggesting potential structuring. However, the transaction amount is below the high-amount threshold, sanctions screening is clear, and EDD was performed, mitigating some risk. Overall, the transaction presents a moderate money\u2011laundering risk."
-}

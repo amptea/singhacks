@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggers the High Daily Cash Total for Customer rule (daily cash total $20,961.63 exceeds $10,000). No other AML rules are triggered: the amount is below the high\u2011transaction threshold, the customer risk rating is Low, sanctions screening is none, EDD is not required, and travel rule data is complete. The single trigger indicates a moderate risk of structuring or smurfing, warranting further monitoring but not an immediate high\u2011risk flag."
-}

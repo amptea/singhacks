@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of SGD 668,588.55 far exceeds the threshold of 17,343.58, which is a strong indicator of potential money\u2011laundering activity. Although other risk factors (customer risk rating, sanctions screening, EDD, daily cash total, travel rule completeness) are low or absent, the sheer size of the transaction alone warrants a high risk assessment."
-}

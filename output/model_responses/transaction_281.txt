@@ -1,1 +1,0 @@
-{"risk_label":"High","score":80,"matched_rules":["High Transaction Amount"],"explanation":"The transaction amount ($1,147,587.97) is far above the high‑amount threshold of $17,343.58, which

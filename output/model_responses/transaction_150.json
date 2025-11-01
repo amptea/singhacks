@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (753,429.25\u202fEUR > 17,343.58\u202fEUR), which is a strong indicator of potential money\u2011laundering activity. However, other risk factors\u2014such as customer risk rating, sanctions screening, EDD requirements, daily cash totals, and travel rule completeness\u2014are all within acceptable limits. Consequently, the overall risk is assessed as medium with a score of 70."
-}

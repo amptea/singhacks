@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold, which is a common indicator of suspicious activity. However, other risk factors such as customer risk rating, sanctions screening, and daily cash totals are low or absent, reducing overall risk."
-}

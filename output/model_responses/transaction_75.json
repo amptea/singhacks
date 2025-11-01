@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 742,707.19 HKD exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No other AML rules are triggered: the customer risk rating is low, there is no sanctions hit, EDD is not required, daily cash total is zero, and travel rule data is complete. The large amount alone raises concern, but the absence of additional red flags and the presence of standard controls (e.g., KYC, sanctions screening) suggest a medium risk level."
-}

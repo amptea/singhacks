@@ -1,1 +1,0 @@
-{"risk_label":"Medium","score":70,"matched_rules":["High Transaction Amount"],"explanation":"The transaction exceeds the high‑amount threshold, which is a strong indicator of potential money‑laundering activity. However, other risk factors such as sanctions hits, high customer risk rating, or missing travel‑rule data are absent, and the transaction is a single, well‑document

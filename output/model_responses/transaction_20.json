@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 65,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 155,364.83 CNY exceeds the high transaction threshold (>17,343.58), triggering the \"High Transaction Amount\" rule. However, the customer has a medium risk rating, no sanctions hit, no EDD gap, daily cash total is zero, and travel rule information is complete. These mitigating factors reduce the overall risk, resulting in a medium risk assessment with a score of 65."
-}

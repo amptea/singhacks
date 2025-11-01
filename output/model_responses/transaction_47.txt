@@ -1,5 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": ["High Transaction Amount"],
-  "explanation": "The transaction amount (864,358.93 JPY) is well above the 17,343.58 threshold identified in the high‑amount rule, which is a strong indicator of potential money‑laundering activity. Although other risk factors such as the customer’s low risk rating and completed EDD are favorable, the presence of a PEP and the cross‑border nature

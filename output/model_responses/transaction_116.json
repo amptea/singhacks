@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount (\u00a3445,209.11) exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No other red\u2011flag rules (high customer risk, sanctions hit, EDD gap, daily cash structuring, or incomplete travel rule data) are triggered. While the large amount alone raises concern, the absence of additional risk indicators suggests a moderate overall risk level."
-}

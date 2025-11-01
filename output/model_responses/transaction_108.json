@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (CHF\u202f20,000 > CHF\u202f17,343.58), which is a common indicator of suspicious activity. However, the customer has a low risk rating, no sanctions hit, and no other red flags such as daily structuring or incomplete travel\u2011rule data. Therefore the overall risk is assessed as medium with a score of 60."
-}

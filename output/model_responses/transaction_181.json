@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction triggered a potential sanctions screening hit, which is a notable red flag. However, the amount is modest, the customer risk rating is medium, daily cash total is low, and all other controls (travel rule, EDD, KYC) are satisfied. Therefore the overall risk is assessed as medium with a score of 60."
-}

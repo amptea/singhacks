@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (JPY 2,495,597.47 > 17,343.58), which is a strong indicator of potential money\u2011laundering activity. However, other red\u2011flag criteria\u2014such as high customer risk rating, sanctions hit, EDD gap, daily cash structuring, or incomplete travel\u2011rule data\u2014are absent. Consequently, the overall risk is assessed as medium with a score of 70."
-}

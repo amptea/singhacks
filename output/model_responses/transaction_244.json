@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Customer Risk Rating",
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction involves a customer with a high risk rating and triggered a potential sanctions hit, which are significant red flags. However, the transaction amount is below the high-amount threshold, there is no daily cash structuring indicator, and EDD was performed. These factors moderate the overall risk to a medium level."
-}

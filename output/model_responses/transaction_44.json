@@ -1,6 +1,0 @@
-{
-  "risk_label": "Low",
-  "score": 5,
-  "matched_rules": [],
-  "explanation": "None of the anti-money laundering rules were triggered for this transaction. The amount is well below the high-amount threshold, the customer risk rating is low, sanctions screening returned no potential hit, EDD was performed as required, daily cash total is below the structuring limit, and travel rule information is complete. Therefore the transaction is assessed as low risk."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 247,881.78 GBP exceeds the high\u2011amount threshold (17,343.58 GBP) and is characteristic of suspected money\u2011laundering activity. No other AML rules are triggered, but the originator is a PEP, which adds additional risk. Overall, the transaction is considered high risk."
-}

@@ -1,8 +1,0 @@
-{
-  "risk_label": "Low",
-  "score": 20,
-  "matched_rules": [],
-  "explanation": "All relevant clauses are satisfied: high\u2011risk PEP customer has EDD performed, KYC is recent, sanctions screening is documented (no confirmed hit), and the transaction amount is below the S$20,000 threshold for non\u2011relationship customers. No suspicious activity or missing information was identified, so the transaction poses low AML/CFT risk.",
-  "transaction_id": "015e2202-1c97-4f0f-9756-2c8fc85e7ac9",
-  "index": 4
-}

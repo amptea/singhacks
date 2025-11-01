@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 75,
-  "matched_rules": [
-    "High Transaction Amount",
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and triggered a potential sanctions hit, both of which are strong indicators of suspicious activity. However, the customer is rated only medium risk, the travel rule is complete, and no EDD gap exists, so the overall risk is assessed as medium rather than high."
-}

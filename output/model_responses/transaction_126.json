@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (CHF\u202f20,000 > CHF\u202f17,343.58), triggering the \"High Transaction Amount\" rule. However, the customer is rated low risk, there are no sanctions hits, no EDD gap, and daily cash totals are negligible. These mitigating factors reduce the overall risk, resulting in a medium risk assessment with a score of 60."
-}

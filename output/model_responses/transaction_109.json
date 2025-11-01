@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, EDD is not required, daily cash total is negligible, and travel rule data is complete. These mitigating factors suggest a medium risk rather than high."
-}

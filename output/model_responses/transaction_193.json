@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (CHF\u202f943,268.26 >\u202f17,343.58), which is a strong indicator of potential money\u2011laundering activity. However, other risk factors\u2014low customer risk rating, no sanctions hit, no EDD gap, negligible daily cash total, and complete travel\u2011rule data\u2014mitigate the overall risk. Consequently, the transaction is assessed as medium risk with a score of 70."
-}

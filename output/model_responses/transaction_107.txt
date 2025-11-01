@@ -1,6 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount",
-    "Potential Sanctions Hit"

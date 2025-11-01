@@ -1,1 +1,0 @@
-{"risk_label":"Medium","score":45,"matched_rules":["Incomplete Travel Rule Information"],

@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "Potential Sanctions Hit",
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit and the customer\u2019s daily cash total exceeds the $10,000 structuring threshold, indicating possible structuring activity. Although the amount itself is below the high\u2011amount threshold and the customer risk rating is low, the combination of sanctions exposure and high daily cash volume raises significant money\u2011laundering concerns, warranting a high risk assessment."
-}

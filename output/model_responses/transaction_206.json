@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction triggered a potential sanctions screening hit, which is a notable red flag. However, the amount is below the high\u2011transaction threshold, the customer risk rating is medium, no EDD gap exists, daily cash total is negligible, and travel\u2011rule data is complete. These mitigating factors suggest a moderate risk rather than a high\u2011risk money\u2011laundering scenario."
-}

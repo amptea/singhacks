@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold (\u00a5953,400.62 > \u00a517,343.58), which is a common indicator of suspicious activity. However, the customer has a low risk rating, no sanctions hit, no EDD gap, and the daily cash total is zero, reducing overall risk. Therefore the transaction is assessed as medium risk."
-}

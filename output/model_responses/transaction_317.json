@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of $666,087.85 exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. Other controls\u2014such as completed KYC, no sanctions hit, and no daily cash structuring\u2014reduce the overall risk, leading to a medium risk assessment."
-}

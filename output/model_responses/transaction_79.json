@@ -1,8 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of \u00a3365,274.92 exceeds the high\u2011amount threshold of 17,343.58, which is a strong indicator of suspicious activity. No other red\u2011flag rules are triggered, but the sheer size of the transfer alone warrants a high risk assessment."
-}

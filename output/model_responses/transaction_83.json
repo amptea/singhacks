@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount of 1,652,734.49 USD exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No sanctions hit, the customer is rated Medium risk, EDD was performed, travel rule data is complete, and daily cash total is zero, which mitigates the risk. Overall, the transaction presents a moderate money\u2011laundering risk."
-}

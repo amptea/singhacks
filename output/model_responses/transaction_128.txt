@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount",
-    "Incomplete Travel Rule Information"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold and lacks complete travel rule data, raising concerns. However

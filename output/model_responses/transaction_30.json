@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and involves a customer with a high risk rating (including PEP status). Although EDD was performed and sanctions screening returned no hits, the combination of a large value and elevated customer risk warrants a high risk assessment."
-}

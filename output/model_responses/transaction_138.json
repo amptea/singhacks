@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "High Transaction Amount"
-  ],
-  "explanation": "The transaction amount (114,418.28 CNY) exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No other red\u2011flag rules are triggered (customer risk is medium, no sanctions hit, EDD not required, daily cash total is zero, and travel rule data is complete). Therefore the transaction presents a moderate money\u2011laundering risk."
-}

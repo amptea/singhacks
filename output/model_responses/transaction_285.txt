@@ -1,1 +1,0 @@
-{"risk_label":"Medium","score":55,"matched_rules":["High Daily Cash Total for Customer"],"explanation":"The transaction exceeds the daily cash threshold of CHF 10,000, triggering the smurfing indicator rule. However, other risk factors such as high customer risk rating, sanctions hit

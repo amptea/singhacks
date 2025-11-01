@@ -1,8 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 60,
-  "matched_rules": [
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit, which is a significant red flag. The amount is moderate and the customer risk rating is medium, but the beneficiary country (Iran) and the sanctions screening result elevate the risk. No other high\u2011risk rules were triggered, so the overall assessment is medium risk."
-}

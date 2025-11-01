@@ -1,9 +1,0 @@
-{
-  "risk_label": "High",
-  "score": 85,
-  "matched_rules": [
-    "High Transaction Amount",
-    "EDD Required but Not Performed"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and the required EDD was not performed, indicating a control failure. Although the customer risk rating is low and there are no sanctions or travel\u2011rule issues, the combination of a large amount and missing due diligence raises the likelihood of money\u2011laundering activity to a high level."
-}

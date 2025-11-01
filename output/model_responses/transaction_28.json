@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 65,
-  "matched_rules": [
-    "Potential Sanctions Hit",
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit and exceeded the daily cash threshold, indicating possible structuring. Although the amount is below the high\u2011transaction threshold and the customer risk rating is low, the customer is a PEP and the sanctions potential raises concern. Combined, these factors warrant a medium risk assessment."
-}

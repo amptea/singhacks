@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 70,
-  "matched_rules": [
-    "Potential Sanctions Hit",
-    "High Daily Cash Total for Customer"
-  ],
-  "explanation": "The transaction triggered a potential sanctions hit and exceeded the daily cash threshold for the customer, indicating possible structuring and regulatory concern. While the amount itself is below the high\u2011transaction threshold and the customer risk rating is low, the combination of sanctions exposure and high daily cash volume raises a moderate money\u2011laundering risk."
-}

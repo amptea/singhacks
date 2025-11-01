@@ -1,9 +1,0 @@
-{
-  "risk_label": "Medium",
-  "score": 65,
-  "matched_rules": [
-    "High Transaction Amount",
-    "Incomplete Travel Rule Information"
-  ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and lacks complete travel rule data, both of which are red flags. However, the customer has a low risk rating, no sanctions hit, and no EDD gap, which mitigates the overall risk. Therefore, the transaction is assessed as medium risk."
-}
