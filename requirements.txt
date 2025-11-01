@@ -86,3 +86,4 @@ tzdata==2025.2
 urllib3==2.5.0
 watchdog==6.0.0
 yarl==1.22.0
+duckduckgo-search==2.6.0
