@@ -137,7 +137,7 @@ def main():
         
         selected_tool = st.radio(
             "Select a tool:",
-            ["Home", "MAS Regulation Compliance", "PDF OCR Extractor"],
+            ["Home", "MAS Regulation Compliance", "AI Fraud Detection"],
             index=0
         )
         
@@ -163,8 +163,8 @@ def main():
         show_home_page()
     elif selected_tool == "MAS Regulation Compliance":
         show_mas_tool_info()
-    elif selected_tool == "PDF OCR Extractor":
-        show_ocr_tool_info()
+    elif selected_tool == "AI Fraud Detection":
+        show_fraud_detection_info()
 
 def show_home_page():
     """Display the home page with tool cards"""
@@ -225,50 +225,30 @@ def show_home_page():
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Tool 2: PDF OCR
+    # Tool 2: AI Fraud Detection
     st.markdown("""
     <div class="tool-card-alt">
-        <div class="tool-title">📄 PDF OCR Text Extractor</div>
+        <div class="tool-title">🔍 AI-Powered Fraud Detection System</div>
         <div class="tool-description">
-            Extract text from scanned PDF documents using advanced OCR technology. 
-            Supports multiple languages and provides high-quality text extraction 
-            for document digitization and analysis.
+            Comprehensive document fraud detection using JigsawStack OCR and Groq AI. 
+            Analyzes documents for authenticity, validates content, extracts structured data, 
+            and provides risk scoring with actionable recommendations.
         </div>
         <ul class="feature-list">
-            <li>Multi-language OCR support (English, German, French, etc.)</li>
-            <li>Drag & drop PDF upload</li>
-            <li>Adjustable quality settings</li>
-            <li>Downloadable extracted text</li>
-            <li>Real-time processing progress</li>
+            <li>JigsawStack OCR for PDFs, images (JPG, PNG), and text files</li>
+            <li>AI-powered structured field extraction (names, IDs, amounts, etc.)</li>
+            <li>Format & content validation with LLM reasoning</li>
+            <li>External verification (company registers, sanction lists, PEP data)</li>
+            <li>Comprehensive fraud risk scoring and reporting</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🚀 Launch PDF OCR Extractor", type="primary", use_container_width=True, key="ocr_btn"):
+        if st.button("🚀 Launch AI Fraud Detection", type="primary", use_container_width=True, key="fraud_btn"):
             st.switch_page("pages/2__PDF_OCR.py")
     
-    # Additional info
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class="info-box">
-        <h3>🎯 Getting Started</h3>
-        <p><strong>Prerequisites:</strong></p>
-        <ul>
-            <li>Python 3.12+ installed</li>
-            <li>Required packages: <code>pip install -r requirements.txt</code></li>
-            <li>For OCR: Tesseract-OCR executable installed</li>
-            <li>For MAS tool: Groq API key in <code>.env</code> file</li>
-        </ul>
-        <p><strong>Quick Start Commands:</strong></p>
-        <ul>
-            <li>MAS Compliance: <code>streamlit run src/mas_scraping_ui.py</code></li>
-            <li>PDF OCR: <code>streamlit run src/pdf_ocr_ui.py</code></li>
-            <li>Run Agent: <code>python agents/part1/regIngestAgent.py</code></li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
 
 def show_mas_tool_info():
     """Show detailed info about MAS Regulation Compliance tool"""
@@ -317,62 +297,108 @@ def show_mas_tool_info():
     if st.button("📚 View Documentation", type="secondary"):
         st.info("Documentation available at: `agents/README.md`")
 
-def show_ocr_tool_info():
-    """Show detailed info about PDF OCR tool"""
-    st.header("📄 PDF OCR Text Extractor")
+def show_fraud_detection_info():
+    """Show detailed info about AI Fraud Detection tool"""
+    st.header("🔍 AI-Powered Fraud Detection System")
     
     st.markdown("""
     ### Overview
-    The PDF OCR Text Extractor converts scanned PDF documents into searchable, editable text 
-    using advanced Optical Character Recognition (OCR) technology.
+    The AI Fraud Detection System provides comprehensive document fraud detection using 
+    cutting-edge AI technology. It combines JigsawStack's advanced OCR with Groq AI's 
+    reasoning capabilities to detect fraud indicators across multiple dimensions.
     
     ### Key Features
     
-    #### 📤 Easy Upload
-    - Drag & drop PDF interface
-    - Supports all PDF file types
-    - Real-time file size and format validation
+    #### 📄 Multi-Format Document Processing
+    - **JigsawStack OCR**: Industry-leading text extraction
+    - **Supported formats**: PDF, JPG, PNG, JPEG, TXT
+    - **Multi-page support**: Up to 10 pages per document
+    - **Fallback system**: PyMuPDF for PDFs if OCR fails
     
-    #### 🌍 Multi-Language Support
-    - English, German, French, Spanish, Italian, Portuguese
-    - Configurable language selection
-    - Handles multilingual documents
+    #### 🔍 Structured Field Extraction
+    - **AI-powered parsing**: Automatically extracts key fields
+    - **Document info**: Type, number, date, issuer
+    - **Parties**: Names, IDs, addresses, contact info
+    - **Financial**: Bank names, SWIFT codes, transaction IDs, amounts
+    - **Additional**: Account numbers, purpose, notes
+    - **Output**: Clean JSON structure for easy analysis
     
-    #### ⚙️ Customizable Processing
-    - Adjustable DPI scale (1-4) for quality vs speed trade-off
-    - Page-by-page progress tracking
-    - Configurable Tesseract path
+    #### ✅ Advanced Validation
+    - **Formatting checks**: Double spacing, irregular fonts, inconsistent indentation
+    - **Content validation**: Spelling errors, incorrect headers, missing sections
+    - **Structure analysis**: Document organization and completeness
+    - **Template matching**: Comparison against standard document types
+    - **AI reasoning**: LLM explains each validation issue
     
-    #### 💾 Output Options
-    - Text preview in browser
-    - Download full extracted text
-    - Copy to clipboard functionality
+    #### 🌐 External Verification
+    - **Company registers**: OpenCorporates, GLEIF, EU Business Register
+    - **Sanction lists**: OFAC, EU, UN (via public APIs)
+    - **PEP databases**: Politically Exposed Persons screening
+    - **Match confidence**: AI-calculated similarity scores
+    - **Discrepancy detection**: Flags mismatches between document and external data
+    
+    #### 🎯 Risk Scoring & Reporting
+    - **Risk scores**: 0-10 scale with AI reasoning
+    - **Risk levels**: Critical (8-10), High (6-8), Medium (4-6), Low (2-4), Minimal (0-2)
+    - **Key findings**: Prioritized list of fraud indicators
+    - **Recommendations**: Actionable next steps for compliance officers
+    - **Audit trail**: Complete processing log for compliance records
+    
+    ### How It Works
+    
+    1. **Upload**: Drag & drop document (PDF, image, or text)
+    2. **Parse**: JigsawStack OCR extracts text from document
+    3. **Extract**: AI identifies and structures key data fields
+    4. **Validate**: LLM checks formatting, content, and organization
+    5. **Verify**: Optional external checks against company/sanction databases
+    6. **Analyze**: Comprehensive AI fraud risk assessment
+    7. **Report**: Downloadable JSON report with full analysis
     
     ### Requirements
     
-    #### Software
-    - **Tesseract-OCR**: Download from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki)
-    - Install to: `C:\\Program Files\\Tesseract-OCR\\tesseract.exe`
+    #### API Keys (Required)
+    - **Groq API**: Get free key at [console.groq.com/keys](https://console.groq.com/keys)
+    - **JigsawStack API**: Sign up at [jigsawstack.com](https://jigsawstack.com)
+    
+    #### Configuration
+    Create `.env` file in project root:
+    ```
+    GROQ_API_KEY=your-groq-key
+    JIGSAWSTACK_API_KEY=your-jigsawstack-key
+    ```
     
     #### Python Packages
-    - pytesseract
-    - Pillow
-    - PyMuPDF (fitz)
+    All dependencies listed in `requirements.txt`:
+    ```bash
+    pip install groq jigsawstack python-dotenv streamlit requests PyMuPDF Pillow
+    ```
     
-    ### Best Practices
-    - Use high-quality scans for better accuracy
-    - Select appropriate languages for your document
-    - Higher DPI scale = better quality but slower processing
-    - Clear, legible source documents yield best results
+    ### Use Cases
+    
+    - **Financial Compliance**: Validate bank statements, invoices, receipts
+    - **Identity Verification**: Check ID documents, certificates
+    - **Contract Analysis**: Verify contracts, agreements
+    - **KYC/AML**: Know Your Customer and Anti-Money Laundering checks
+    - **Document Authentication**: Detect forged or manipulated documents
     
     ### Launch Command
     ```bash
-    streamlit run src/pdf_ocr_ui.py
+    cd src
+    streamlit run home.py
     ```
+    
+    Then navigate to "AI Fraud Detection" from the sidebar or home page.
     """)
     
-    if st.button("🔧 Install Tesseract", type="secondary"):
-        st.info("Download Tesseract: https://github.com/UB-Mannheim/tesseract/wiki")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🔑 Get Groq API Key", type="secondary", use_container_width=True):
+            st.info("Visit: https://console.groq.com/keys")
+    
+    with col2:
+        if st.button("🔑 Get JigsawStack API Key", type="secondary", use_container_width=True):
+            st.info("Visit: https://jigsawstack.com")
 
 if __name__ == "__main__":
     main()
