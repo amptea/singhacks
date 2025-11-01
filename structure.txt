@@ -1,0 +1,37 @@
+AML_Agentic_Solution/
+├── **.env** # Store environment variables (API keys, config)
+├── **requirements.txt** # List of all Python dependencies (pandas, langchain, etc.)
+├── **main.py** # Entry point to run the integrated solution/dashboard
+|
+├── **data/** # Holds input and mock data
+│   ├── **transactions_mock_1000_for_participants.csv** # Provided transaction data
+│   ├── **Swiss_Home_Purchase_Agreement_Scanned_Noise_forparticipants.pdf** # Provided document
+│   └── **regulatory_rules_mock.json** # Simulated parsed regulatory rules (from Part 1-A)
+|
+├── **agents/** # Core business logic for each agent/engine
+│   ├── **part1_aml_monitoring/**
+│   │   ├── **regulatory_engine.py** # Agent 1: Logic for ingesting/parsing rules
+│   │   ├── **transaction_analysis.py** # Agent 2: Logic for risk scoring & pattern detection
+│   │   └── **alerts_remediation.py** # Logic for routing, context, and remediation workflows
+│   |
+│   ├── **part2_doc_corroboration/**
+│   │   ├── **document_processing.py** # Agent 3: Logic for OCR, extraction, and format validation
+│   │   ├── **image_analysis.py** # Agent 4: Logic for image authenticity/tampering
+│   │   └── **risk_reporting.py** # Logic for final risk scoring and report generation
+│   |
+│   └── **integration_agent.py** # Agent for cross-referencing Part 1 alerts with Part 2 findings
+|
+├── **config/** # Global configuration settings
+│   ├── **__init__.py**
+│   ├── **settings.py** # Configuration for LLM endpoints, API keys (loaded from .env)
+│   └── **rule_schemas.py** # Python classes/Pydantic models for transactions, rules, and alerts
+|
+├── **output/** # Generated results and audit trails
+│   ├── **audit_trail.log** # Comprehensive log of actions (transactions checked, documents validated)
+│   ├── **alerts_history.csv** # Record of all generated alerts
+│   ├── **reports/** # Generated PDF/text reports from Part 2
+│   └── **reports/ClientX_Document_Risk_Report.pdf**
+|
+└── **ui/** # (Optional) For the unified dashboard
+    ├── **__init__.py**
+    └── **dashboard.py** # Streamlit or Flask application for the unified dashboard
