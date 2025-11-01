@@ -1,0 +1,8 @@
+{
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "The transaction satisfies all relevant MAS Notice 626 requirements: cross\u2011border SWIFT transfer with travel rule completed, appropriate CDD performed, no sanctions hits, no PEP, and no suspicious activity flagged. No rule violations were identified, resulting in a low\u2011risk assessment.",
+  "transaction_id": "135cef35-c054-46f0-8d8d-daedb7429de4",
+  "index": 0
+}

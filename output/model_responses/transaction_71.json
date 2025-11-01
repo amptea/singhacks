@@ -1,0 +1,8 @@
+{
+  "risk_label": "Low",
+  "score": 25,
+  "matched_rules": [
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction only triggers the Incomplete Travel Rule Information rule. All other high\u2011risk indicators (large amount, high customer risk rating, sanctions hit, EDD gap, high daily cash total) are absent. Therefore the overall risk is assessed as low."
+}

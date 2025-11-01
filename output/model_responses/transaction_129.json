@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction triggered a potential sanctions hit, which is a significant red flag. However, the amount is below the high-transaction threshold, the customer risk rating is low, and no other AML rules are triggered. Therefore, the overall risk is assessed as medium."
+}

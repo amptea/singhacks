@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":70,"matched_rules":["High Transaction Amount"],"explanation":"The transaction amount of 1,406,498.84 SGD exceeds the high‑amount threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, no EDD gap, and the travel rule information is complete

@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 65,
+  "matched_rules": [
+    "High Daily Cash Total for Customer",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction exceeds the daily cash threshold and lacks complete travel rule information, indicating potential structuring and compliance gaps. The amount is not high enough to trigger the high-amount rule, and other risk indicators are absent, so the overall risk is assessed as medium."
+}

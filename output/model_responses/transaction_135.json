@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction amount (SGD 217,902.88) is well above the high\u2011amount threshold and it triggered a potential sanctions hit during screening. These two factors strongly suggest a money\u2011laundering risk, outweighing the mitigating factors such as a medium customer risk rating and complete travel rule information."
+}

@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high amount threshold, involves a high\u2011risk customer, and triggered a potential sanctions hit, indicating multiple red flags consistent with money\u2011laundering risk."
+}

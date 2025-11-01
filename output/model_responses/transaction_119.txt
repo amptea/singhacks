@@ -1,0 +1,5 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": ["High Transaction Amount"],
+  "explanation": "The transaction amount (394,101.14 JPY) exceeds the high‑amount threshold of 17,343.58, triggering the \"High Transaction Amount\" rule. No other red flags (e.g., sanctions hit, high customer risk, EDD gap, daily cash structuring, or incomplete travel rule data) are present. Therefore, the transaction is considered medium risk

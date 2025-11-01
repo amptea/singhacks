@@ -1,0 +1,78 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "Value Transfer Disclosure Missing",
+    "Missing Originator Identification for Value Transfer",
+    "Sanctions Screening Not Performed",
+    "Outdated KYC for Digital Token Transaction"
+  ],
+  "explanation": "The transaction is a digital token transfer (product_has_va_exposure=true) with a high value (S$1,991,250.25). It fails several mandatory requirements: the value transfer disclosure (va_disclosure_provided) is false, originator identification details (address/ID) are missing for a >S$1,500 transfer, sanctions screening results are not populated, and the KYC was last completed over a year ago, violating ongoing monitoring obligations. These multiple breaches trigger a high‑risk assessment.",
+  "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
+  "index": 2,
+  "actionables": {
+    "next_steps": [
+      {
+        "step_number": 1,
+        "action": "Freeze the transaction and prevent further activity",
+        "team": "FRONT",
+        "priority": "IMMEDIATE",
+        "details": "To prevent potential money laundering, it's crucial to immediately freeze the transaction to prevent any further movement of funds. This action is necessary to mitigate risk and comply with MAS regulations.",
+        "deadline": "Within 1 hour"
+      },
+      {
+        "step_number": 2,
+        "action": "Conduct an initial review of the customer's risk profile and transaction history",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "The compliance team should review the customer's risk rating, KYC status, and transaction history to identify any patterns or red flags that may indicate money laundering activity. This review will inform the next steps in the investigation.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 3,
+        "action": "Perform sanctions screening on the transaction parties",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "Sanctions screening is a critical component of AML/CFT compliance. The compliance team must perform sanctions screening on the transaction parties to ensure they are not listed on any sanctions lists. This step is necessary to comply with MAS regulations and prevent potential sanctions breaches.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 4,
+        "action": "Update the customer's KYC information and perform ongoing monitoring",
+        "team": "FRONT",
+        "priority": "HIGH",
+        "details": "The customer's KYC information is outdated, which is a breach of MAS Notice 626 requirements. The front office staff must update the customer's KYC information and perform ongoing monitoring to ensure compliance with regulatory requirements.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 5,
+        "action": "Investigate the transaction for potential structuring or unusual activity",
+        "team": "COMPLIANCE",
+        "priority": "MEDIUM",
+        "details": "The compliance team should investigate the transaction to determine if it exhibits any characteristics of structuring or unusual activity. This step is necessary to identify potential money laundering patterns and comply with AML/CFT regulations.",
+        "deadline": "Within 3 days"
+      },
+      {
+        "step_number": 6,
+        "action": "File a suspicious transaction report (STR) with the Financial Intelligence Unit",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "Given the high-risk nature of the transaction, it is necessary to file an STR with the Financial Intelligence Unit. This step is required to comply with MAS regulations and report potential money laundering activity.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 7,
+        "action": "Document the investigation and outcome",
+        "team": "COMPLIANCE",
+        "priority": "ROUTINE",
+        "details": "The compliance team must document the investigation, including all steps taken and the outcome. This documentation is necessary for audit and regulatory purposes, and to demonstrate compliance with MAS regulations.",
+        "deadline": "Within 1 week"
+      }
+    ],
+    "recommended_outcome": "Reject the transaction and file a suspicious transaction report",
+    "estimated_resolution_time": "5-7 days",
+    "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
+    "risk_score": 85,
+    "index": 2
+  }
+}

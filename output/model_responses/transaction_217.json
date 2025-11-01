@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "EDD Required but Not Performed",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, the customer is a PEP, EDD was required but not performed, and travel\u2011rule data is incomplete. These factors collectively indicate a high likelihood of money\u2011laundering activity."
+}

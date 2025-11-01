@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, has a potential sanctions hit, and lacks complete travel rule data\u2014all strong indicators of money\u2011laundering risk. Combined with the large value and international wire transfer, the overall risk is assessed as high."
+}

@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 65,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount (1,183,384.64 HKD) exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No other red flags are present (medium customer risk rating, no sanctions hit, EDD not required, daily cash total below threshold, travel rule complete). Therefore the transaction is considered moderately suspicious, warranting further review."
+}

@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold and involves a customer with a high risk rating, both strong indicators of potential money\u2011laundering activity. Although enhanced due diligence was performed, sanctions screening returned no hits and daily cash totals are low, the combination of a large value and high\u2011risk customer warrants a high risk assessment."
+}

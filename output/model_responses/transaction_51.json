@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction triggered a potential sanctions hit, which is a significant red flag. However, the amount is below the high-transaction threshold, the customer risk rating is medium, daily cash total is negligible, and travel rule information is complete. These mitigating factors suggest a moderate overall risk rather than high."
+}

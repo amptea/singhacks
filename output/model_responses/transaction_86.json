@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, triggered a potential sanctions hit, and lacks complete travel rule data. These combined indicators strongly suggest money\u2011laundering risk, warranting a high\u2011risk classification."
+}

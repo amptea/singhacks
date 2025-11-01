@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold and triggered a potential sanctions hit. Combined with the customer\u2019s PEP status and the large FX conversion, the risk of money laundering is elevated."
+}

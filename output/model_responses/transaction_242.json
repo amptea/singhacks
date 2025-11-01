@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold and involves a customer with a high risk rating, both of which are strong indicators of potential money\u2011laundering activity. Although sanctions screening passed, EDD was performed, and travel\u2011rule data is complete, the combination of a large cash deposit and a high\u2011risk customer warrants a high\u2011risk classification."
+}

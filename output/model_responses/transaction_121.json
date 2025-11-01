@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating",
+    "EDD Required but Not Performed"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, involves a customer with a high risk rating, and required EDD was not performed. These factors together indicate a high likelihood of money\u2011laundering activity."
+}

@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 65,
+  "matched_rules": [
+    "Potential Sanctions Hit",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction triggered a potential sanctions hit and lacks complete travel rule information, both of which are red flags. While the amount is below the high\u2011value threshold and the customer risk rating is medium, the combination of sanctions exposure and missing regulatory data elevates the risk to a medium level."
+}
