@@ -1,0 +1,797 @@
+{
+  "document_info": {
+    "notice_number": "MAS Notice 626",
+    "effective_date": "2024-04-01",
+    "last_revised": "2025-06-30",
+    "title": "Prevention of Money Laundering and Countering the Financing of Terrorism – Banks",
+    "legal_basis": "Financial Services and Markets Act 2022, Section 16",
+    "applicable_to": "All banks in Singapore as defined in section 2 of the Banking Act 1970"
+  },
+  "risk_assessment": {
+    "clause_4": {
+      "title": "Assessing Risks and Applying a Risk-Based Approach",
+      "description": "Banks must identify, assess, and understand ML/TF risks across customers, jurisdictions, operations, products (including digital token transactions), and delivery channels.",
+      "sub_clauses": {
+        "4.1": {
+          "requirement": "Bank shall take appropriate steps to identify, assess and understand ML/TF risks in relation to:",
+          "risk_factors": [
+            "Its customers",
+            "Countries or jurisdictions its customers are from or in",
+            "Countries or jurisdictions the bank has operations in",
+            "Products, services, transactions, including digital token transactions, and delivery channels"
+          ]
+        },
+        "4.2": {
+          "requirement": "The appropriate steps shall include:",
+          "components": {
+            "4.2.a": "Documenting the bank's risk assessments",
+            "4.2.b": "Considering all relevant risk factors before determining level of overall risk and appropriate mitigation",
+            "4.2.c": "Keeping the bank's risk assessments up-to-date",
+            "4.2.d": "Having appropriate mechanisms to provide risk assessment information to the Authority"
+          }
+        },
+        "4.3": {
+          "title": "Risk Mitigation",
+          "requirements": {
+            "4.3.a": "Develop and implement policies, procedures and controls approved by senior management",
+            "4.3.b": "Monitor implementation and enhance if necessary",
+            "4.3.c": "Perform enhanced measures where higher risks identified",
+            "4.3.d": "Ensure measures address risk assessment and Authority guidance"
+          }
+        }
+      },
+      "summary": "Establishes foundation for risk-based AML/CFT compliance requiring systematic identification, documentation, and mitigation of ML/TF risks. Explicitly includes digital token transactions as a risk factor, recognizing emerging threats from digital assets.",
+      "supplementary_info": "Risk assessments must be dynamic and regularly updated. Digital token transactions present unique risks including anonymity, cross-border movement speed, and difficulty tracing. Banks must consider technology-specific risks when assessing products and delivery channels.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "customer_type",
+        "customer_risk_rating",
+        "customer_is_pep",
+        "originator_country",
+        "beneficiary_country",
+        "product_type",
+        "channel",
+        "edd_required",
+        "edd_performed",
+        "amount",
+        "currency",
+        "product_has_va_exposure"
+      ],
+      "validation_approach": "Validate that high-risk customers (high customer_risk_rating, customer_is_pep=true, high-risk countries) have edd_required and edd_performed=true. For digital token transactions (product_has_va_exposure=true), verify enhanced risk measures are applied. Check that product_type and channel combinations align with documented risk assessments."
+    }
+  },
+  "customer_due_diligence": {
+    "clause_6": {
+      "title": "Customer Due Diligence (CDD)",
+      "description": "Comprehensive requirements for identifying customers, verifying identities, understanding beneficial ownership, conducting ongoing monitoring, and screening. Includes specific provisions for digital token transactions.",
+      "sub_clauses": {
+        "6.1": {
+          "title": "Anonymous or Fictitious Account",
+          "requirement": "No bank shall open or maintain an anonymous account or an account in a fictitious name",
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "originator_name",
+            "beneficiary_name",
+            "customer_id"
+          ],
+          "validation_approach": "Check for null, blank, generic placeholder names, or systematic patterns indicating fictitious identities."
+        },
+        "6.2": {
+          "title": "Reasonable Grounds for Suspicion",
+          "requirement": "Prior to establishing business relations or undertaking transactions, if bank has reasonable grounds to suspect proceeds of crime or terrorism financing, bank shall not proceed and must file STR",
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "suspicion_determined_datetime",
+            "sanctions_screening",
+            "customer_risk_rating",
+            "booking_datetime"
+          ],
+          "validation_approach": "Validate that transactions do not proceed when suspicion_determined_datetime is populated before booking_datetime. Check sanctions_screening results for hits."
+        },
+        "6.3": {
+          "title": "When CDD is to be Performed",
+          "requirement": "Bank shall perform CDD measures when:",
+          "triggers": {
+            "6.3.a": "Bank establishes business relations with any customer",
+            "6.3.b": "Bank undertakes any transaction of value exceeding S$20,000, other than digital token transaction, for non-relationship customer",
+            "6.3.c": "Bank undertakes any digital token transaction for non-relationship customer",
+            "6.3.d": "Bank effects or receives funds by domestic wire transfer, or cross-border wire transfer exceeding S$1,500, for non-relationship customer",
+            "6.3.e": "Bank effects or receives digital tokens by value transfer, for non-relationship customer",
+            "6.3.f": "There is suspicion of ML/TF",
+            "6.3.g": "Bank has doubts about veracity or adequacy of previously obtained information"
+          },
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "amount",
+            "product_type",
+            "kyc_last_completed",
+            "originator_country",
+            "beneficiary_country",
+            "customer_id",
+            "product_has_va_exposure"
+          ],
+          "validation_approach": "For transactions >S$20,000 or cross-border transfers >S$1,500, validate kyc_last_completed is populated and recent. For all digital token transactions (product_has_va_exposure=true), verify CDD performed regardless of amount. Check that high-value or cross-border transactions have associated customer_id with completed CDD."
+        },
+        "6.4": {
+          "title": "Transaction Aggregation",
+          "requirement": "Where bank suspects multiple transactions are related, linked or deliberately structured to evade measures, shall treat as single transaction and aggregate values",
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "customer_id",
+            "booking_datetime",
+            "amount",
+            "originator_account",
+            "beneficiary_account",
+            "daily_cash_total_customer",
+            "daily_cash_txn_count"
+          ],
+          "validation_approach": "Identify patterns of multiple transactions just below S$20,000 or S$1,500 thresholds within short timeframes from same customer/accounts. Check daily_cash_total_customer and daily_cash_txn_count for structuring patterns."
+        },
+        "6.19_to_6.26": {
+          "title": "Ongoing Monitoring",
+          "requirement": "Bank shall monitor business relations on ongoing basis, scrutinize transactions to ensure consistency with knowledge of customer",
+          "sub_requirements": {
+            "6.19": "Monitor business relations with customers on ongoing basis",
+            "6.20": "Observe conduct of customer's account and scrutinize transactions throughout business relations to ensure consistency with bank's knowledge of customer, business, risk profile and source of funds. If participating in COSMIC, must include information received through COSMIC",
+            "6.20A": "Perform enhanced risk mitigation measures where transaction involves transfer of digital token to/from entity other than FATF-compliant financial institution",
+            "6.21": "Pay special attention to complex, unusually large or unusual patterns of transactions with no apparent economic or lawful purpose. If participating in COSMIC, must take into account information received through COSMIC",
+            "6.22": "Put in place adequate systems and processes to monitor business relations and detect/report suspicious, complex, unusually large or unusual patterns",
+            "6.24": "Ensure CDD data is relevant and kept up-to-date by undertaking reviews, particularly for higher risk categories",
+            "6.25": "Where reasonable grounds for suspicion exist and customer is retained, substantiate and document reasons, subject customer to enhanced ongoing monitoring",
+            "6.26": "For higher risk customers under 6.25, perform enhanced CDD including obtaining senior management approval to retain customer"
+          },
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "customer_id",
+            "customer_risk_rating",
+            "kyc_last_completed",
+            "kyc_due_date",
+            "amount",
+            "product_type",
+            "swift_f70_purpose",
+            "narrative",
+            "sow_documented",
+            "suspicion_determined_datetime",
+            "edd_required",
+            "edd_performed",
+            "product_has_va_exposure"
+          ],
+          "validation_approach": "Check kyc_last_completed is within acceptable periods based on customer_risk_rating. For digital token transactions (product_has_va_exposure=true), verify enhanced measures applied. Validate high-risk customers have edd_performed=true. Flag large/unusual transactions where narrative or purpose is vague. For COSMIC participants, validation should confirm enhanced scrutiny for flagged customers."
+        },
+        "6.39_to_6.42": {
+          "title": "Screening",
+          "requirement": "Bank shall screen customers, appointed persons, connected parties, beneficial owners, wire transfer originators/beneficiaries, and value transfer originators/beneficiaries against relevant ML/TF information sources",
+          "timing": {
+            "6.40.a": "When, or as soon as reasonably practicable after, establishing business relations",
+            "6.40.b": "When undertaking transaction exceeding S$20,000 (excluding digital token transactions) for non-relationship customer",
+            "6.40.c": "When effecting/receiving funds by domestic wire transfer or cross-border wire transfer exceeding S$1,500 for non-relationship customer",
+            "6.40.d": "On periodic basis after establishing business relations",
+            "6.40.e": "When changes/updates to lists or customer information",
+            "6.40.f": "When undertaking digital token transaction for non-relationship customer",
+            "6.40.g": "When effecting/receiving digital tokens by value transfer for non-relationship customer"
+          },
+          "wire_transfer_screening": "Screen all wire transfer originators and beneficiaries (6.41)",
+          "value_transfer_screening": "Screen all value transfer originators and beneficiaries (6.41A)",
+          "documentation": "Results of screening and assessment must be documented (6.42)",
+          "validation_relevance": "RELEVANT",
+          "critical_columns": [
+            "sanctions_screening",
+            "customer_is_pep",
+            "originator_name",
+            "beneficiary_name",
+            "originator_country",
+            "beneficiary_country",
+            "product_has_va_exposure"
+          ],
+          "validation_approach": "Validate sanctions_screening is populated for all transactions. Check customer_is_pep is determined. For digital token transactions (product_has_va_exposure=true), verify screening performed regardless of amount. Cross-reference screening results with customer_risk_rating escalations."
+        }
+      },
+      "summary": "Clause 6 forms the core of AML/CFT compliance for banks, with enhanced provisions for digital token transactions. Unlike PSN01, this notice applies CDD to all digital token transactions regardless of value, recognizing unique risks of digital assets. COSMIC integration enables enhanced information sharing for monitoring and detection.",
+      "supplementary_info": "CDD triggers include lower thresholds for certain activities (S$20,000 vs PSN01's S$5,000) reflecting banks' broader scope. Digital token transactions have universal CDD requirements due to anonymity and traceability risks. COSMIC system allows banks to share and receive information about customers and transactions, enhancing collective defense against ML/TF. Enhanced risk mitigation for digital token transfers to/from non-FATF-compliant entities (6.20A) addresses regulatory arbitrage risks."
+    }
+  },
+  "simplified_cdd": {
+    "clause_7": {
+      "title": "Simplified Customer Due Diligence",
+      "description": "Conditions under which banks may apply simplified CDD measures for lower-risk customers and transactions.",
+      "sub_clauses": {
+        "7.1": {
+          "requirement": "Bank may perform simplified CDD if satisfied that ML/TF risks are low"
+        },
+        "7.4": {
+          "title": "Restrictions on Simplified CDD",
+          "requirement": "Bank shall not perform simplified CDD where:",
+          "restrictions": {
+            "7.4.a": "Customer or beneficial owner is from/in country/jurisdiction for which FATF has called for countermeasures",
+            "7.4.b": "Customer or beneficial owner is from/in country/jurisdiction known to have inadequate AML/CFT measures",
+            "7.4.c": "Bank suspects ML/TF is involved"
+          }
+        }
+      },
+      "summary": "Simplified CDD allows resource-efficient processing of demonstrably lower-risk customers, with strict boundaries. Unlike PSN01, no specific monetary threshold for simplified CDD - focus is on risk-based determination with geographic and suspicion-based restrictions.",
+      "supplementary_info": "Banks have broader discretion than PSPs in applying simplified CDD, but must support determination with adequate risk analysis. Financial institutions in Appendix 2 may receive simplified CDD. Key difference from PSN01: no annual transaction volume limit, reflecting banks' ability to maintain more sophisticated ongoing monitoring.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "customer_risk_rating",
+        "amount",
+        "originator_country",
+        "beneficiary_country",
+        "kyc_last_completed"
+      ],
+      "validation_approach": "Identify customers with low customer_risk_rating. Check that customers from high-risk jurisdictions are not classified as low-risk. Validate that low-risk classification is supported by appropriate CDD measures (kyc_last_completed populated)."
+    }
+  },
+  "enhanced_cdd": {
+    "clause_8": {
+      "title": "Enhanced Customer Due Diligence",
+      "description": "Requirements for higher-risk scenarios including politically exposed persons (PEPs) and other elevated ML/TF risk situations. Includes COSMIC integration for enhanced risk detection.",
+      "sub_clauses": {
+        "8.2": {
+          "title": "PEP Determination",
+          "requirement": "Bank shall implement appropriate internal risk management systems to determine if customer, appointed person, connected party or beneficial owner is PEP, or family member/close associate of PEP. If participating in COSMIC, must ensure systems take into account information received through COSMIC"
+        },
+        "8.3": {
+          "title": "Enhanced CDD for PEPs",
+          "requirement": "In addition to standard CDD, bank shall perform enhanced CDD for PEPs, their family members and close associates:",
+          "measures": {
+            "8.3.a": "Obtain approval from senior management to establish/continue business relations or undertake transactions",
+            "8.3.b": "Establish source of wealth and source of funds of customer and beneficial owners by appropriate and reasonable means",
+            "8.3.c": "Conduct enhanced monitoring of business relations, increasing degree and nature of monitoring to determine whether transactions appear unusual or suspicious"
+          }
+        },
+        "8.5_to_8.7": {
+          "title": "Other Higher Risk Categories",
+          "requirement": "Bank shall implement systems to determine if business relations or transactions present higher ML/TF risk. If participating in COSMIC, must ensure systems take into account information received through COSMIC",
+          "higher_risk_circumstances": {
+            "8.6.a": "Customer or beneficial owner from/in jurisdiction for which FATF has called for countermeasures - shall treat as higher risk",
+            "8.6.b": "Customer or beneficial owner from/in jurisdiction with inadequate AML/CFT measures - shall assess whether presents higher risk",
+            "8.6.c": "Customer is legal person for which bank cannot establish ongoing/visible operation, economic/business purpose for structure, or substantive financial activity - shall assess whether presents higher risk"
+          },
+          "enhanced_measures": "Bank shall perform appropriate enhanced CDD from paragraph 8.3 for customers determined or notified as presenting higher ML/TF risk (8.7)"
+        }
+      },
+      "summary": "Enhanced CDD applies heightened scrutiny to higher-risk relationships. COSMIC integration provides additional intelligence for PEP identification and risk assessment. Requirements are similar to PSN01 but with stronger emphasis on information sharing and collective defense.",
+      "supplementary_info": "COSMIC system enables banks to receive alerts about customers from other financial institutions, enhancing PEP detection and risk assessment. Source of wealth differs from source of funds - both must be established for PEPs. Risk-based approach may be applied to domestic and international organization PEPs who have stepped down (8.4), but foreign PEPs always require enhanced measures.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "customer_is_pep",
+        "customer_risk_rating",
+        "originator_country",
+        "beneficiary_country",
+        "edd_required",
+        "edd_performed",
+        "sow_documented",
+        "amount",
+        "swift_f70_purpose",
+        "narrative"
+      ],
+      "validation_approach": "Validate all customers with customer_is_pep=true have edd_required=true and edd_performed=true. Check sow_documented=true for PEPs. Validate customers from FATF countermeasure jurisdictions have high customer_risk_rating and edd_performed=true. Flag customers with vague business descriptions or unclear transaction purposes."
+    }
+  },
+  "correspondent_banking": {
+    "clause_10": {
+      "title": "Correspondent Banking",
+      "description": "Enhanced due diligence requirements for correspondent banking relationships, including assessment of respondent financial institutions.",
+      "sub_clauses": {
+        "10.3": {
+          "title": "Measures When Providing Correspondent Services",
+          "requirement": "Bank providing correspondent banking or similar services shall, in addition to CDD measures, perform:",
+          "measures": {
+            "10.3.a": "Assess suitability of respondent financial institution by: (i) gathering adequate information about respondent's business, management, major activities and countries of operation; (ii) determining reputation and quality of supervision, including whether subject of ML/TF investigation or regulatory action; (iii) assessing respondent's AML/CFT controls for adequacy and effectiveness",
+            "10.3.b": "Clearly understand and document respective AML/CFT responsibilities of each financial institution",
+            "10.3.c": "Obtain senior management approval before providing correspondent services to new financial institution"
+          }
+        },
+        "10.4": {
+          "title": "Payable-Through Accounts",
+          "requirement": "Where correspondent services involve payable-through account, correspondent bank shall be satisfied that:",
+          "requirements": [
+            "Respondent financial institution has performed appropriate CDD measures at least equivalent to paragraph 6 on third party having direct access to payable-through account",
+            "Respondent financial institution is able to perform ongoing monitoring and is willing and able to provide CDD information to correspondent bank upon request"
+          ]
+        },
+        "10.6_and_10.7": {
+          "prohibition": "No bank shall enter into/continue correspondent relationship with financial institution that does not have adequate controls against ML/TF, is not effectively supervised, or is a shell financial institution (10.6)",
+          "additional_measure": "Bank shall take appropriate measures to satisfy itself that respondent financial institutions do not permit their accounts to be used by shell financial institutions (10.7)"
+        }
+      },
+      "summary": "Correspondent banking presents heightened ML/TF risk because it can provide indirect access to payment systems. Enhanced due diligence, senior management approval, and prohibition on shell banks are critical controls. Similar to PSN01 but includes 'similar services' for securities transactions, funds transfers, and digital token transactions.",
+      "supplementary_info": "Correspondent banking has been exploited for large-scale money laundering by enabling access to financial systems without direct oversight. Shell banks (no physical presence, not part of regulated groups) are prohibited. Payable-through accounts are especially risky as they allow respondent's customers direct access. Notice 626 explicitly includes digital token transactions in 'similar services' definition (10.2), addressing emerging risks.",
+      "validation_relevance": "PARTIALLY RELEVANT",
+      "critical_columns": [
+        "ordering_institution_bic",
+        "beneficiary_institution_bic",
+        "product_type",
+        "product_has_va_exposure"
+      ],
+      "validation_approach": "Identify correspondent banking transactions by analyzing BIC patterns and product types. For digital token transactions (product_has_va_exposure=true), verify correspondent relationships have undergone enhanced due diligence. While correspondent relationship documentation is primarily outside transaction data, presence of certain BICs and transaction patterns indicates relationships requiring enhanced scrutiny."
+    }
+  },
+  "wire_transfers": {
+    "clause_11": {
+      "title": "Wire Transfers",
+      "description": "Comprehensive requirements for information to accompany wire transfers, implementing FATF's Travel Rule. Applies to serial payments and cover payments.",
+      "sub_clauses": {
+        "11.3": {
+          "title": "Identification and Recording",
+          "requirement": "Before effecting wire transfer, ordering institution shall:",
+          "requirements": [
+            "Identify wire transfer originator and verify identity (if not already done per paragraph 6)",
+            "Record adequate details to permit reconstruction, including date, currency type and amount, and value date"
+          ]
+        },
+        "11.4": {
+          "title": "Cross-Border Wire Transfers ≤ S$1,500",
+          "requirement": "For cross-border wire transfers ≤S$1,500, ordering institution shall include in message:",
+          "required_information": [
+            "Name of wire transfer originator",
+            "Wire transfer originator's account number (or unique transaction reference number)",
+            "Name of wire transfer beneficiary",
+            "Wire transfer beneficiary's account number (or unique transaction reference number)"
+          ]
+        },
+        "11.5_and_11.6": {
+          "title": "Cross-Border Wire Transfers > S$1,500",
+          "requirement": "For cross-border wire transfers >S$1,500, ordering institution shall include all information from 11.4 plus:",
+          "additional_required_information": [
+            "Wire transfer originator's residential address (or registered/business address if not natural person), OR",
+            "Wire transfer originator's unique identification number (ID card, passport, incorporation number, etc.), OR",
+            "Date and place of birth, incorporation or registration of originator"
+          ],
+          "batch_transfers": "Where multiple transfers from single originator bundled in batch file, batch must contain verified originator information and beneficiary information, fully traceable within beneficiary jurisdiction (11.6)"
+        },
+        "11.7": {
+          "title": "Domestic Wire Transfers",
+          "requirement": "For domestic wire transfers, ordering institution shall either:",
+          "option_a": "Include in message: originator name, originator account number (or unique reference), and one of: address, unique ID number, or date/place of birth/incorporation",
+          "option_b": "Include only originator account number (or unique reference), provided details can be provided within 3 business days upon request (immediately for law enforcement) and details permit tracing"
+        },
+        "11.10_to_11.12": {
+          "title": "Responsibility of Beneficiary Institution",
+          "requirements": {
+            "11.10": "Take reasonable measures to identify cross-border wire transfers lacking required originator or beneficiary information",
+            "11.11": "For cross-border transfers, identify and verify beneficiary identity if not previously verified",
+            "11.12": "Implement risk-based policies for determining when to execute, reject, or suspend wire transfer lacking required information and appropriate follow-up action"
+          }
+        },
+        "11.13_to_11.16": {
+          "title": "Responsibility of Intermediary Institution",
+          "requirements": {
+            "11.13": "Retain all required wire transfer originator and beneficiary information accompanying wire transfer",
+            "11.14": "Where technical limitations prevent required information from remaining with related domestic wire transfer, keep record for at least 5 years",
+            "11.15": "Take reasonable measures consistent with straight-through processing to identify cross-border wire transfers lacking required information",
+            "11.16": "Implement risk-based policies for determining when to execute, reject, or suspend wire transfer lacking required information"
+          }
+        }
+      },
+      "summary": "Clause 11 implements FATF Travel Rule for wire transfers, requiring comprehensive originator and beneficiary information. Requirements vary by transfer amount and type (cross-border vs. domestic). Similar to PSN01 but explicitly includes serial and cover payments in scope (11.1).",
+      "supplementary_info": "Travel Rule addresses risk that wire transfers can rapidly move funds across borders with limited transparency. Different thresholds (S$1,500) recognize higher-value transfers warrant more complete information. Cover payments combine direct messaging with indirect fund routing, requiring special attention. Intermediary institutions must preserve information integrity through payment chain. For banks, this applies to broader range of payment types than PSPs.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "swift_mt",
+        "swift_f50_present",
+        "swift_f59_present",
+        "travel_rule_complete",
+        "originator_name",
+        "originator_account",
+        "originator_country",
+        "beneficiary_name",
+        "beneficiary_account",
+        "beneficiary_country",
+        "amount",
+        "ordering_institution_bic",
+        "beneficiary_institution_bic"
+      ],
+      "validation_approach": "For cross-border wire transfers (originator_country != beneficiary_country), validate travel_rule_complete=true. Check swift_f50_present and swift_f59_present for SWIFT messages. For amounts >S$1,500, verify originator and beneficiary details are complete. For domestic transfers, verify either full information or unique reference is present. Flag transactions where required fields are missing or incomplete."
+    }
+  },
+  "value_transfers": {
+    "clause_11A": {
+      "title": "Value Transfers (Digital Token Transfers)",
+      "description": "Comprehensive requirements for information to accompany value transfers of digital tokens, implementing Travel Rule for digital assets. This is a key difference from PSN01 which does not have equivalent provisions.",
+      "sub_clauses": {
+        "11A.3": {
+          "title": "Identification and Recording",
+          "requirement": "Before effecting value transfer, ordering institution shall:",
+          "requirements": [
+            "Identify value transfer originator and take reasonable measures to verify identity (if not already done per paragraph 6)",
+            "Record adequate details to permit reconstruction, including date, type and value of digital token(s) transferred, and value date"
+          ]
+        },
+        "11A.4_and_11A.5": {
+          "title": "Value Transfers ≤ S$1,500",
+          "requirement": "For value transfers ≤S$1,500, ordering institution shall include in message:",
+          "required_information": [
+            "Name of value transfer originator",
+            "Value transfer originator's account number (or unique transaction reference number)",
+            "Name of value transfer beneficiary",
+            "Value transfer beneficiary's account number (or unique transaction reference number)"
+          ],
+          "exception": "May include only unique transaction reference number and beneficiary information to intermediary institution in Singapore, provided information can be provided within 3 business days upon request (immediately for law enforcement) (11A.5)"
+        },
+        "11A.6_to_11A.8": {
+          "title": "Value Transfers > S$1,500",
+          "requirement": "For value transfers >S$1,500, ordering institution shall identify and verify originator identity and include all information from 11A.4 plus:",
+          "additional_required_information": [
+            "Value transfer originator's residential address (or registered/business address if not natural person), OR",
+            "Value transfer originator's unique identification number (ID card, passport, incorporation number, etc.), OR",
+            "Date and place of birth, incorporation or registration of originator"
+          ],
+          "batch_transfers": "Where multiple value transfers from single originator bundled in batch file, batch must contain verified originator information and beneficiary information, fully traceable within beneficiary jurisdiction (11A.7)",
+          "intermediary_exception": "May include only unique transaction reference number and beneficiary information to intermediary in Singapore, provided full information can be provided within 3 business days upon request (immediately for law enforcement) (11A.8)"
+        },
+        "11A.9": {
+          "title": "Immediate Secure Submission",
+          "requirement": "All value transfer originator and beneficiary information collected by ordering institution shall be immediately and securely submitted to beneficiary institution",
+          "note": "This is stricter than wire transfers - immediate submission required vs. accompanying message"
+        },
+        "11A.12_to_11A.15": {
+          "title": "Responsibility of Beneficiary Institution",
+          "requirements": {
+            "11A.12": "Take reasonable measures to identify value transfers lacking required originator or beneficiary information",
+            "11A.13": "For value transfers where beneficiary institution pays out transferred digital tokens in cash/cash equivalent in Singapore, identify and verify beneficiary identity if not previously verified",
+            "11A.14": "Implement risk-based policies for determining when to execute, reject, or suspend value transfer lacking required information",
+            "11A.15": "For bank controlling both ordering and beneficiary institution, take into account all information from both to determine if STR required, and file STR in affected jurisdictions"
+          }
+        },
+        "11A.16_to_11A.20": {
+          "title": "Responsibility of Intermediary Institution",
+          "requirements": {
+            "11A.16": "Retain all information accompanying value transfer",
+            "11A.17": "Immediately and securely provide information accompanying value transfer to next intermediary or beneficiary institution",
+            "11A.18": "Where technical limitations prevent required information from remaining with related value transfer, keep record for at least 5 years",
+            "11A.19": "Take reasonable measures consistent with straight-through processing to identify value transfers lacking required information",
+            "11A.20": "Implement risk-based policies for determining when to execute, reject, or suspend value transfer lacking required information"
+          }
+        }
+      },
+      "summary": "Clause 11A implements Travel Rule for digital token transfers (value transfers), a critical innovation not present in PSN01. Recognizes unique risks of digital assets including speed of transfer, cross-border nature, and potential anonymity. Stricter than wire transfers - requires immediate secure submission of information to beneficiary institution.",
+      "supplementary_info": "Digital tokens can move across borders in seconds without traditional banking intermediaries, creating ML/TF risks. Travel Rule for value transfers ensures traceability similar to wire transfers. Key difference: 11A.9 requires 'immediate and secure' submission vs. wire transfers where information 'accompanies' transfer. This recognizes that blockchain transactions may complete before information transmission, requiring proactive information sharing. Intermediaries must also immediately and securely forward information (11A.17), not just retain it.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "product_has_va_exposure",
+        "va_disclosure_provided",
+        "travel_rule_complete",
+        "originator_name",
+        "originator_account",
+        "originator_country",
+        "beneficiary_name",
+        "beneficiary_account",
+        "beneficiary_country",
+        "amount",
+        "currency",
+        "ordering_institution_bic",
+        "beneficiary_institution_bic"
+      ],
+      "validation_approach": "Filter transactions where product_has_va_exposure=true. Validate travel_rule_complete=true for all digital token transactions regardless of amount (unlike wire transfers which have thresholds). Verify originator and beneficiary information completeness based on S$1,500 threshold. Flag value transfers where required information is missing. Check va_disclosure_provided=true for transactions involving digital tokens. For amounts >S$1,500, verify enhanced originator information (address OR unique ID OR date/place of birth/incorporation)."
+    }
+  },
+  "record_keeping": {
+    "clause_12": {
+      "title": "Record Keeping",
+      "description": "Requirements for maintaining records of all data, documents and information obtained or produced to meet AML/CFT obligations. Includes specific provisions for digital token transactions.",
+      "sub_clauses": {
+        "12.1_and_12.2": {
+          "requirement": "Bank shall prepare, maintain and retain records of all data, documents and information required under this Notice such that:",
+          "purposes": [
+            "All requirements imposed by law (including this Notice) are met",
+            "Any individual transaction can be reconstructed (including amount and currency type) to provide evidence for prosecution",
+            "Authority, relevant authorities, and internal/external auditors can review business relations, transactions, records and CDD information, and assess compliance",
+            "Bank can satisfy inquiries or orders from relevant authorities within reasonable time"
+          ]
+        },
+        "12.3": {
+          "title": "Retention Periods",
+          "requirement": "Bank shall comply with following record retention periods:",
+          "periods": {
+            "12.3.a": "For CDD information relating to business relations, wire transfers, value transfers, and transactions without account being opened, plus account files, business correspondence and analysis results: at least 5 years following termination of business relations or completion of wire transfers, value transfers or transactions",
+            "12.3.b": "For data, documents and information relating to a transaction, including information needed to explain and reconstruct transaction: at least 5 years following completion of transaction"
+          },
+          "note": "Explicitly includes value transfers (digital token transfers) in retention requirements"
+        },
+        "12.4": {
+          "requirement": "Bank may retain records as originals or copies, in paper or electronic form or on microfilm, provided they are admissible as evidence in Singapore court of law"
+        },
+        "12.5": {
+          "requirement": "Bank shall retain records on all business relations or transactions pertaining to matter under investigation or subject of STR, in accordance with any request or order from STRO or other relevant authorities"
+        }
+      },
+      "summary": "Comprehensive record-keeping ensures AML/CFT compliance activities are documented and transaction trails can be reconstructed. The 5-year retention period aligns with international standards. Specific inclusion of value transfers reflects importance of digital token transaction records.",
+      "supplementary_info": "Record-keeping serves multiple purposes: demonstrating compliance, supporting internal investigations, providing evidence for law enforcement, and enabling transaction reconstruction. Digital token transactions require special attention as blockchain records may not capture all required CDD information. Banks must maintain off-chain records of originator/beneficiary information, verification evidence, and risk assessments for value transfers.",
+      "validation_relevance": "PARTIALLY RELEVANT",
+      "critical_columns": [
+        "transaction_id",
+        "booking_datetime",
+        "kyc_last_completed",
+        "suspicion_determined_datetime",
+        "product_has_va_exposure"
+      ],
+      "validation_approach": "While record retention is primarily a systems/archival function, validate that kyc_last_completed dates exist and are within expected timeframes. For transactions with suspicion_determined_datetime populated, ensure appropriate flags indicate ongoing retention requirements. For digital token transactions (product_has_va_exposure=true), verify that transaction records include sufficient detail for reconstruction. This is partially relevant as full record-keeping compliance requires access to document management systems beyond transaction data."
+    }
+  },
+  "suspicious_transaction_reporting": {
+    "clause_14": {
+      "title": "Suspicious Transactions Reporting",
+      "description": "Requirements for identifying, documenting, and reporting suspicious transactions to STRO. Includes digital token transactions.",
+      "sub_clauses": {
+        "14.1": {
+          "requirement": "Bank shall implement appropriate internal policies, procedures and controls for meeting STR obligations under CDSA and TSOFA, including:",
+          "requirements": {
+            "14.1.a": "Establish single reference point within organisation to whom all employees and officers are instructed to promptly refer all transactions suspected of being connected with ML/TF, for possible referral to STRO via STRs",
+            "14.1.b": "Keep records of all transactions referred to STRO, together with all internal findings and analysis done in relation to them"
+          }
+        },
+        "14.2": {
+          "requirement": "Bank shall promptly submit reports on suspicious transactions (including attempted transactions), regardless of the amount of the transaction, to STRO, and extend a copy to the Authority upon request"
+        },
+        "14.3": {
+          "requirement": "Bank shall consider if circumstances are suspicious so as to warrant filing STR and document the basis for its determination, including where:",
+          "circumstances": [
+            "Bank is unable to complete CDD measures required by paragraphs 6, 7 and 8",
+            "Customer is reluctant, unable or unwilling to provide requested information, or decides to withdraw pending application/transaction, or terminate existing business relations"
+          ]
+        },
+        "14.4": {
+          "requirement": "Where bank forms suspicion of ML/TF and reasonably believes that performing CDD measures will tip-off customer, appointed person, connected party or beneficial owner, bank may stop performing those measures. Bank shall document the basis for its assessment and file an STR",
+          "note": "Section 57 of CDSA prohibits tipping-off"
+        }
+      },
+      "summary": "STR reporting is critical component of AML/CFT framework, requiring banks to promptly report suspicious activity regardless of transaction amount. Applies to all transactions including digital token transactions. The clause balances need to complete CDD with risk of alerting criminals through tipping-off.",
+      "supplementary_info": "Suspicious transactions are not limited to monetary thresholds - even small transactions can be suspicious if they fit unusual patterns or involve suspicious parties. Digital token transactions may present unique red flags: mixing services, tumbling, use of privacy coins, transactions to/from high-risk exchanges or darknet marketplaces. The 'single reference point' (MLRO) ensures consistent evaluation. Documentation is critical - banks must explain why they did or didn't file an STR.",
+      "validation_relevance": "RELEVANT",
+      "critical_columns": [
+        "suspicion_determined_datetime",
+        "sanctions_screening",
+        "customer_risk_rating",
+        "amount",
+        "narrative",
+        "swift_f70_purpose",
+        "kyc_last_completed",
+        "customer_id",
+        "product_has_va_exposure"
+      ],
+      "validation_approach": "Validate that transactions with suspicion_determined_datetime populated have appropriate risk ratings and screening results documented. Check for patterns indicating suspicious behavior: incomplete KYC (kyc_last_completed is null or very old), failed sanctions screening, vague or inconsistent purpose narratives, unusual amounts for customer profile. For digital token transactions (product_has_va_exposure=true), flag transactions with characteristics associated with obfuscation or anonymization. Flag transactions where customer_id shows history of incomplete CDD attempts."
+    }
+  },
+  "internal_policies_and_controls": {
+    "clause_15": {
+      "title": "Internal Policies, Compliance, Audit and Training",
+      "description": "Requirements for establishing comprehensive AML/CFT governance framework including policies, compliance function, audit, employee screening, and training. Includes group policy requirements and COSMIC integration considerations.",
+      "sub_clauses": {
+        "15.1_and_15.2": {
+          "requirement": "Bank shall develop and implement adequate internal policies, procedures and controls, taking into consideration ML/TF risks and size of business, to help prevent ML/TF and communicate these to employees. Policies must meet all requirements of this Notice"
+        },
+        "15.4_to_15.9": {
+          "title": "Group Policy (for banks incorporated in Singapore)",
+          "requirement": "Bank incorporated in Singapore shall develop group policy on AML/CFT meeting all requirements of this Notice and extend to all branches and subsidiaries in financial group",
+          "key_requirements": {
+            "15.5": "Where branch/subsidiary in jurisdiction with FATF countermeasures or inadequate AML/CFT measures, ensure group policy is strictly observed",
+            "15.6_to_15.7A": "Develop group policies for sharing information (with adequate confidentiality safeguards) for CDD and ML/TF risk management purposes, including providing customer, account, and transaction information to group-level compliance, audit, and AML/CFT functions. Information includes analysis of unusual transactions. Subject to tipping-off restrictions, may include STRs",
+            "15.8": "Where host jurisdiction requirements differ from Singapore, apply higher of two standards to extent host law permits",
+            "15.9": "Where host law conflicts with Singapore law preventing higher standard, apply additional measures to manage ML/TF risks, report to Authority and comply with further directions",
+            "15.9A": "Singapore branch of bank incorporated outside Singapore shall share customer, account, and transaction information within financial group when necessary for ML/TF risk management, including analysis of unusual transactions"
+          }
+        },
+        "15.10_and_15.11": {
+          "title": "Compliance",
+          "requirement": "Bank shall develop appropriate compliance management arrangements, including:",
+          "requirements": [
+            "Appointment of AML/CFT compliance officer at management level (15.10)",
+            "Ensure compliance officer and assistants are suitably qualified, have adequate resources and timely access to all customer records and relevant information required to discharge functions (15.11)"
+          ]
+        },
+        "15.12": {
+          "title": "Audit",
+          "requirement": "Bank shall maintain audit function that is adequately resourced and independent, and able to regularly assess effectiveness of internal policies, procedures and controls, and compliance with regulatory requirements"
+        },
+        "15.13": {
+          "title": "Employee Hiring",
+          "requirement": "Bank shall have in place screening procedures to ensure high standards when hiring employees and appointing officers"
+        },
+        "15.14": {
+          "title": "Training",
+          "requirement": "Bank shall take all appropriate steps to ensure employees and officers (whether in Singapore or elsewhere) are regularly and appropriately trained on:",
+          "training_topics": [
+            "AML/CFT laws and regulations, and in particular, CDD measures, and detecting and reporting of suspicious transactions",
+            "Prevailing techniques, methods and trends in ML/TF",
+            "Bank's internal AML/CFT policies, procedures and controls, and roles and responsibilities of employees and officers in combating ML/TF"
+          ]
+        }
+      },
+      "summary": "Establishes governance framework for AML/CFT compliance, requiring banks to build comprehensive control environments with clear accountability, independent oversight, qualified personnel, and ongoing training. Group policy requirements ensure consistent standards across international operations while recognizing jurisdictional differences.",
+      "supplementary_info": "Effective AML/CFT requires 'three lines of defense': (1) business units implementing policies, (2) compliance function providing oversight, and (3) audit function providing independent assurance. Compliance officer must have sufficient seniority, resources, and access. Training must be regular and role-specific. Group policies ensure international operations don't create weak links. Information sharing provisions (with confidentiality safeguards) enable collective defense against ML/TF, particularly important for digital token transactions that can move rapidly across jurisdictions.",
+      "validation_relevance": "NOT DIRECTLY RELEVANT",
+      "critical_columns": [],
+      "validation_approach": "Internal policies, compliance functions, audit, and training are governance and organizational matters that cannot be validated from transaction-level data. These requirements are assessed through policy reviews, organizational charts, training records, and audit reports - not from the transaction dataset provided."
+    }
+  },
+  "reliance_on_third_parties": {
+    "clause_9": {
+      "title": "Reliance on Third Parties",
+      "description": "Conditions under which banks may rely on third parties to perform CDD measures, while retaining ultimate responsibility.",
+      "sub_clauses": {
+        "9.2": {
+          "requirement": "Bank may rely on third party to perform CDD measures (paragraphs 6, 7, 8) if following requirements met:",
+          "requirements": {
+            "9.2.a": "Bank is satisfied that third party is subject to and supervised for AML/CFT compliance consistent with FATF standards, and has adequate AML/CFT measures in place",
+            "9.2.b": "Bank takes appropriate steps to identify, assess and understand ML/TF risks particular to countries/jurisdictions that third party operates in",
+            "9.2.c": "Third party is not one which banks have been specifically precluded by Authority from relying upon",
+            "9.2.d": "Third party is able and willing to provide, without delay, upon bank's request, any data, documents or information obtained regarding CDD measures"
+          }
+        },
+        "9.3": {
+          "requirement": "No bank shall rely on third party to conduct ongoing monitoring of business relations"
+        },
+        "9.5": {
+          "requirement": "Notwithstanding reliance upon third party, bank shall remain responsible for its AML/CFT obligations in this Notice"
+        }
+      },
+      "summary": "Third-party reliance allows operational efficiency by avoiding duplication of CDD work, but banks cannot outsource their responsibility. They must ensure third parties meet FATF standards and can provide information upon demand. Critical functions like transaction monitoring cannot be delegated.",
+      "supplementary_info": "Third-party reliance is common in correspondent banking, group structures, and certain customer onboarding arrangements. Key principle: reliance is permissible for identification and verification, but not for ongoing monitoring and transaction review. Banks must conduct due diligence on the third party itself. If third party's CDD proves inadequate, the bank bears regulatory consequences. For banks, third party definition includes group entities (9.1), enabling efficient CDD within financial groups while maintaining accountability.",
+      "validation_relevance": "NOT DIRECTLY RELEVANT",
+      "critical_columns": [],
+      "validation_approach": "Third-party reliance is an operational arrangement that cannot be validated from transaction data alone. Assessment requires reviewing third-party agreements, due diligence documentation, and information-sharing protocols - not transactional records."
+    }
+  },
+  "new_products_and_technologies": {
+    "clause_5": {
+      "title": "New Products, Practices and Technologies",
+      "description": "Requirements to assess ML/TF risks of new products, practices and technologies before launch, with special attention to anonymity-enhancing features.",
+      "sub_clauses": {
+        "5.1": {
+          "requirement": "Bank shall identify and assess ML/TF risks that may arise in relation to:",
+          "scope": [
+            "Development of new products and new business practices, including new delivery mechanisms",
+            "Use of new or developing technologies for both new and existing products"
+          ]
+        },
+        "5.2": {
+          "requirement": "Bank shall undertake risk assessments prior to launch or use of such products, practices and technologies (to extent use is permitted by this Notice), and shall take appropriate measures to manage and mitigate the risks"
+        },
+        "5.3": {
+          "requirement": "Bank shall, in complying with requirements of paragraphs 5.1 and 5.2, pay special attention to any new products, business practices, delivery mechanisms, and new or developing technologies that favour anonymity"
+        }
+      },
+      "summary": "Innovation must be balanced with risk management. Banks must conduct ML/TF risk assessments before launching new products or adopting new technologies, with heightened scrutiny for anything that could enhance anonymity or obscure transaction trails. Particularly relevant for digital tokens and blockchain-based products.",
+      "supplementary_info": "Financial innovation often introduces new ML/TF risks - cryptocurrencies, DeFi protocols, NFTs, tokenized assets, and other digital innovations can enable faster, more anonymous transactions. Requirement for prior risk assessment ensures controls are designed into new products from start, not retrofitted after problems emerge. Products favoring anonymity (e.g., privacy coins, mixing services, unhosted wallets, certain DeFi protocols) require special attention. Banks offering digital token services must assess both the technology risk and the counterparty risk of entities customers transact with.",
+      "validation_relevance": "PARTIALLY RELEVANT",
+      "critical_columns": [
+        "product_type",
+        "channel",
+        "product_complex",
+        "product_has_va_exposure"
+      ],
+      "validation_approach": "Identify transactions involving complex products (product_complex=true) or virtual asset exposure (product_has_va_exposure=true). While new product risk assessments are documented outside transaction data, the presence of complex or emerging product types in transactions indicates that appropriate risk assessments should have been conducted. Flag new product_type or channel values that appear without corresponding risk documentation. Pay particular attention to digital token products which should always have documented risk assessments given anonymity and cross-border risks."
+    }
+  },
+  "personal_data": {
+    "clause_13": {
+      "title": "Personal Data",
+      "description": "Provisions allowing banks to collect, use and disclose personal data for AML/CFT purposes, with certain access rights for individuals.",
+      "sub_clauses": {
+        "13.2": {
+          "requirement": "For purposes of complying with this Notice, bank shall not be required to provide individual customers/beneficiaries/appointed persons/connected parties/beneficial owners with:",
+          "exemptions": [
+            "Access to personal data in possession or control of bank",
+            "Information about ways personal data has been or may have been used or disclosed",
+            "Right to correct error or omission of personal data"
+          ]
+        },
+        "13.3": {
+          "requirement": "Bank shall, as soon as reasonably practicable upon request, provide requesting individual with right to:",
+          "rights": [
+            "Access specific types of personal data (full name including alias, unique ID number, residential address, date of birth, nationality, and other personal data provided by individual to bank)",
+            "Correct error or omission in relation to those personal data types, provided bank is satisfied there are reasonable grounds for request"
+          ]
+        },
+        "13.4": {
+          "requirement": "For purposes of complying with this Notice, bank may, whether directly or through third party, collect, use and disclose personal data without the respective individual's consent"
+        }
+      },
+      "summary": "Balances AML/CFT compliance needs with personal data protection. Banks can collect and use personal data without consent for compliance purposes, but individuals retain certain access and correction rights. Banks are not required to disclose how data is used (which would risk tipping off).",
+      "supplementary_info": "Personal Data Protection Act normally requires consent for data collection and use, but AML/CFT compliance is legal obligation that overrides consent requirement. Restriction on providing information about how data is used prevents inadvertent tipping-off - if bank told customer their data was being analyzed for suspicious activity, this would defeat the purpose. However, individuals retain rights to access and correct their basic identity information to ensure accuracy. Note inclusion of 'individual beneficiary of life insurance policy' in 13.2, reflecting banks' role in distributing insurance products.",
+      "validation_relevance": "NOT DIRECTLY RELEVANT",
+      "critical_columns": [],
+      "validation_approach": "Personal data handling is a privacy and data governance matter that cannot be validated from transaction data. Assessment requires reviewing privacy policies, data protection impact assessments, and data subject request handling procedures."
+    }
+  },
+  "summary_and_validation_priority": {
+    "highest_priority_clauses": {
+      "clause_6": {
+        "reason": "Core CDD requirements - most comprehensive and directly validatable from transaction data. Critical for customer identification, verification, ongoing monitoring, and screening. Includes specific provisions for digital token transactions.",
+        "key_validation_points": [
+          "Anonymous accounts (6.1)",
+          "CDD triggers and thresholds (6.3) - note S$20,000 vs PSN01's S$5,000, and universal CDD for digital token transactions",
+          "Transaction aggregation/structuring (6.4)",
+          "Ongoing monitoring (6.19-6.26) with COSMIC integration",
+          "Enhanced measures for digital token transfers to non-FATF entities (6.20A)",
+          "Sanctions screening (6.39-6.42) including value transfer parties"
+        ]
+      },
+      "clause_11": {
+        "reason": "Wire transfer requirements (Travel Rule) - directly validatable from SWIFT and wire transfer data. Critical for cross-border transaction compliance. Includes serial and cover payments.",
+        "key_validation_points": [
+          "Originator information completeness (11.4, 11.5)",
+          "Beneficiary information completeness (11.4, 11.5)",
+          "Threshold-based requirements (≤S$1,500 vs >S$1,500)",
+          "Travel rule completion flags",
+          "Domestic wire transfer information requirements (11.7)"
+        ]
+      },
+      "clause_11A": {
+        "reason": "Value transfer requirements (Travel Rule for digital tokens) - UNIQUE TO NOTICE 626. Critical for digital asset transaction compliance. Stricter than wire transfers with immediate secure submission requirement.",
+        "key_validation_points": [
+          "Originator information completeness for value transfers (11A.4, 11A.6)",
+          "Beneficiary information completeness for value transfers (11A.4, 11A.6)",
+          "Immediate and secure submission requirement (11A.9, 11A.17)",
+          "Travel rule completion for all value transfers",
+          "Threshold-based requirements (≤S$1,500 vs >S$1,500)"
+        ]
+      },
+      "clause_8": {
+        "reason": "Enhanced CDD for PEPs and high-risk customers - directly validatable from risk rating and PEP flags. Includes COSMIC integration for enhanced detection.",
+        "key_validation_points": [
+          "PEP identification and enhanced measures (8.2-8.3) with COSMIC consideration",
+          "High-risk jurisdiction handling (8.6)",
+          "EDD performance for high-risk customers (8.7)",
+          "Source of wealth documentation for PEPs (8.3.b)"
+        ]
+      },
+      "clause_14": {
+        "reason": "Suspicious transaction reporting - directly validatable from suspicion flags and timing data. Applies to all transactions including digital tokens.",
+        "key_validation_points": [
+          "Suspicion determination and documentation (14.3)",
+          "Timing of suspicion vs. transaction execution (14.2, 14.4)",
+          "Consideration of digital token transaction red flags"
+        ]
+      }
+    },
+    "medium_priority_clauses": {
+      "clause_4": "Risk assessment - partially validatable through customer risk ratings and risk-based measure application",
+      "clause_7": "Simplified CDD - validatable through customer risk levels, no specific transaction thresholds",
+      "clause_10": "Correspondent banking - partially validatable through BIC patterns and product types",
+      "clause_5": "New products - partially validatable through product complexity flags, especially for digital tokens"
+    },
+    "low_priority_clauses": {
+      "clause_12": "Record keeping - primarily systems/archival function, limited transaction-level validation",
+      "clause_15": "Internal policies/training - governance matters not validatable from transaction data",
+      "clause_9": "Third-party reliance - operational arrangements not in transaction data",
+      "clause_13": "Personal data - privacy governance not validatable from transaction data"
+    },
+    "unique_to_banks_vs_psps": {
+      "higher_thresholds": "S$20,000 for non-DPT transactions vs S$5,000 for PSPs reflects banks' broader scope and more sophisticated monitoring",
+      "digital_token_coverage": "Comprehensive digital token transaction requirements (Clauses 6.3.c, 6.3.e, 6.20A, 11A, etc.) not present in PSN01",
+      "cosmic_integration": "References to COSMIC information sharing system (6.20, 6.21, 8.2, 8.5) enable enhanced collective defense",
+      "life_insurance": "Beneficiary identification requirements for life insurance (6.17A-C) reflect banks' distribution of insurance products",
+      "value_transfers": "Entire Clause 11A dedicated to digital token transfers with stricter immediate submission requirements",
+      "correspondent_banking_scope": "Broader scope including securities transactions and digital token transactions (10.2)",
+      "group_entities_as_third_parties": "Can rely on group entities for CDD (9.1.c-d) with appropriate safeguards"
+    }
+  },
+  "validation_considerations_for_banks": {
+    "digital_token_transactions": {
+      "universal_cdd": "All digital token transactions require CDD regardless of amount (6.3.c, 6.3.e) - stricter than other transaction types",
+      "enhanced_measures": "Transfers to/from non-FATF-compliant entities require enhanced risk mitigation (6.20A)",
+      "travel_rule_strictness": "Value transfers require immediate and secure submission of information (11A.9, 11A.17) vs. wire transfers where information accompanies transfer",
+      "screening_requirement": "Value transfer originators and beneficiaries must be screened (6.41A)",
+      "risk_assessment": "New digital token products/services must undergo prior risk assessment (5.1-5.3)",
+      "validation_flag": "product_has_va_exposure column is critical for identifying transactions subject to enhanced requirements"
+    },
+    "cosmic_integration": {
+      "ongoing_monitoring": "Banks participating in COSMIC must include information received through COSMIC in ongoing monitoring (6.20, 6.21)",
+      "pep_detection": "COSMIC information must be considered in PEP determination systems (8.2)",
+      "risk_assessment": "COSMIC information must be considered in higher risk determination systems (8.5)",
+      "validation_limitation": "Transaction data does not capture COSMIC information sharing - validation requires access to COSMIC records and internal risk assessment documentation"
+    },
+    "threshold_differences": {
+      "general_transactions": "S$20,000 threshold for non-DPT transactions vs PSN01's S$5,000 (6.3.b)",
+      "wire_transfers": "S$1,500 threshold for cross-border wire transfers - same as PSN01 (6.3.d, 11.4, 11.5)",
+      "digital_tokens": "No threshold for digital token transactions - CDD always required (6.3.c, 6.3.e)",
+      "validation_approach": "Must apply different threshold logic based on transaction type - use product_has_va_exposure to identify digital token transactions requiring universal CDD"
+    },
+    "life_insurance_considerations": {
+      "beneficiary_identification": "Banks distributing life insurance must identify beneficiaries (6.17A-C)",
+      "validation_limitation": "Life insurance beneficiary information typically not in standard transaction data - requires access to insurance policy records"
+    }
+  }
+}
