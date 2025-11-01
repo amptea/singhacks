@@ -119,7 +119,7 @@ Provide analysis as JSON:
     ],
     "completeness_score": <0-100>,
     "accuracy_score": <0-100>,
-    "overall_quality": "excellent/good/fair/poor",
+    "overall_quality": "Excellent/Good/Fair/Poor",
     "critical_issues": ["list of critical issues that must be addressed"],
     "recommendations": ["specific recommendations for improvement"]
 }}

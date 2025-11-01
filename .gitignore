@@ -9,3 +9,4 @@ __pycache__/
 # Outputs
 outputs/
 temp/
+data/logs/audit_trail.log
