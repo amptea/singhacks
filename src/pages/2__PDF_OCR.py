@@ -1,6 +1,6 @@
 """
-PDF OCR Parser with Drag & Drop UI
-Streamlit-based interface for PDF OCR extraction
+AI-Powered Fraud Detection & PDF OCR
+Streamlit-based interface with JigsawStack OCR and AI fraud detection
 """
 
 import streamlit as st
@@ -9,16 +9,20 @@ import sys
 import tempfile
 from pathlib import Path
 import time
+import json
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # Page configuration
 st.set_page_config(
-    page_title="PDF OCR Extractor",
-    page_icon="📄",
+    page_title="AI Fraud Detection & PDF OCR",
+    page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS
 st.markdown("""
 <style>
     .main-header {
@@ -27,22 +31,16 @@ st.markdown("""
         text-align: center;
         margin-bottom: 2rem;
     }
-    .upload-area {
-        border: 2px dashed #cccccc;
-        border-radius: 10px;
-        padding: 3rem;
-        text-align: center;
-        margin: 1rem 0;
-        background-color: #fafafa;
-        transition: all 0.3s ease;
-    }
-    .upload-area:hover {
-        border-color: #1f77b4;
-        background-color: #f0f8ff;
-    }
     .success-box {
         background-color: #d4edda;
         border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
         border-radius: 5px;
         padding: 1rem;
         margin: 1rem 0;
@@ -54,295 +52,452 @@ st.markdown("""
         padding: 1rem;
         margin: 1rem 0;
     }
-    .progress-bar {
-        margin: 1rem 0;
+    .risk-high {
+        background-color: #ff4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .risk-medium {
+        background-color: #ff9800;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .risk-low {
+        background-color: #4caf50;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Import OCR functionality
+# Import AI fraud detector
 try:
-    import pytesseract
-    from PIL import Image
-    import fitz  # PyMuPDF
+    from document_parser_jigsawstack import JigsawDocumentParser
+    from ai_fraud_detector import AIFraudDetector
+    from structured_extractor import StructuredFieldExtractor
+    from enhanced_validator import EnhancedDocumentValidator
+    from external_verification import ExternalVerificationAgent
     
-    # Common Tesseract installation paths on Windows
-    TESSERACT_PATHS = [
-        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
-        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
-        r"C:\Users\Public\Tesseract-OCR\tesseract.exe",
-    ]
-    
-    # Try to find Tesseract
-    tesseract_found = False
-    for path in TESSERACT_PATHS:
-        if os.path.exists(path):
-            pytesseract.pytesseract.tesseract_cmd = path
-            tesseract_found = True
-            st.session_state.tesseract_path = path
-            break
-    
-    if not tesseract_found:
-        st.warning("⚠️ Tesseract not found in common locations. OCR may not work properly.")
-        
+    IMPORTS_OK = True
 except ImportError as e:
-    st.error(f"❌ Missing required dependency: {e}")
-    st.stop()
+    st.error(f"❌ Missing dependencies: {e}")
+    st.info("Please ensure all required modules are installed")
+    IMPORTS_OK = False
 
-def parse_pdf_to_text(pdf_path, output_path=None, dpi_scale=3, progress_bar=None, status_text=None):
-    """
-    Parse a scanned PDF and extract text using OCR
-    Modified to work with Streamlit progress tracking
-    """
-    try:
-        if status_text:
-            status_text.text("Opening PDF document...")
-        
-        # Open the PDF
-        pdf_document = fitz.open(pdf_path)
-        
-        all_text = []
-        total_pages = len(pdf_document)
-        
-        if status_text:
-            status_text.text(f"Processing {total_pages} page(s)...")
-        
-        for page_num in range(total_pages):
-            if progress_bar:
-                progress = (page_num + 1) / total_pages
-                progress_bar.progress(progress)
-            
-            if status_text:
-                status_text.text(f"Processing page {page_num + 1}/{total_pages}...")
-            
-            try:
-                # Get the page
-                page = pdf_document[page_num]
-                
-                # Convert page to image (higher DPI for better OCR)
-                mat = fitz.Matrix(dpi_scale, dpi_scale)
-                pix = page.get_pixmap(matrix=mat)
-                
-                # Convert to PIL Image
-                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                
-                # Perform OCR on the image
-                if status_text:
-                    status_text.text(f"Running OCR on page {page_num + 1}...")
-                
-                text = pytesseract.image_to_string(img, lang='deu+fra+eng')
-                
-                # Add page header
-                all_text.append(f"\n{'='*80}\n")
-                all_text.append(f"PAGE {page_num + 1}\n")
-                all_text.append(f"{'='*80}\n\n")
-                all_text.append(text)
-                
-            except Exception as e:
-                error_msg = f"ERROR processing page {page_num + 1}: {e}"
-                all_text.append(f"\n{'='*80}\n")
-                all_text.append(f"PAGE {page_num + 1} - ERROR\n")
-                all_text.append(f"{'='*80}\n\n")
-                all_text.append(f"[Error: {str(e)}]\n")
-        
-        # Close the PDF
-        pdf_document.close()
-        
-        # Combine all text
-        full_text = "".join(all_text)
-        
-        # Save to file if output path is provided
-        if output_path:
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(full_text)
-        
-        return full_text, None  # Return text and no error
-        
-    except Exception as e:
-        return None, str(e)
+def display_risk_badge(risk_level, risk_score):
+    """Display colored risk badge"""
+    if risk_score >= 7:
+        risk_class = "risk-high"
+        emoji = "🔴"
+    elif risk_score >= 4:
+        risk_class = "risk-medium"
+        emoji = "🟡"
+    else:
+        risk_class = "risk-low"
+        emoji = "🟢"
+    
+    return f'{emoji} <span class="{risk_class}">{risk_level} ({risk_score}/10)</span>'
 
 def main():
     """Main Streamlit application"""
     
     # Header
-    st.markdown('<div class="main-header">📄 PDF OCR Text Extractor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">🔍 AI-Powered Fraud Detection System</div>', unsafe_allow_html=True)
+    st.markdown("### Upload documents for comprehensive fraud detection analysis powered by AI")
     
     # Sidebar
     with st.sidebar:
-        st.header("⚙️ Settings")
+        st.header("⚙️ Configuration")
         
-        # DPI Scale selection
-        dpi_scale = st.slider(
-            "Image Quality (DPI Scale)",
-            min_value=1,
-            max_value=4,
-            value=2,
-            help="Higher values = better quality but slower processing"
+        # Document type selection
+        doc_type = st.selectbox(
+            "Document Type",
+            [
+                "statement",
+                "invoice",
+                "contract",
+                "certificate",
+                "identity",
+                "financial_report",
+                "receipt",
+                "other"
+            ],
+            help="Select the type of document for specialized analysis"
         )
         
-        # Language selection
-        languages = st.multiselect(
-            "OCR Languages",
-            options=['eng', 'deu', 'fra', 'spa', 'ita', 'por'],
-            default=['eng', 'deu', 'fra'],
-            help="Select languages for OCR (multiple for multilingual documents)"
+        # Analysis options
+        st.subheader("📊 Analysis Options")
+        use_external_verification = st.checkbox(
+            "External Verification",
+            value=False,
+            help="Query company registers and sanction lists (takes longer)"
         )
         
-        # Manual Tesseract path
-        st.subheader("Tesseract Configuration")
-        manual_path = st.text_input(
-            "Tesseract Path (if not auto-detected)",
-            value=st.session_state.get('tesseract_path', ''),
-            help="Path to tesseract.exe on Windows"
+        show_debug = st.checkbox(
+            "Show Debug Info",
+            value=False,
+            help="Display detailed API responses and processing logs"
         )
         
-        if manual_path and os.path.exists(manual_path):
-            pytesseract.pytesseract.tesseract_cmd = manual_path
-            st.session_state.tesseract_path = manual_path
-            st.success("✅ Tesseract path set successfully")
+        st.markdown("---")
+        
+        # API Key status
+        st.subheader("🔑 API Status")
+        
+        # Check for API keys
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        groq_key = os.getenv("GROQ_API_KEY")
+        jigsaw_key = os.getenv("JIGSAWSTACK_API_KEY")
+        
+        if groq_key:
+            st.success("✅ Groq API")
+        else:
+            st.error("❌ Groq API Key Missing")
+        
+        if jigsaw_key:
+            st.success("✅ JigsawStack API")
+        else:
+            st.error("❌ JigsawStack API Key Missing")
         
         st.markdown("---")
         st.info("""
-        **How to use:**
-        1. Drag & drop a PDF file
-        2. Adjust settings if needed
-        3. Click 'Extract Text'
-        4. Download or copy the extracted text
+        **How it works:**
+        1. Upload PDF/image document
+        2. JigsawStack OCR extracts text
+        3. AI extracts structured data
+        4. AI validates format & content
+        5. Optional external verification
+        6. AI generates fraud risk report
         """)
     
-    # Main content area
-    col1, col2 = st.columns([1, 1])
+    # Main content
+    if not IMPORTS_OK:
+        st.error("Cannot proceed without required dependencies")
+        return
     
-    with col1:
-        st.subheader("📤 Upload PDF File")
+    # File uploader
+    st.subheader("📤 Upload Document")
+    
+    uploaded_file = st.file_uploader(
+        "Drag and drop your document here (PDF, JPG, PNG, TXT)",
+        type=['pdf', 'jpg', 'jpeg', 'png', 'txt'],
+        help="Upload a document for AI-powered fraud detection analysis"
+    )
+    
+    if uploaded_file is not None:
+        # File info
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Filename", uploaded_file.name)
+        with col2:
+            st.metric("Size", f"{uploaded_file.size / 1024:.2f} KB")
+        with col3:
+            st.metric("Type", uploaded_file.type)
         
-        # File uploader with drag & drop
-        uploaded_file = st.file_uploader(
-            "Drag and drop your PDF file here",
-            type=['pdf'],
-            help="Upload a scanned PDF document for text extraction"
+        # Analyze button
+        if st.button("🚀 Analyze Document", type="primary", use_container_width=True):
+            # Create temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=Path(uploaded_file.name).suffix) as tmp_file:
+                tmp_file.write(uploaded_file.getvalue())
+                tmp_path = tmp_file.name
+            
+            try:
+                # Progress tracking
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                
+                # Initialize results container
+                results = {
+                    'stages': {},
+                    'overall_risk': None,
+                    'processing_time': 0
+                }
+                
+                start_time = time.time()
+                
+                # Stage 1: Parse Document
+                status_text.text("📄 Stage 1/5: Parsing document with JigsawStack OCR...")
+                progress_bar.progress(20)
+                
+                with st.spinner("Extracting text from document..."):
+                    parser = JigsawDocumentParser()
+                    parsed = parser.parse_document(tmp_path)
+                    results['stages']['parsing'] = parsed
+                
+                if not parsed.get('success', False):
+                    st.error(f"❌ Document parsing failed: {parsed.get('error', 'Unknown error')}")
+                    st.info("💡 Check your JigsawStack API key in .env file")
+                    os.unlink(tmp_path)
+                    return
+                
+                parser_method = parsed.get('parser_used', 'jigsawstack')
+                if 'warning' in parsed:
+                    st.warning(f"⚠️ {parsed['warning']}")
+                
+                pages_info = f"{parsed['page_count']} page(s)"
+                if parsed.get('pages_processed') and parsed.get('pages_processed') != parsed.get('page_count'):
+                    pages_info = f"{parsed['pages_processed']}/{parsed['page_count']} pages"
+                
+                st.success(f"✓ Extracted {len(parsed['text'])} characters from {pages_info} using {parser_method}")
+                
+                # Stage 2: Extract Structured Fields
+                status_text.text("🔍 Stage 2/5: Extracting structured fields...")
+                progress_bar.progress(40)
+                
+                with st.spinner("AI analyzing document structure..."):
+                    extractor = StructuredFieldExtractor()
+                    extracted = extractor.extract_fields(parsed['text'], document_type=doc_type)
+                    results['stages']['extraction'] = extracted
+                
+                if extracted['success']:
+                    st.success(f"✓ Extracted {extracted['fields_found']} data fields")
+                
+                # Stage 3: Enhanced Validation
+                status_text.text("✅ Stage 3/5: Validating document quality...")
+                progress_bar.progress(60)
+                
+                with st.spinner("AI checking format and content..."):
+                    validator = EnhancedDocumentValidator()
+                    validation = validator.validate_document(
+                        parsed['text'],
+                        doc_type,
+                        extracted.get('extracted_fields')
+                    )
+                    results['stages']['validation'] = validation
+                
+                st.success(f"✓ Validation complete: {validation.get('overall_quality', 'N/A')}")
+                
+                # Stage 4: External Verification (if enabled)
+                if use_external_verification:
+                    status_text.text("🌐 Stage 4/5: Verifying with external sources...")
+                    progress_bar.progress(75)
+                    
+                    with st.spinner("Checking company registers and sanction lists..."):
+                        verifier = ExternalVerificationAgent()
+                        verification = verifier.verify_entity(extracted)
+                        results['stages']['verification'] = verification
+                    
+                    st.success("✓ External verification complete")
+                else:
+                    st.info("⏭️ Skipping external verification (disabled)")
+                
+                # Stage 5: AI Fraud Analysis
+                status_text.text("🤖 Stage 5/5: AI fraud analysis...")
+                progress_bar.progress(90)
+                
+                with st.spinner("Generating comprehensive fraud detection report..."):
+                    detector = AIFraudDetector()
+                    fraud_analysis = detector.analyze_document(tmp_path)
+                    results['stages']['fraud_analysis'] = fraud_analysis
+                
+                # Complete
+                progress_bar.progress(100)
+                status_text.text("✅ Analysis complete!")
+                
+                results['processing_time'] = time.time() - start_time
+                results['overall_risk'] = fraud_analysis.get('ai_analysis', {})
+                
+                # Store in session state
+                st.session_state.results = results
+                st.session_state.filename = uploaded_file.name
+                
+                # Clean up
+                os.unlink(tmp_path)
+                
+                st.balloons()
+                
+            except Exception as e:
+                st.error(f"❌ Error during analysis: {str(e)}")
+                if show_debug:
+                    st.exception(e)
+                if os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+                return
+    
+    # Display Results
+    if 'results' in st.session_state:
+        st.markdown("---")
+        st.header("📊 Analysis Results")
+        
+        results = st.session_state.results
+        
+        # Summary metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            risk_score = results['overall_risk'].get('risk_score', 0)
+            st.metric("Risk Score", f"{risk_score}/10")
+        
+        with col2:
+            risk_level = results['overall_risk'].get('risk_level', 'UNKNOWN')
+            st.metric("Risk Level", risk_level)
+        
+        with col3:
+            fields_found = results['stages'].get('extraction', {}).get('fields_found', 0)
+            st.metric("Fields Extracted", fields_found)
+        
+        with col4:
+            st.metric("Processing Time", f"{results['processing_time']:.1f}s")
+        
+        # Risk Badge
+        st.markdown(
+            f"### Overall Assessment: {display_risk_badge(risk_level, risk_score)}",
+            unsafe_allow_html=True
         )
         
-        if uploaded_file is not None:
-            # File info
-            file_details = {
-                "Filename": uploaded_file.name,
-                "File size": f"{uploaded_file.size / 1024:.2f} KB"
+        # Tabs for detailed results
+        tabs = st.tabs([
+            "📋 Overview",
+            "🔍 Extracted Data",
+            "✅ Validation",
+            "🌐 Verification",
+            "🤖 AI Analysis",
+            "📄 Full Report"
+        ])
+        
+        # Tab 1: Overview
+        with tabs[0]:
+            st.subheader("Executive Summary")
+            
+            recommendations = results['overall_risk'].get('recommendations', [])
+            if recommendations:
+                st.markdown("**Recommendations:**")
+                for rec in recommendations:
+                    st.markdown(f"- {rec}")
+            
+            key_findings = results['overall_risk'].get('key_findings', [])
+            if key_findings:
+                st.markdown("**Key Findings:**")
+                for finding in key_findings:
+                    st.markdown(f"- {finding}")
+        
+        # Tab 2: Extracted Data
+        with tabs[1]:
+            st.subheader("Structured Fields")
+            
+            extraction = results['stages'].get('extraction', {})
+            if extraction.get('success'):
+                fields = extraction.get('extracted_fields', {})
+                
+                # Display in expanders by category
+                for category, data in fields.items():
+                    if data and data != {}:
+                        with st.expander(f"📁 {category.replace('_', ' ').title()}"):
+                            st.json(data)
+            else:
+                st.warning("No structured data extracted")
+        
+        # Tab 3: Validation
+        with tabs[2]:
+            st.subheader("Document Validation Results")
+            
+            validation = results['stages'].get('validation', {})
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Formatting Issues:**")
+                formatting = validation.get('formatting_issues', [])
+                if formatting:
+                    for issue in formatting:
+                        st.warning(f"⚠️ {issue.get('issue', 'Unknown')}: {issue.get('details', '')}")
+                else:
+                    st.success("✅ No formatting issues found")
+            
+            with col2:
+                st.markdown("**Content Issues:**")
+                content = validation.get('content_issues', [])
+                if content:
+                    for issue in content:
+                        st.warning(f"⚠️ {issue.get('issue', 'Unknown')}: {issue.get('details', '')}")
+                else:
+                    st.success("✅ No content issues found")
+        
+        # Tab 4: Verification
+        with tabs[3]:
+            verification = results['stages'].get('verification', {})
+            
+            if verification:
+                st.subheader("External Verification Results")
+                
+                # Company Register
+                company_reg = verification.get('company_register', {})
+                if company_reg:
+                    with st.expander("🏢 Company Register"):
+                        st.json(company_reg)
+                
+                # Sanctions
+                sanctions = verification.get('sanctions', {})
+                if sanctions:
+                    with st.expander("🚫 Sanctions Check"):
+                        st.json(sanctions)
+            else:
+                st.info("External verification was not performed")
+        
+        # Tab 5: AI Analysis
+        with tabs[4]:
+            st.subheader("Comprehensive AI Fraud Detection")
+            
+            ai_analysis = results['overall_risk']
+            
+            st.markdown("**Analysis Categories:**")
+            
+            # Format Analysis
+            with st.expander("📋 Format Analysis"):
+                format_analysis = ai_analysis.get('format_analysis', {})
+                st.write(format_analysis.get('summary', 'No analysis available'))
+                
+                issues = format_analysis.get('issues', [])
+                if issues:
+                    for issue in issues:
+                        st.warning(f"⚠️ {issue}")
+            
+            # Image Analysis
+            with st.expander("🖼️ Image Analysis"):
+                image_analysis = ai_analysis.get('image_analysis', {})
+                st.write(image_analysis.get('summary', 'No analysis available'))
+            
+            # Content Analysis
+            with st.expander("📝 Content Analysis"):
+                content_analysis = ai_analysis.get('content_analysis', {})
+                st.write(content_analysis.get('summary', 'No analysis available'))
+        
+        # Tab 6: Full Report
+        with tabs[5]:
+            st.subheader("Complete Analysis Report")
+            
+            # Generate downloadable report
+            report = {
+                'filename': st.session_state.filename,
+                'analysis_date': time.strftime("%Y-%m-%d %H:%M:%S"),
+                'risk_score': risk_score,
+                'risk_level': risk_level,
+                'results': results
             }
             
-            st.json(file_details)
+            report_json = json.dumps(report, indent=2, default=str)
             
-            # Preview upload
-            st.success("✅ File uploaded successfully!")
-            
-            # Extract button
-            if st.button("🚀 Extract Text", type="primary", use_container_width=True):
-                with st.spinner("Processing PDF..."):
-                    # Create temporary file
-                    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
-                        tmp_file.write(uploaded_file.getvalue())
-                        tmp_path = tmp_file.name
-                    
-                    try:
-                        # Setup progress tracking
-                        progress_bar = st.progress(0)
-                        status_text = st.empty()
-                        
-                        # Process PDF
-                        start_time = time.time()
-                        extracted_text, error = parse_pdf_to_text(
-                            tmp_path, 
-                            dpi_scale=dpi_scale,
-                            progress_bar=progress_bar,
-                            status_text=status_text
-                        )
-                        processing_time = time.time() - start_time
-                        
-                        # Clean up temp file
-                        os.unlink(tmp_path)
-                        
-                        if error:
-                            st.error(f"❌ Extraction failed: {error}")
-                        else:
-                            st.session_state.extracted_text = extracted_text
-                            st.session_state.processing_time = processing_time
-                            st.session_state.filename = uploaded_file.name
-                            
-                            progress_bar.progress(1.0)
-                            status_text.text("✅ Extraction complete!")
-                            
-                    except Exception as e:
-                        st.error(f"❌ Error during processing: {str(e)}")
-    
-    with col2:
-        st.subheader("📋 Extraction Results")
-        
-        if 'extracted_text' in st.session_state:
-            # Success message
-            st.markdown(f"""
-            <div class="success-box">
-                <strong>✅ Text Extraction Complete!</strong><br>
-                File: {st.session_state.filename}<br>
-                Processing time: {st.session_state.processing_time:.2f} seconds<br>
-                Characters extracted: {len(st.session_state.extracted_text)}
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Text preview
-            st.subheader("📝 Text Preview")
-            preview_length = min(1000, len(st.session_state.extracted_text))
-            st.text_area(
-                "First 1000 characters preview",
-                st.session_state.extracted_text[:preview_length] + ("..." if len(st.session_state.extracted_text) > preview_length else ""),
-                height=200
-            )
-            
-            # Download button
             st.download_button(
-                label="💾 Download Full Text",
-                data=st.session_state.extracted_text,
-                file_name=f"{Path(st.session_state.filename).stem}_extracted.txt",
-                mime="text/plain",
+                label="📥 Download JSON Report",
+                data=report_json,
+                file_name=f"fraud_analysis_{int(time.time())}.json",
+                mime="application/json",
                 use_container_width=True
             )
             
-            # Copy to clipboard button
-            if st.button("📋 Copy to Clipboard", use_container_width=True):
-                st.code(st.session_state.extracted_text[:500] + ("..." if len(st.session_state.extracted_text) > 500 else ""))
-                st.success("Text copied to clipboard!")
-            
-            # Full text expander
-            with st.expander("📖 View Full Extracted Text"):
-                st.text_area("Full Text", st.session_state.extracted_text, height=400)
-        
-        else:
-            # Initial state message
-            st.info("👆 Upload a PDF file and click 'Extract Text' to see results here")
-            
-            # Example of what the tool can do
-            with st.expander("ℹ️ About this tool"):
-                st.markdown("""
-                **What this tool does:**
-                - Extracts text from scanned PDF documents using OCR
-                - Supports multiple languages
-                - Handles image-based PDFs (scanned documents)
-                - Provides downloadable results
-                
-                **Best practices:**
-                - Use high-quality scans for better accuracy
-                - Choose appropriate languages for your document
-                - Higher DPI scale = better quality but slower processing
-                
-                **Supported languages:** English, German, French, Spanish, Italian, Portuguese
-                """)
+            st.json(report)
 
     # Footer
     st.markdown("---")
-    st.markdown(
-        "**Note:** This tool uses Tesseract OCR for text extraction. "
-        "For best results, ensure your PDF pages are clear and legible."
-    )
+    st.markdown("Powered by JigsawStack OCR + Groq AI | Built for SingHacks")
 
 if __name__ == "__main__":
     main()
