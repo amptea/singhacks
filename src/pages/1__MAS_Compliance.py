@@ -6,6 +6,7 @@ Streamlit-based interface for viewing regulatory compliance comparison results
 import streamlit as st
 import json
 import os
+import pandas as pd
 from datetime import datetime
 from pathlib import Path
 
@@ -314,54 +315,314 @@ def main():
     comparison = st.session_state.data.get('comparison', {})
     
     # Tab layout
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Overview", "📋 Clause Comparison", "📑 Documents", "🔍 Raw Data"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📁 Data", "📊 Transaction Viewer", "📋 Clause Comparison", "🔍 Raw Data"])
     
     with tab1:
-        st.header("Overview & Summary")
+        st.header("📁 Data Upload")
+        st.markdown("""
+        Upload your CSV file containing transaction data for validation against MAS Notice 626 requirements.
+        The uploaded data will be cross-referenced with regulatory clauses for compliance analysis.
+        """)
         
-        # MAS JSON Info
-        st.subheader("📘 Reference Document (mas.json)")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Notice Number", mas_json_info.get('notice_number', 'N/A'))
-        with col2:
-            st.metric("Effective Date", mas_json_info.get('effective_date', 'N/A'))
-        with col3:
-            st.metric("Last Revised", mas_json_info.get('last_revised', 'N/A'))
+        # File uploader with drag & drop
+        uploaded_file = st.file_uploader(
+            "Drag and drop your CSV file here",
+            type=['csv'],
+            help="Upload a CSV file with transaction data for compliance validation"
+        )
         
-        st.text(mas_json_info.get('title', 'N/A'))
-        
-        st.markdown("---")
-        
-        # Comparison results
-        if 'analysis' in comparison:
-            # Try to parse JSON from analysis
+        if uploaded_file is not None:
+            # File info
+            file_details = {
+                "Filename": uploaded_file.name,
+                "File size": f"{uploaded_file.size / 1024:.2f} KB"
+            }
+            
+            st.json(file_details)
+            
+            # Preview upload
+            st.success("✅ File uploaded successfully!")
+            
             try:
-                analysis_text = comparison['analysis']
-                # Extract JSON from markdown code block if present
-                if "```json" in analysis_text:
-                    json_start = analysis_text.find("```json") + 7
-                    json_end = analysis_text.find("```", json_start)
-                    json_str = analysis_text[json_start:json_end].strip()
-                    analysis_data = json.loads(json_str)
-                else:
-                    analysis_data = json.loads(analysis_text)
+                # Read CSV file
+                df = pd.read_csv(uploaded_file)
                 
-                # Display document match
-                if 'document_match' in analysis_data:
-                    display_document_match_table(analysis_data['document_match'])
+                st.subheader("📊 Data Preview")
+                st.markdown(f"**Rows:** {len(df)} | **Columns:** {len(df.columns)}")
+                
+                # Display first few rows
+                st.dataframe(df.head(10), use_container_width=True)
+                
+                # Column info
+                with st.expander("📋 Column Details"):
+                    col_info = pd.DataFrame({
+                        'Column': df.columns,
+                        'Type': df.dtypes.astype(str),
+                        'Non-Null Count': df.count(),
+                        'Null Count': df.isnull().sum()
+                    })
+                    st.dataframe(col_info, use_container_width=True)
                 
                 st.markdown("---")
                 
-                # Display overall assessment
-                if 'overall_assessment' in analysis_data:
-                    display_overall_assessment(analysis_data['overall_assessment'])
+                # Risk Analysis Section
+                st.subheader("🔍 Run Risk Analysis")
+                st.markdown("""
+                Analyze the uploaded transactions for money laundering risk using AI-powered analysis.
+                Each transaction will be evaluated against MAS Notice 626 AML/CFT requirements.
+                """)
+                
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    # Option to limit number of transactions
+                    analyze_all = st.checkbox("Analyze all transactions", value=True)
+                    if not analyze_all:
+                        max_transactions = st.number_input(
+                            "Number of transactions to analyze",
+                            min_value=1,
+                            max_value=len(df),
+                            value=min(10, len(df)),
+                            step=1
+                        )
+                    else:
+                        max_transactions = len(df)
+                
+                with col2:
+                    st.metric("Transactions to Analyze", max_transactions)
+                
+                # Save uploaded file temporarily for analysis
+                temp_csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "temp_uploaded_transactions.csv")
+                
+                if st.button("🚀 Start Risk Analysis", type="primary", use_container_width=True):
+                    # Save the uploaded file
+                    df.to_csv(temp_csv_path, index=False)
                     
+                    # Import and run the analysis agent
+                    try:
+                        import sys
+                        agent_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "agents", "part1")
+                        if agent_path not in sys.path:
+                            sys.path.insert(0, agent_path)
+                        
+                        from risk_analysis_agent import analyze_transactions
+                        
+                        with st.spinner(f"🔄 Analyzing {max_transactions} transaction(s)... This may take a few minutes."):
+                            # Create a progress bar
+                            progress_bar = st.progress(0)
+                            status_text = st.empty()
+                            
+                            # Set output path
+                            output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "output")
+                            output_csv = os.path.join(output_dir, "transactions_analysis_results.csv")
+                            
+                            status_text.text("Initializing analysis...")
+                            progress_bar.progress(10)
+                            
+                            # Run the analysis
+                            limit = None if analyze_all else max_transactions
+                            analyze_transactions(
+                                transactions_csv=temp_csv_path,
+                                output_csv=output_csv,
+                                limit=limit
+                            )
+                            
+                            progress_bar.progress(100)
+                            status_text.text("Analysis complete!")
+                            
+                        st.success(f"✅ Analysis completed! {max_transactions} transaction(s) analyzed.")
+                        st.info("📊 View the results in the **Transaction Viewer** tab above.")
+                        
+                        # Add a button to switch to the viewer tab
+                        st.markdown("---")
+                        if st.button("📈 View Analysis Results", use_container_width=True):
+                            st.session_state.switch_to_viewer = True
+                            st.rerun()
+                        
+                    except Exception as e:
+                        st.error(f"❌ Error during analysis: {str(e)}")
+                        st.info("Please ensure all dependencies are installed and the risk analysis agent is properly configured.")
+                        with st.expander("Show Error Details"):
+                            st.code(str(e))
+                
+                st.markdown("---")
+                
+                # Download processed data option
+                st.download_button(
+                    label="💾 Download Uploaded Data",
+                    data=uploaded_file.getvalue(),
+                    file_name=uploaded_file.name,
+                    mime="text/csv"
+                )
+                
             except Exception as e:
-                st.warning(f"⚠️ Could not parse analysis JSON: {e}")
-                st.text_area("Raw Analysis", comparison.get('analysis', 'N/A'), height=300)
+                st.error(f"❌ Error reading CSV file: {str(e)}")
+                st.info("Please ensure the file is a valid CSV format (.csv)")
     
     with tab2:
+        
+        # Add refresh button
+        col1, col2 = st.columns([3, 1])
+        with col2:
+            if st.button("🔄 Refresh Data", use_container_width=True):
+                st.rerun()
+        
+        # Path to the risk analysis output CSV
+        output_csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "output", "transactions_analysis_results.csv")
+        
+        if os.path.exists(output_csv_path):
+            try:
+                # Load the analysis results
+                results_df = pd.read_csv(output_csv_path)
+                
+                st.subheader(f"📈 Total Transactions Analyzed: {len(results_df)}")
+                
+                # Summary metrics
+                col1, col2, col3, col4 = st.columns(4)
+                
+                # Count risk levels
+                risk_counts = results_df['risk_label'].value_counts()
+                
+                with col1:
+                    high_risk = risk_counts.get('High', 0)
+                    st.metric("🔴 High Risk", high_risk)
+                
+                with col2:
+                    medium_risk = risk_counts.get('Medium', 0)
+                    st.metric("🟡 Medium Risk", medium_risk)
+                
+                with col3:
+                    low_risk = risk_counts.get('Low', 0)
+                    st.metric("🟢 Low Risk", low_risk)
+                
+                with col4:
+                    avg_score = results_df['score'].mean()
+                    st.metric("📊 Avg Risk Score", f"{avg_score:.1f}/100")
+                
+                st.markdown("---")
+                
+                # Filter options
+                st.subheader("🔍 Filter Transactions")
+                
+                # Simple dropdown filter
+                risk_filter = st.selectbox(
+                    "Filter by Risk Level",
+                    options=['All', 'High', 'Medium', 'Low', 'Error'],
+                    index=0
+                )
+                
+                # Apply filter
+                if risk_filter == 'All':
+                    filtered_df = results_df.copy()
+                else:
+                    filtered_df = results_df[results_df['risk_label'] == risk_filter]
+                
+                st.markdown(f"**Showing {len(filtered_df)} of {len(results_df)} transactions**")
+                
+                # Display transactions table
+                st.subheader("📋 Transaction Analysis Results")
+                st.caption("💡 Click on any row to view detailed analysis below")
+                
+                # Format the dataframe for display
+                display_df = filtered_df.copy()
+                
+                # Add color emoji to risk level
+                def add_risk_emoji(risk_level):
+                    if risk_level == 'High':
+                        return '🔴 High'
+                    elif risk_level == 'Medium':
+                        return '🟡 Medium'
+                    elif risk_level == 'Low':
+                        return '🟢 Low'
+                    else:
+                        return '⚫ Error'
+                
+                display_df['risk_label'] = display_df['risk_label'].apply(add_risk_emoji)
+                
+                # Reorder columns for better display - put important columns first
+                column_order = ['transaction_id', 'risk_label', 'score', 'matched_rules', 'explanation']
+                display_columns = [col for col in column_order if col in display_df.columns]
+                display_df = display_df[display_columns]
+                
+                # Rename columns for better readability
+                display_df = display_df.rename(columns={
+                    'transaction_id': 'Transaction ID',
+                    'risk_label': 'Risk Level',
+                    'score': 'Risk Score',
+                    'matched_rules': 'Matched Rules',
+                    'explanation': 'Explanation'
+                })
+                
+                # Display interactive dataframe with selection
+                event = st.dataframe(
+                    display_df,
+                    use_container_width=True,
+                    height=400,
+                    on_select="rerun",
+                    selection_mode="single-row",
+                    hide_index=True
+                )
+                
+                # Detailed view based on selection
+                st.markdown("---")
+                st.subheader("🔎 Detailed Transaction View")
+                
+                if len(filtered_df) > 0:
+                    # Check if a row is selected
+                    if event.selection and len(event.selection.rows) > 0:
+                        selected_idx = event.selection.rows[0]
+                        tx_data = display_df.iloc[selected_idx]
+                        
+                        detail_col1, detail_col2 = st.columns([1, 2])
+                        
+                        with detail_col1:
+                            st.markdown("**Transaction Details**")
+                            st.write(f"**Transaction ID:** {tx_data['Transaction ID']}")
+                            st.write(f"**Risk Level:** {tx_data['Risk Level']}")
+                            st.write(f"**Risk Score:** {tx_data['Risk Score']}/100")
+                            
+                            # Display matched rules
+                            if 'Matched Rules' in tx_data and pd.notna(tx_data['Matched Rules']):
+                                try:
+                                    matched_rules = eval(tx_data['Matched Rules']) if isinstance(tx_data['Matched Rules'], str) else tx_data['Matched Rules']
+                                    st.write(f"**Matched Rules:** {len(matched_rules)}")
+                                    for rule in matched_rules:
+                                        st.write(f"- {rule}")
+                                except:
+                                    st.write(f"**Matched Rules:** {tx_data['Matched Rules']}")
+                        
+                        with detail_col2:
+                            st.markdown("**Analysis Explanation**")
+                            st.info(tx_data['Explanation'])
+                    else:
+                        st.info("👆 Click on a row in the table above to view detailed analysis")
+                
+                # Download filtered results
+                st.markdown("---")
+                csv_download = filtered_df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="💾 Download Filtered Results (CSV)",
+                    data=csv_download,
+                    file_name="filtered_transaction_analysis.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+                
+            except Exception as e:
+                st.error(f"❌ Error loading transaction analysis results: {str(e)}")
+                st.info("Please ensure the risk analysis agent has been run and the output file exists.")
+        else:
+            st.warning("⚠️ No transaction analysis results found")
+            st.info(f"""
+            **To view transaction analysis:**
+            1. Run the risk analysis agent: `python agents/part1/risk_analysis_agent.py`
+            2. The analysis results will be saved to: `{output_csv_path}`
+            3. Refresh this page to view the results
+            
+            Alternatively, you can upload transaction data in the **Data** tab and run the analysis from there.
+            """)
+    
+    with tab3:
         st.header("Clause-by-Clause Comparison")
         
         # Try to extract clause comparison from analysis
@@ -382,27 +643,6 @@ def main():
                 
         except Exception as e:
             st.warning(f"⚠️ Could not load clause comparison: {e}")
-    
-    with tab3:
-        st.header("Scraped Documents")
-        
-        documents = scraped_data.get('documents', [])
-        if documents:
-            display_pdf_documents_table(documents)
-            
-            # Show PDF content preview
-            with st.expander("📖 View PDF Content Preview"):
-                for doc in documents:
-                    st.markdown(f"**{doc.get('title', 'Document')}**")
-                    pdf_content = doc.get('pdf_content', 'N/A')
-                    preview_length = min(2000, len(pdf_content))
-                    st.text_area(
-                        "First 2000 characters",
-                        pdf_content[:preview_length] + ("..." if len(pdf_content) > preview_length else ""),
-                        height=300
-                    )
-        else:
-            st.info("No documents found in scraping results")
     
     with tab4:
         st.header("Raw Data")
