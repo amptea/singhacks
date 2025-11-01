@@ -1,3 +1,100 @@
+"""
+MAS Regulation Compliance Agent
+================================
+
+PURPOSE:
+--------
+This agent automatically monitors and validates regulatory compliance by comparing 
+the latest MAS (Monetary Authority of Singapore) Notice 626 regulations with your 
+organization's documented compliance requirements in mas.json.
+
+SOURCE OF TRUTH:
+----------------
+MAS Notice 626 PDF (from MAS website) is the AUTHORITATIVE source of truth.
+- Official URL: https://www.mas.gov.sg/regulation/notices/notice-626
+- Latest revision: 30 June 2025
+- Document: "Prevention of Money Laundering and Countering the Financing of Terrorism – Banks"
+
+mas.json is YOUR ORGANIZATION'S documented interpretation/implementation of Notice 626.
+- Location: data/mas.json
+- Should match the official Notice 626 requirements
+- This agent validates whether mas.json is up-to-date with the latest official notice
+
+HOW IT WORKS:
+-------------
+1. SCRAPING PHASE:
+   - Connects to MAS website and navigates to Notice 626 page
+   - Locates the latest PDF version (currently 30 June 2025 revision)
+   - Downloads the complete PDF document
+   - Extracts ALL text content from ALL pages (no truncation)
+
+2. EXTRACTION PHASE:
+   - Reads your organization's mas.json file
+   - Identifies all documented clauses (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, etc.)
+   - Prepares both documents for comprehensive comparison
+
+3. AI ANALYSIS PHASE:
+   - Uses Groq AI (llama-3.3-70b-versatile model) for intelligent comparison
+   - Performs CLAUSE-BY-CLAUSE analysis of ALL clauses (not just samples)
+   - Compares:
+     * Document metadata (notice number, dates, title)
+     * Every single clause and sub-clause
+     * Requirements, obligations, and thresholds
+     * Risk factors and compliance components
+   
+4. VALIDATION PHASE:
+   - Identifies three types of status for each clause:
+     * CONSISTENT: Content matches (ignore formatting differences)
+     * DIFFERENT: Substantive changes in requirements
+     * MISSING: Clause exists in one but not the other
+   
+5. REPORTING PHASE:
+   - Generates detailed JSON report with:
+     * Document match verification
+     * Clause-by-clause comparison results
+     * Overall consistency score
+     * Critical differences (require immediate action)
+     * Minor differences (cosmetic/formatting only)
+   - Saves results to data/scraping_results.json
+   - Results viewable in Streamlit UI (src/mas_scraping_ui.py)
+
+WHAT TO DO WITH RESULTS:
+-------------------------
+✅ Consistency Score 95%+ & No Critical Differences:
+   → Your mas.json is up-to-date, no action needed
+
+⚠️ Critical Differences Found:
+   → Review the differences immediately
+   → Update mas.json to match the official Notice 626
+   → Update your compliance procedures accordingly
+   → Re-run this agent to verify updates
+
+📊 Minor Differences:
+   → Review for completeness
+   → Update mas.json if needed for clarity
+   → Generally cosmetic (formatting, word order)
+
+USE CASES:
+----------
+1. Regular Compliance Monitoring: Run weekly/monthly to catch regulatory updates
+2. Audit Preparation: Verify mas.json matches current regulations before audits
+3. Change Detection: Automatically identify when MAS updates Notice 626
+4. Documentation Sync: Ensure internal docs stay aligned with official requirements
+
+CONFIGURATION:
+--------------
+- API Key: Set GROQ_API_KEY or api_key in .env file
+- Temperature: 0.1 (low for consistent, factual analysis)
+- Max Tokens: 16,000 (ensures comprehensive analysis of all clauses)
+- No cost/time limits: Thoroughness prioritized over speed
+
+AUTHOR NOTES:
+-------------
+Cost and inference time are not constraints - this agent prioritizes thoroughness
+and accuracy over speed. It will analyze every clause comprehensively to ensure
+no regulatory requirements are missed.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -15,7 +112,12 @@ import io
 load_dotenv()
 
 class MASRegulationScraper:
-    """Agent to scrape MAS regulations and compare with existing mas.json"""
+    """
+    Agent to scrape MAS Notice 626 regulations and compare with mas.json.
+    
+    Source of Truth: MAS Notice 626 PDF from official MAS website
+    Validation Target: data/mas.json (your organization's compliance documentation)
+    """
     
     def __init__(self, groq_api_key=None):
         self.base_url = "https://www.mas.gov.sg"
