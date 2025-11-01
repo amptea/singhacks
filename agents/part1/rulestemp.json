@@ -1,0 +1,74 @@
+{
+  "source_file": "transactions_mock_1000_for_participants.csv",
+  "total_transactions": 1000,
+  "suspected_transactions_found": 75,
+  "money_laundering_rules": [
+    {
+      "rule_name": "High Transaction Amount",
+      "description": "Transactions with an amount significantly higher than the norm, characteristic of suspected transactions.",
+      "condition": {
+        "field": "amount",
+        "operator": "gt",
+        "value": 17343.58
+      },
+      "evidence": "75% of suspected transactions had an amount greater than 17343.58, compared to a median of 155364.83 for normal transactions."
+    },
+    {
+      "rule_name": "High Customer Risk Rating",
+      "description": "Customer is rated as 'High' risk.",
+      "condition": {
+        "field": "customer_risk_rating",
+        "operator": "eq",
+        "value": "High"
+      },
+      "evidence": "13.3% of suspected transactions involved 'High' risk customers."
+    },
+    {
+      "rule_name": "Potential Sanctions Hit",
+      "description": "The transaction triggered a potential match during sanctions screening.",
+      "condition": {
+        "field": "sanctions_screening",
+        "operator": "eq",
+        "value": "potential"
+      },
+      "evidence": "56.0% of suspected transactions had a 'potential' sanctions hit."
+    },
+    {
+      "rule_name": "EDD Required but Not Performed",
+      "description": "Enhanced Due Diligence (EDD) was required for the customer, but it was not performed, indicating a control failure.",
+      "condition": [
+        {
+          "field": "edd_required",
+          "operator": "eq",
+          "value": true
+        },
+        {
+          "field": "edd_performed",
+          "operator": "eq",
+          "value": false
+        }
+      ],
+      "evidence": "4.0% of suspected transactions had this EDD gap."
+    },
+    {
+      "rule_name": "High Daily Cash Total for Customer",
+      "description": "Customer's total cash transactions for the day exceed a high threshold (e.g., $10,000 structuring limit), which is a common smurfing indicator.",
+      "condition": {
+        "field": "daily_cash_total_customer",
+        "operator": "gt",
+        "value": 9999.0
+      },
+      "evidence": "2.7% of suspected transactions involved high daily cash totals, (e.g., > 16804.53)."
+    },
+    {
+      "rule_name": "Incomplete Travel Rule Information",
+      "description": "Required originator or beneficiary information for the wire transfer (as per 'Travel Rule') is missing.",
+      "condition": {
+        "field": "travel_rule_complete",
+        "operator": "eq",
+        "value": false
+      },
+      "evidence": "1.3% of suspected transactions had incomplete travel rule data."
+    }
+  ]
+}

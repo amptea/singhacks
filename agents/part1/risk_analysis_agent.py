@@ -1,11 +1,31 @@
 import os
 import json
 import time
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import pandas as pd
 from dotenv import load_dotenv
 from groq import Groq
 
+# Set BASE_DIR to the singhacks repository root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+TRANSACTIONS_CSV = os.path.join(DATA_DIR, "transactions_mock_1000_for_participants.csv")
+RULES_PATH = os.path.join(os.path.dirname(__file__), "rulestemp.json")
+# Output directory (new) - place analysis outputs here
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+OUTPUT_CSV = os.path.join(OUTPUT_DIR, "transactions_analysis_results.csv")
+# A human-readable rules document saved alongside analysis outputs
+OUTPUT_RULES_DOC = os.path.join(OUTPUT_DIR, "rules_document.txt")
+# Directory for saving raw model responses
+MODEL_RESPONSES_DIR = os.path.join(OUTPUT_DIR, "model_responses")
+
+# Model configuration
+MODEL = "openai/gpt-oss-20b"
+TEMPERATURE = 0.1
+MAX_TOKENS = 500
+SLEEP_SECONDS = 0.08  # Rate limiting delay between API calls
+
+# Load environment variables and initialize client
 load_dotenv()
 
 key = os.getenv("API_KEY")
@@ -15,122 +35,30 @@ if not key:
     )
 
 client = Groq(api_key=key)
-MODEL = "openai/gpt-oss-20b"
 
-def load_rules(rules_path: str) -> Dict[str, Any]:
+def load_rules(rules_path: str) -> str:
+    #Load rules from JSON file as dictionary and type cast to string.
+
     with open(rules_path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def evaluate_condition(value, operator, expected) -> bool:
-    # Coerce booleans and numeric-like strings
-    # Attempt numeric comparison first
-    try:
-        # handle booleans represented as strings
-        if isinstance(expected, bool):
-            if isinstance(value, str):
-                val = value.strip().lower() in ("true", "1", "yes")
-            else:
-                val = bool(value)
-        else:
-            val = float(value)
-    except Exception:
-        val = value
-
-    if operator == "eq":
-        return val == expected
-    if operator == "gt":
-        try:
-            return float(val) > float(expected)
-        except Exception:
-            return False
-    if operator == "lt":
-        try:
-            return float(val) < float(expected)
-        except Exception:
-            return False
-
-    # Unknown operator -> no match
-    return False
-
-
-def format_rules_as_text(rules: Dict[str, Any]) -> str:
-    """Convert JSON rules into a natural language format."""
-    rule_texts = []
-    for idx, rule in enumerate(rules.get("money_laundering_rules", []), 1):
-        name = rule.get("rule_name", "Unnamed Rule")
-        desc = rule.get("description", "No description provided")
-        
-        # Convert condition to text
-        cond = rule.get("condition", {})
-        if isinstance(cond, list):
-            # Handle compound conditions (e.g., EDD rules)
-            conditions = []
-            for c in cond:
-                field = c.get("field", "unknown")
-                op = c.get("operator", "unknown")
-                val = c.get("value", "unknown")
-                conditions.append(f"{field} {op} {val}")
-            condition_text = " AND ".join(conditions)
-        else:
-            # Single condition
-            field = cond.get("field", "unknown")
-            op = cond.get("operator", "unknown")
-            val = cond.get("value", "unknown")
-            condition_text = f"{field} {op} {val}"
-        
-        evidence = rule.get("evidence", "No evidence provided")
-        
-        rule_text = (
-            f"Rule {idx}: {name}\n"
-            f"Description: {desc}\n"
-            f"Trigger Condition: {condition_text}\n"
-            f"Historical Evidence: {evidence}\n"
-        )
-        rule_texts.append(rule_text)
+        rules_json = json.load(f)
     
-    return "\n".join(rule_texts)
-
+    rules_dict = json.dumps(rules_json)
+    return str(rules_dict)
 
 def format_transaction_as_text(row: pd.Series) -> str:
     """Convert a transaction record into natural language text."""
     # Drop NaN/None values and convert to dict
     trans_dict = row.dropna().to_dict()
-    
-    # Order key fields first if present
-    key_fields = [
-        "transaction_id",
-        "amount",
-        "customer_risk_rating",
-        "sanctions_screening",
-        "edd_required",
-        "edd_performed",
-        "daily_cash_total_customer",
-        "travel_rule_complete",
-    ]
-    
-    lines = []
-    # Add key fields first (if present)
-    for field in key_fields:
-        if field in trans_dict:
-            value = trans_dict.pop(field)  # Remove from dict after adding
-            lines.append(f"{field}: {value}")
-    
-    # Add any remaining fields
-    for field, value in sorted(trans_dict.items()):
-        lines.append(f"{field}: {value}")
-    
-    return "\n".join(lines)
+    return str(trans_dict)
 
-
-def build_prompt_for_row(row: pd.Series, rules: Dict[str, Any]) -> str:
+def build_prompt_for_row(row: pd.Series, rules: str) -> str:
     """Build a natural language prompt for analyzing a transaction."""
-    rules_text = format_rules_as_text(rules)
     transaction_text = format_transaction_as_text(row)
     
     prompt = f"""You are a financial crime analyst. Please analyze this transaction against our anti-money laundering rules and determine if it poses a risk.
 
 ANTI-MONEY LAUNDERING RULES:
-{rules_text}
+{rules}
 
 TRANSACTION DETAILS:
 {transaction_text}
@@ -142,18 +70,22 @@ Please respond with a valid JSON object containing these fields:
 - matched_rules: A list of rule names that were triggered
 - explanation: A brief explanation of your assessment
 
-Response must be valid JSON with no other text.
+Response must be valid JSON format with no other text.
 """
     return prompt
 
 def analyze_transactions(
-    transactions_csv: str = os.path.join(os.path.dirname(__file__), "..", "data", "transactions_mock_1000_for_participants.csv"),
-    rules_path: str = os.path.join(os.path.dirname(__file__), "rulestemp.json"),
-    output_csv: str = os.path.join(os.path.dirname(__file__), "..", "data", "transactions_analysis_results.csv"),
-    sleep_seconds: float = 0.08,
+    transactions_csv: str = TRANSACTIONS_CSV,
+    rules_path: str = RULES_PATH,
+    output_csv: str = OUTPUT_CSV,
+    sleep_seconds: float = SLEEP_SECONDS,
     limit: int | None = None,
 ) -> None:
     """Analyze transactions in the given CSV file using the GROQ chat API."""
+    # Ensure output directories exist
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+    os.makedirs(MODEL_RESPONSES_DIR, exist_ok=True)
+    
     rules = load_rules(rules_path)
     df = pd.read_csv(transactions_csv)
     
@@ -166,40 +98,53 @@ def analyze_transactions(
     for idx, row in df.iterrows():
         prompt = build_prompt_for_row(row, rules)
         
-        response = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a financial crime analyst expert trained to analyze transactions for money laundering risk."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            model = MODEL,
-            temperature=0.1,
-            max_tokens=500,
-            top_p=1,
-            stop=None
-        )
-        
+        # Call Groq API
         try:
-            analysis = json.loads(response.choices[0].message.content)
-            analysis["transaction_id"] = row.get("transaction_id", f"TX_{idx}")
-            analysis["index"] = int(idx)
-            results.append(analysis)
-        except json.JSONDecodeError as e:
-            print(f"Error decoding response for transaction {idx}: {e}")
-            print("Response:", response.choices[0].message.content)
-            results.append({
-                "index": int(idx),
-                "transaction_id": row.get("transaction_id", f"TX_{idx}"),
+            response = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a financial crime analyst expert trained to analyze transactions for money laundering risk."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                model=MODEL,
+                temperature=TEMPERATURE,
+                max_tokens=MAX_TOKENS,
+                top_p=1,
+                stop=None
+            )
+            raw_response = response.choices[0].message.content
+        except Exception as e:
+            print(f"Error calling Groq API for transaction {idx}: {e}")
+            raw_response = str(e)
+
+        # Save raw response, either as JSON if valid or .txt if not
+        response_base = os.path.join(MODEL_RESPONSES_DIR, f"transaction_{idx}")
+        try:
+            # Try to parse as JSON first
+            parsed = json.loads(raw_response)
+            with open(f"{response_base}.json", "w", encoding="utf-8") as f:
+                json.dump(parsed, f, indent=2)
+            analysis = parsed  # Use for results
+        except json.JSONDecodeError:
+            # If not valid JSON, save as text and create error analysis
+            with open(f"{response_base}.txt", "w", encoding="utf-8") as f:
+                f.write(raw_response)
+            analysis = {
                 "risk_label": "Error",
                 "score": -1,
                 "matched_rules": [],
-                "explanation": f"Error processing response: {e}"
-            })
+                "explanation": f"Error processing response: Invalid JSON"
+            }
+        
+        # Add metadata and append to results
+        analysis["transaction_id"] = row.get("transaction_id", f"TX_{idx}")
+        analysis["index"] = int(idx)
+        results.append(analysis)
         
         time.sleep(sleep_seconds)  # Rate limiting
     
@@ -207,13 +152,13 @@ def analyze_transactions(
     results_df = pd.DataFrame(results)
     results_df.to_csv(output_csv, index=False)
     print(f"Analysis complete. Results saved to {output_csv}")
+    print(f"Raw model responses saved to {MODEL_RESPONSES_DIR}")
 
 
 if __name__ == "__main__":
     # Interactive entrypoint: ask user how many transactions to analyze
     try:
-        df_path = os.path.join(os.path.dirname(__file__), "..", "data", "transactions_mock_1000_for_participants.csv")
-        df = pd.read_csv(df_path)
+        df = pd.read_csv(TRANSACTIONS_CSV)
         max_rows = len(df)
     except Exception:
         max_rows = None
