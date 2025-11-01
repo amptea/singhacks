@@ -5,18 +5,24 @@ Streamlit Interface for Compliance Officers
 
 import streamlit as st
 import sys
-sys.path.insert(0, 'src')
+# Adjust path insertion if 'src' contains other dependencies like extractor and validator
+# Assuming all necessary files (parse_pdf_ocr, ai_fraud_detector, etc.) are in the same directory or accessible via system path
+# If document_parser_jigsawstack.py was in 'src', removing this line might break other imports if not adjusted.
+# Keeping the sys.path.insert for other assumed modules, but commenting out the specific JigsawStack import.
+sys.path.insert(0, 'src') 
 
-from document_parser_jigsawstack import JigsawDocumentParser
+# from document_parser_jigsawstack import JigsawDocumentParser # REMOVED JigsawStack dependency
 from structured_extractor import StructuredFieldExtractor
 from enhanced_validator import EnhancedDocumentValidator
 from external_verification import ExternalVerificationAgent
 from ai_fraud_detector import AIFraudDetector
-from groq_agent import FraudDetectionAgent
+# from groq_agent import FraudDetectionAgent # Not used in analyze_document, keeping for completeness if needed elsewhere
+from parse_pdf_ocr import parse_pdf_to_text # ADDED dependency on local OCR parser
 import json
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
+import fitz # PyMuPDF is needed to get page count and other metadata (like size)
 
 # Page config
 st.set_page_config(
@@ -54,7 +60,7 @@ def main():
         st.header("Analysis Steps")
         st.markdown("""
         1. **Upload Document**
-        2. **Parse & Extract**
+        2. **Parse & Extract (Local OCR)**
         3. **Validate Format**
         4. **Verify Externally**
         5. **Generate Report**
@@ -74,6 +80,15 @@ def main():
             help="Query company registers and sanction lists"
         )
         
+        # New setting for OCR DPI scale
+        ocr_dpi_scale = st.slider(
+            "OCR DPI Scale",
+            min_value=1,
+            max_value=5,
+            value=3,
+            help="Higher scale (e.g., 3 = 216 DPI) results in better OCR but slower processing. Default is 3."
+        )
+
         st.divider()
         
         if st.session_state.analysis_complete:
@@ -84,12 +99,12 @@ def main():
     
     # Main content
     if not st.session_state.analysis_complete:
-        show_upload_interface(document_type, use_external_verification)
+        show_upload_interface(document_type, use_external_verification, ocr_dpi_scale)
     else:
         show_results_interface()
 
 
-def show_upload_interface(document_type, use_external_verification):
+def show_upload_interface(document_type, use_external_verification, ocr_dpi_scale):
     """Document upload and analysis interface"""
     
     st.header("📄 Step 1: Upload Document")
@@ -97,7 +112,7 @@ def show_upload_interface(document_type, use_external_verification):
     uploaded_file = st.file_uploader(
         "Upload document for analysis",
         type=['pdf', 'jpg', 'jpeg', 'png', 'txt'],
-        help="Supported: PDF, JPG, PNG, TXT"
+        help="Supported: PDF, JPG, PNG, TXT (PDF is required for current parsing logic)"
     )
     
     if uploaded_file:
@@ -121,15 +136,21 @@ def show_upload_interface(document_type, use_external_verification):
         
         # Analyze button
         if st.button("🚀 Start Comprehensive Analysis", type="primary"):
+            # Check for PDF compatibility
+            if uploaded_file.type != "application/pdf":
+                st.error("❌ The current local OCR parsing only fully supports PDF files. Please upload a PDF.")
+                st.stop()
+            
             analyze_document(
                 str(temp_path),
                 document_type,
-                use_external_verification
+                use_external_verification,
+                ocr_dpi_scale
             )
 
 
-def analyze_document(file_path, document_type, use_external_verification):
-    """Run comprehensive document analysis"""
+def analyze_document(file_path, document_type, use_external_verification, ocr_dpi_scale):
+    """Run comprehensive document analysis, modified to use parse_pdf_to_text"""
     
     results = {
         'file_path': file_path,
@@ -144,34 +165,44 @@ def analyze_document(file_path, document_type, use_external_verification):
     status_text = st.empty()
     
     try:
-        # Stage 1: Parse Document
-        status_text.text("📄 Stage 1/5: Parsing document...")
+        # Stage 1: Parse Document using local OCR
+        status_text.text("📄 Stage 1/5: Parsing document with local OCR...")
         progress_bar.progress(20)
         
-        with st.spinner("Parsing document with JigsawStack OCR..."):
-            parser = JigsawDocumentParser()
-            parsed = parser.parse_document(file_path)
+        # Determine page count for status display
+        page_count = 0
+        try:
+            doc = fitz.open(file_path)
+            page_count = len(doc)
+            doc.close()
+        except Exception:
+            # Continue even if page count fails, as text extraction might still work
+            page_count = 1 
+            st.warning("⚠️ Could not reliably determine page count.")
+            
+        with st.spinner(f"Parsing document with Tesseract OCR (DPI Scale: {ocr_dpi_scale})..."):
+            extracted_text = parse_pdf_to_text(file_path, output_path=None, dpi_scale=ocr_dpi_scale)
+            
+            # Manually construct a 'parsed' structure for downstream compatibility
+            parsed = {
+                'success': True,
+                'text': extracted_text,
+                'page_count': page_count,
+                'pages_processed': page_count, # Assume all pages are processed by the internal loop in parse_pdf_to_text
+                'parser_used': f'local_ocr (DPI:{72 * ocr_dpi_scale})',
+                'file_name': results['file_name'],
+                'warning': 'Local OCR might be less accurate than commercial OCR for complex documents.'
+            }
             results['stages']['parsing'] = parsed
         
-        # Check if parsing was successful
-        if not parsed.get('success', False):
-            st.error(f"❌ Document parsing failed: {parsed.get('error', 'Unknown error')}")
-            st.info("💡 Tip: Check your JigsawStack API key in the .env file")
+        # Check if text was extracted
+        if not extracted_text or extracted_text.strip() == "":
+            st.error("❌ Document parsing failed: No text extracted. Check Tesseract installation or document quality.")
+            st.info("💡 Tip: Ensure Tesseract OCR is correctly installed and accessible on your system.")
             st.stop()
         
-        parser_method = parsed.get('parser_used', 'jigsawstack')
-        if 'fallback' in parsed:
-            st.warning(f"⚠️ JigsawStack OCR failed, used fallback method: {parser_method}")
-        
-        # Show warning if not all pages were processed
-        if 'warning' in parsed:
-            st.warning(f"⚠️ {parsed['warning']}")
-        
         pages_info = f"{parsed['page_count']} page(s)"
-        if parsed.get('pages_processed') and parsed.get('pages_processed') != parsed.get('page_count'):
-            pages_info = f"{parsed['pages_processed']}/{parsed['page_count']} pages"
-        
-        st.success(f"✓ Extracted {len(parsed['text'])} characters from {pages_info} using {parser_method}")
+        st.success(f"✓ Extracted {len(parsed['text'])} characters from {pages_info} using {parsed['parser_used']}")
         
         # Stage 2: Extract Structured Fields
         status_text.text("🔍 Stage 2/5: Extracting structured fields...")
@@ -220,6 +251,7 @@ def analyze_document(file_path, document_type, use_external_verification):
         progress_bar.progress(90)
         
         with st.spinner("AI analyzing all findings..."):
+            # AIFraudDetector internally calls _extract_document_data which uses parse_pdf_to_text again
             detector = AIFraudDetector()
             fraud_analysis = detector.analyze_document(file_path)
             results['stages']['fraud_analysis'] = fraud_analysis
@@ -240,6 +272,7 @@ def analyze_document(file_path, document_type, use_external_verification):
     except Exception as e:
         st.error(f"❌ Analysis failed: {str(e)}")
         st.exception(e)
+        st.stop() # Stop execution if a major error occurs
 
 
 def show_results_interface():
@@ -621,4 +654,3 @@ def generate_detailed_report(results):
 
 if __name__ == "__main__":
     main()
-
