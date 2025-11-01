@@ -19,7 +19,7 @@ OUTPUT_CSV = os.path.join(OUTPUT_DIR, "transactions_analysis_results.csv")
 NUM_ROWS = 5  # limit number of rows to process for testing
 
 # key
-KEY = os.getenv("API_KEY")
+KEY = os.getenv("GROQ_API_KEY")
 
 # import the dataframe and filter regulator column if it is MAS
 df = pd.read_csv(TRANSACTIONS_CSV)
