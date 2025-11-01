@@ -229,7 +229,7 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
             )
             results['stages']['validation'] = validation
         
-        st.success(f"✓ Validation complete: {validation.get('overall_quality', 'N/A')}")
+        st.success(f"✓ Validation Check: {validation.get('overall_quality', 'N/A')}")
         
         # Stage 4: External Verification (if enabled)
         if use_external_verification:
@@ -241,7 +241,7 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
                 verification = verifier.verify_entity(extracted)
                 results['stages']['verification'] = verification
             
-            st.success(f"✓ Verification complete: {verification.get('overall_status', 'N/A')}")
+            st.success(f"✓ Verification Check: {verification.get('overall_status', 'N/A')}")
         else:
             results['stages']['verification'] = {'skipped': True}
             progress_bar.progress(75)

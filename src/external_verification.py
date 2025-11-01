@@ -307,7 +307,7 @@ ANALYZE:
 
 Provide analysis as JSON:
 {{
-    "status": "VERIFIED/PARTIAL/NOT_FOUND/SANCTIONS_HIT",
+    "status": "Verified/Partial/Not Found/Sanctions Hit",
     "confidence": <0-1>,
     "discrepancies": ["list any discrepancies"],
     "recommendations": ["specific recommendations"],
