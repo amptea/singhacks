@@ -54,6 +54,8 @@ class EnhancedDocumentValidator:
         
         prompt = f"""You are a document quality assurance expert. Perform comprehensive validation of this document.
 
+CRITICAL INSTRUCTION: List ALL issues found, not just a few examples. Be exhaustive and complete.
+
 DOCUMENT TEXT:
 {text[:4000]}
 
@@ -69,24 +71,30 @@ PERFORM THESE CHECKS:
    - Check for unusual whitespace patterns
    - Identify formatting inconsistencies
    - Verify consistent use of formatting elements
+   - LIST EVERY SINGLE FORMATTING ISSUE FOUND
 
 2. CONTENT VALIDATION:
-   - Check for spelling mistakes
-   - Verify headers are correct and present
-   - Identify missing sections compared to template
-   - Check grammar and language quality
+   - Check for spelling mistakes - LIST ALL SPELLING ERRORS
+   - Verify headers are correct and present - LIST ALL HEADER ISSUES
+   - Identify missing sections compared to template - LIST ALL MISSING SECTIONS
+   - Check grammar and language quality - LIST ALL GRAMMAR ERRORS
+   - DO NOT SUMMARIZE - LIST EACH ISSUE INDIVIDUALLY
 
 3. STRUCTURE VALIDATION:
    - Compare document structure against expected template
    - Verify all required sections are present
    - Check section ordering and organization
    - Assess document completeness
+   - LIST ALL STRUCTURAL PROBLEMS
 
 4. ACCURACY VALIDATION:
-   - Check for inconsistent dates
-   - Verify number/amount formatting
-   - Identify contradictory information
-   - Check logical flow
+   - Check for inconsistent dates - LIST ALL DATE INCONSISTENCIES
+   - Verify number/amount formatting - LIST ALL FORMATTING ERRORS
+   - Identify contradictory information - LIST ALL CONTRADICTIONS
+   - Check logical flow - LIST ALL LOGICAL ISSUES
+
+IMPORTANT: Your response must include EVERY issue found, not just representative examples. 
+If you find 10 spelling mistakes, list all 10. If you find 15 formatting issues, list all 15.
 
 Provide analysis as JSON:
 {{
@@ -98,6 +106,7 @@ Provide analysis as JSON:
             "description": "detailed description",
             "highlight_text": "the actual text with issue (if applicable)"
         }}
+        // ... CONTINUE FOR ALL FORMATTING ISSUES
     ],
     "content_issues": [
         {{
@@ -108,6 +117,7 @@ Provide analysis as JSON:
             "expected": "what should be there",
             "actual": "what is actually there"
         }}
+        // ... CONTINUE FOR ALL CONTENT ISSUES
     ],
     "structure_issues": [
         {{
@@ -116,15 +126,17 @@ Provide analysis as JSON:
             "section": "section name",
             "description": "detailed description"
         }}
+        // ... CONTINUE FOR ALL STRUCTURE ISSUES
     ],
     "completeness_score": <0-100>,
     "accuracy_score": <0-100>,
     "overall_quality": "Excellent/Good/Fair/Poor",
-    "critical_issues": ["list of critical issues that must be addressed"],
-    "recommendations": ["specific recommendations for improvement"]
+    "critical_issues": ["list of ALL critical issues that must be addressed"],
+    "recommendations": ["specific recommendations for improvement"],
+    "total_issues_found": <count of all issues>
 }}
 
-Be thorough and specific. For each issue, provide enough detail for precise identification and correction."""
+Be thorough, specific, and EXHAUSTIVE. List every single issue without exception."""
 
         try:
             response = self.client.chat.completions.create(
