@@ -1,0 +1,5 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": ["High Transaction Amount"],
+  "explanation": "The transaction amount of 44,307.22 SGD exceeds the high amount threshold, triggering the \"High Transaction Amount\" rule. No other red‑flag rules are triggered (customer risk rating is low, no sanctions hit, EDD not required, daily cash total is zero, and travel rule information is complete).

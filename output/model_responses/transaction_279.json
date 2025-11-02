@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold and triggered a potential sanctions hit, both of which are common indicators of suspicious activity. While the customer risk rating is low and no EDD gap or daily cash structuring is present, the combination of a large amount and sanctions concern elevates the risk to a medium level."
+}

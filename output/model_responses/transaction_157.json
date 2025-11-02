@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction involves a customer with a high risk rating and triggered a potential sanctions hit, both of which are significant red flags. However, the transaction amount is below the high\u2011amount threshold, daily cash total is low, and enhanced due diligence was performed, mitigating some risk. Overall, the combination of high customer risk and sanctions potential warrants a medium risk assessment."
+}

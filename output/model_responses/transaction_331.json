@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount of CHF 385,763.99 exceeds the high\u2011amount threshold, triggering the High Transaction Amount rule. Other risk indicators are low: the customer has a low risk rating, no sanctions hit, EDD is not required, daily cash total is zero, and travel\u2011rule data is complete. Consequently, the overall risk is assessed as medium with a score of 70."
+}

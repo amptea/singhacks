@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":60,"matched_rules":["Potential Sanctions Hit"],"explanation":"The transaction triggered a potential sanctions screening hit, which is a significant red flag. However, other key risk indicators such as high transaction amount, high customer risk rating, or daily cash

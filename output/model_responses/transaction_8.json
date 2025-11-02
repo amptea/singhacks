@@ -1,0 +1,74 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high amount threshold and triggered a potential sanctions hit, both strong indicators of money laundering risk. No other mitigating factors are present, leading to a high risk assessment.",
+  "actionables": {
+    "next_steps": [
+      {
+        "step_number": 1,
+        "action": "Freeze the transaction and notify the customer",
+        "team": "FRONT",
+        "priority": "IMMEDIATE",
+        "details": "To prevent potential money laundering, the transaction must be frozen immediately to prevent further movement of funds. The customer should be notified of the freeze and the reason for it, in accordance with MAS Notice 626 requirements.",
+        "deadline": "Within 1 hour"
+      },
+      {
+        "step_number": 2,
+        "action": "Conduct an enhanced customer due diligence review",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "Given the high-risk nature of the transaction and the potential sanctions hit, an enhanced review of the customer's KYC status and risk rating is necessary to understand the customer's activities and connections. This review should consider the customer's business, sources of funds, and any other relevant information.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 3,
+        "action": "Investigate the transaction and gather additional information",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "The compliance team should investigate the transaction to determine its legitimacy, including reviewing the transaction amount, purpose, and any pattern indicators such as structuring or unusual activity. Additional information may need to be gathered from the customer or other sources.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 4,
+        "action": "Screen the customer and related parties against sanctions lists",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "To confirm whether the potential sanctions hit is valid, the customer and any related parties must be screened against the latest sanctions lists. This is a critical step to ensure compliance with regulatory requirements and to assess the risk of doing business with the customer.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 5,
+        "action": "Prepare a suspicious transaction report (STR) if necessary",
+        "team": "COMPLIANCE",
+        "priority": "HIGH",
+        "details": "If the investigation confirms that the transaction is suspicious, an STR must be prepared and filed with the relevant authorities. The report should include all relevant details about the transaction, the customer, and the reasons for the suspicion.",
+        "deadline": "Within 24 hours"
+      },
+      {
+        "step_number": 6,
+        "action": "Review and update the customer's risk profile",
+        "team": "COMPLIANCE",
+        "priority": "MEDIUM",
+        "details": "Based on the findings of the investigation and any additional information gathered, the customer's risk profile should be reviewed and updated. This may involve adjusting the customer's risk rating or adding new information to their profile.",
+        "deadline": "Within 3 days"
+      },
+      {
+        "step_number": 7,
+        "action": "Document all actions and decisions",
+        "team": "COMPLIANCE",
+        "priority": "ROUTINE",
+        "details": "All actions taken and decisions made regarding the transaction and the customer must be thoroughly documented. This includes the reasoning behind each decision and any supporting evidence or information.",
+        "deadline": "Within 1 week"
+      }
+    ],
+    "recommended_outcome": "File a suspicious transaction report with the relevant authorities if the investigation confirms suspicious activity, and consider terminating the business relationship with the customer if the risk is deemed too high.",
+    "estimated_resolution_time": "3-5 business days",
+    "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
+    "risk_score": 90,
+    "index": 8
+  }
+}

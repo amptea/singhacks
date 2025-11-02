@@ -1,0 +1,7 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount (1,766,197.14 CNY) exceeds the high‑amount threshold, triggering the \"High Transaction Amount\" rule. No other AML rules are triggered: the customer risk rating is low, sanctions screening

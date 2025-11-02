@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction triggered a potential sanctions screening hit, which is a significant red flag. However, the transaction amount is modest, the customer risk rating is low, and no other high\u2011risk indicators are present. Therefore, the overall risk is assessed as medium."
+}

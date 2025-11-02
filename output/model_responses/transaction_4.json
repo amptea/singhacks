@@ -1,0 +1,8 @@
+{
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "All applicable AML/CFT controls are satisfied: the transaction is a cross\u2011border FX conversion involving a high\u2011risk PEP customer, but enhanced due diligence (EDD) and source\u2011of\u2011wealth documentation have been completed. The Travel Rule for wire transfers is fully met (originator/beneficiary details, SWIFT tags, and travel_rule_complete flag are present). No sanctions hit, no suspicion flag, and record\u2011keeping requirements are met. Therefore no rule violations are identified, resulting in a low\u2011risk assessment.",
+  "transaction_id": "015e2202-1c97-4f0f-9756-2c8fc85e7ac9",
+  "index": 4
+}

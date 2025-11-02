@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":65,"matched_rules":["High Transaction Amount","Potential Sanctions Hit"],"explanation":"The transaction exceeds the high‑amount threshold and triggered a potential sanctions hit, both of which are

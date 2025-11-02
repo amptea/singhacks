@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction involves a customer with a 'High' risk rating and exceeds the daily cash threshold, indicating potential structuring activity. No sanctions hit or EDD gap is present, so the risk is considered moderate rather than high."
+}

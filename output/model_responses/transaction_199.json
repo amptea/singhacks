@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 65,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction involves a customer with a 'High' risk rating and triggered a potential sanctions hit, both of which are significant red flags. The amount is below the high\u2011transaction threshold and daily cash total is low, but the expired KYC and the combination of high risk rating with sanctions exposure elevate the risk to a medium level."
+}

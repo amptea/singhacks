@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":45,"matched_rules":["High Daily Cash Total for Customer"],"explanation":"The transaction exceeds the daily cash threshold of $10,000, triggering a smurfing indicator. However, the customer has a low risk rating, no sanctions hit, and no EDD gaps, so the overall risk is assessed

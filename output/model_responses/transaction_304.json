@@ -1,0 +1,11 @@
+{
+  "risk_label": "High",
+  "score": 80,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit",
+    "High Daily Cash Total for Customer",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction triggers several key AML red flags: it involves a high\u2011risk customer, a potential sanctions hit, exceeds the daily cash threshold, and lacks complete travel rule information. These combined indicators point to a high likelihood of money\u2011laundering activity."
+}

@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount (1,184,277.66\u202fJPY) exceeds the high\u2011amount threshold, which is a strong indicator of suspicious activity. No other red\u2011flag rules (high customer risk, sanctions hit, EDD gap, high daily cash total, incomplete travel rule) are triggered, so the overall risk is assessed as medium."
+}

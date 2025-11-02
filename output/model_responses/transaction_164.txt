@@ -1,0 +1,1 @@
+{"risk_label":"High","score":80,"matched_rules":["High Transaction Amount"],"explanation":"The transaction amount of CHF 633,519.4 exceeds the threshold of 17,343.58, triggering the High Transaction Amount rule. No other

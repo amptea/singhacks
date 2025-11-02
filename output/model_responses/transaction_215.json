@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "Potential Sanctions Hit",
+    "Incomplete Travel Rule Information"
+  ],
+  "explanation": "The transaction triggered a potential sanctions hit and lacks complete travel rule information, both of which raise concern. However, the amount is below the high\u2011value threshold, the customer is rated low risk, and no EDD gap exists, so the overall risk is assessed as medium."
+}

@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold (SGD 2,916,513.91 > 17,343.58), which is a strong indicator of potential money\u2011laundering activity. No other red\u2011flag rules (high customer risk, sanctions hit, EDD gap, daily cash structuring, or incomplete travel rule data) are triggered. The large amount combined with the originator\u2019s Iranian origin and beneficiary\u2019s Russian destination raises concern, but the absence of sanctions matches and other controls suggests a medium risk level."
+}

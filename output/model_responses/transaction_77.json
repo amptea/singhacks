@@ -1,0 +1,6 @@
+{
+  "risk_label": "Low",
+  "score": 5,
+  "matched_rules": [],
+  "explanation": "The transaction does not trigger any of the defined AML rules. The amount is below the high-amount threshold, the customer risk rating is medium, there is no sanctions hit, EDD is not required, daily cash total is zero, and travel rule information is complete. Therefore the transaction is assessed as low risk."
+}

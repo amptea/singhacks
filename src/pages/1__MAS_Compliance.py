@@ -99,6 +99,67 @@ def format_timestamp(timestamp_str):
     except:
         return timestamp_str
 
+def load_actionables_data():
+    """Load all actionables data from transaction JSON files"""
+    try:
+        model_responses_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "output",
+            "model_responses"
+        )
+        
+        if not os.path.exists(model_responses_dir):
+            return []
+        
+        all_actionables = []
+        
+        # Load each transaction JSON file
+        for filename in os.listdir(model_responses_dir):
+            if filename.endswith('.json'):
+                file_path = os.path.join(model_responses_dir, filename)
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        
+                    # Check if actionables exist
+                    if 'actionables' in data and 'next_steps' in data['actionables']:
+                        transaction_info = {
+                            'transaction_id': data['actionables'].get('transaction_id', 'Unknown'),
+                            'risk_score': data['actionables'].get('risk_score', 0),
+                            'risk_label': data.get('risk_label', 'Unknown'),
+                            'estimated_resolution_time': data['actionables'].get('estimated_resolution_time', 'N/A'),
+                            'recommended_outcome': data['actionables'].get('recommended_outcome', 'N/A'),
+                            'next_steps': data['actionables']['next_steps']
+                        }
+                        all_actionables.append(transaction_info)
+                except Exception as e:
+                    st.warning(f"Could not load {filename}: {str(e)}")
+                    continue
+        
+        return all_actionables
+    except Exception as e:
+        st.error(f"Error loading actionables data: {str(e)}")
+        return []
+
+def get_priority_color(priority):
+    """Get color for priority level"""
+    colors = {
+        'IMMEDIATE': '#dc3545',  # Red
+        'HIGH': '#fd7e14',       # Orange
+        'MEDIUM': '#ffc107',     # Yellow
+        'ROUTINE': '#28a745'     # Green
+    }
+    return colors.get(priority, '#6c757d')
+
+def get_team_color(team):
+    """Get color for team"""
+    colors = {
+        'FRONT': '#007bff',      # Blue
+        'COMPLIANCE': '#6610f2', # Purple
+        'LEGAL': '#e83e8c'       # Pink
+    }
+    return colors.get(team, '#6c757d')
+
 def display_document_match_table(document_match):
     """Display document match comparison as table"""
     st.subheader("📄 Document Match Verification")
@@ -315,7 +376,7 @@ def main():
     comparison = st.session_state.data.get('comparison', {})
     
     # Tab layout
-    tab1, tab2, tab3, tab4 = st.tabs(["📁 Data", "📊 Transaction Viewer", "📋 Clause Comparison", "🔍 Raw Data"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📁 Data", "📊 Transaction Viewer", "🚀 Next Steps", "📋 Clause Comparison", "🔍 Raw Data"])
     
     with tab1:
         st.header("📁 Data Upload")
@@ -398,39 +459,35 @@ def main():
                     # Save the uploaded file
                     df.to_csv(temp_csv_path, index=False)
                     
-                    # Import and run the analysis agent
+                    # Import and run the main agent
                     try:
                         import sys
                         agent_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "agents", "part1")
                         if agent_path not in sys.path:
                             sys.path.insert(0, agent_path)
                         
-                        from risk_analysis_agent import analyze_transactions
+                        # Import main_agent instead of risk_analysis_agent
+                        from main_agent import main_agent
                         
                         with st.spinner(f"🔄 Analyzing {max_transactions} transaction(s)... This may take a few minutes."):
                             # Create a progress bar
                             progress_bar = st.progress(0)
                             status_text = st.empty()
                             
-                            # Set output path
-                            output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "output")
-                            output_csv = os.path.join(output_dir, "transactions_analysis_results.csv")
-                            
                             status_text.text("Initializing analysis...")
                             progress_bar.progress(10)
                             
-                            # Run the analysis
-                            limit = None if analyze_all else max_transactions
-                            analyze_transactions(
-                                transactions_csv=temp_csv_path,
-                                output_csv=output_csv,
-                                limit=limit
-                            )
+                            # Run the main agent
+                            # Note: main_agent uses its internal configuration for file paths
+                            status_text.text("Running main agent analysis...")
+                            progress_bar.progress(30)
+                            
+                            main_agent()
                             
                             progress_bar.progress(100)
                             status_text.text("Analysis complete!")
                             
-                        st.success(f"✅ Analysis completed! {max_transactions} transaction(s) analyzed.")
+                        st.success(f"✅ Analysis completed! Transactions analyzed using main agent.")
                         st.info("📊 View the results in the **Transaction Viewer** tab above.")
                         
                         # Add a button to switch to the viewer tab
@@ -441,7 +498,7 @@ def main():
                         
                     except Exception as e:
                         st.error(f"❌ Error during analysis: {str(e)}")
-                        st.info("Please ensure all dependencies are installed and the risk analysis agent is properly configured.")
+                        st.info("Please ensure all dependencies are installed and the main agent is properly configured.")
                         with st.expander("Show Error Details"):
                             st.code(str(e))
                 
@@ -615,7 +672,7 @@ def main():
             st.warning("⚠️ No transaction analysis results found")
             st.info(f"""
             **To view transaction analysis:**
-            1. Run the risk analysis agent: `python agents/part1/risk_analysis_agent.py`
+            1. Run the main agent: `python agents/part1/main_agent.py`
             2. The analysis results will be saved to: `{output_csv_path}`
             3. Refresh this page to view the results
             
@@ -623,6 +680,247 @@ def main():
             """)
     
     with tab3:
+        st.header("🚀 Next Steps - Action Plan")
+        st.markdown("""
+        View and manage department-specific action items for high-risk transactions.
+        Track progress through the timeline and complete tasks assigned to your team.
+        """)
+        
+        # Load actionables data
+        actionables_data = load_actionables_data()
+        
+        if not actionables_data:
+            st.warning("⚠️ No actionables data found")
+            st.info("""
+            **To generate actionables:**
+            1. Ensure you have high-risk transactions analyzed
+            2. Run the actionables agent: `python agents/part1/actionablesAgent.py`
+            3. Refresh this page to view the action plans
+            """)
+        else:
+            # Department selector
+            st.subheader("🏢 Select Your Department")
+            
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                selected_department = st.selectbox(
+                    "Department",
+                    options=['FRONT', 'COMPLIANCE', 'LEGAL'],
+                    help="Select your department to view relevant action items"
+                )
+            
+            with col2:
+                # Show total transactions with actionables
+                st.metric("High-Risk Transactions", len(actionables_data))
+            
+            st.markdown("---")
+            
+            # Initialize session state for task completion
+            if 'completed_tasks' not in st.session_state:
+                st.session_state.completed_tasks = {}
+            
+            # Transaction selector
+            st.subheader("📊 Select Transaction")
+            
+            # Create transaction options
+            transaction_options = {}
+            for idx, tx in enumerate(actionables_data):
+                tx_id = tx['transaction_id']
+                risk_score = tx['risk_score']
+                label = f"Transaction {tx_id[:8]}... (Risk: {risk_score}/100)"
+                transaction_options[label] = idx
+            
+            selected_tx_label = st.selectbox(
+                "Transaction",
+                options=list(transaction_options.keys()),
+                help="Select a transaction to view its action plan"
+            )
+            
+            selected_tx_idx = transaction_options[selected_tx_label]
+            selected_tx = actionables_data[selected_tx_idx]
+            
+            # Display transaction info
+            st.markdown("### 📋 Transaction Overview")
+            
+            info_col1, info_col2, info_col3 = st.columns(3)
+            
+            with info_col1:
+                st.metric("Risk Score", f"{selected_tx['risk_score']}/100")
+            
+            with info_col2:
+                st.metric("Risk Level", selected_tx['risk_label'])
+            
+            with info_col3:
+                st.metric("Est. Resolution", selected_tx['estimated_resolution_time'])
+            
+            st.info(f"**Recommended Outcome:** {selected_tx['recommended_outcome']}")
+            
+            st.markdown("---")
+            
+            # Filter steps by department
+            all_steps = selected_tx['next_steps']
+            my_steps = [step for step in all_steps if step['team'] == selected_department]
+            
+            # Display department-specific tasks
+            st.subheader(f"✅ Your Tasks ({selected_department} Team)")
+            
+            if not my_steps:
+                st.info(f"No tasks assigned to {selected_department} team for this transaction.")
+            else:
+                st.markdown(f"**{len(my_steps)} task(s) assigned to your department**")
+                
+                for step in my_steps:
+                    step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
+                    
+                    # Check if task is completed
+                    is_completed = st.session_state.completed_tasks.get(step_key, False)
+                    
+                    with st.expander(
+                        f"{'✅' if is_completed else '⬜'} Step {step['step_number']}: {step['action']}",
+                        expanded=not is_completed
+                    ):
+                        col_a, col_b = st.columns([3, 1])
+                        
+                        with col_a:
+                            st.markdown(f"**Priority:** `{step['priority']}`")
+                            st.markdown(f"**Deadline:** {step['deadline']}")
+                            st.markdown(f"**Details:**")
+                            st.write(step['details'])
+                        
+                        with col_b:
+                            # Completion checkbox
+                            if st.checkbox(
+                                "Mark Complete",
+                                value=is_completed,
+                                key=f"complete_{step_key}"
+                            ):
+                                st.session_state.completed_tasks[step_key] = True
+                                st.success("✅ Completed!")
+                            else:
+                                st.session_state.completed_tasks[step_key] = False
+            
+            st.markdown("---")
+            
+            # Timeline View
+            st.subheader("🕐 Action Timeline - All Teams")
+            st.caption("View the complete sequence of actions across all departments")
+            
+            # Create a key for tracking current step in session state
+            timeline_key = f"current_step_{selected_tx['transaction_id']}"
+            if timeline_key not in st.session_state:
+                st.session_state[timeline_key] = 1
+            
+            # Find the first incomplete step
+            current_step_num = st.session_state[timeline_key]
+            for step in all_steps:
+                step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
+                if not st.session_state.completed_tasks.get(step_key, False):
+                    current_step_num = step['step_number']
+                    st.session_state[timeline_key] = current_step_num
+                    break
+            
+            # Display timeline
+            for step in all_steps:
+                step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
+                is_completed = st.session_state.completed_tasks.get(step_key, False)
+                is_current = (step['step_number'] == current_step_num) and not is_completed
+                is_future = step['step_number'] > current_step_num
+                
+                # Determine styling
+                if is_completed:
+                    border_color = "#28a745"  # Green
+                    bg_color = "#d4edda"
+                    icon = "✅"
+                    opacity = "0.7"
+                elif is_current:
+                    border_color = get_team_color(step['team'])
+                    bg_color = "#fff3cd"
+                    icon = "🔄"  # Rotating effect
+                    opacity = "1.0"
+                else:
+                    border_color = "#6c757d"  # Gray
+                    bg_color = "#f8f9fa"
+                    icon = "⏳"
+                    opacity = "0.5"
+                
+                # Timeline entry with animation for current step
+                timeline_html = f"""
+                <div style="
+                    border-left: 4px solid {border_color};
+                    padding-left: 20px;
+                    margin-left: 20px;
+                    margin-bottom: 20px;
+                    background-color: {bg_color};
+                    border-radius: 5px;
+                    padding: 15px;
+                    opacity: {opacity};
+                    {'animation: pulse 2s infinite;' if is_current else ''}
+                ">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span style="font-size: 24px; margin-right: 10px;">{icon}</span>
+                        <span style="font-size: 20px; font-weight: bold;">Step {step['step_number']}</span>
+                        <span style="margin-left: auto; background-color: {get_team_color(step['team'])}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px;">
+                            {step['team']}
+                        </span>
+                        <span style="margin-left: 10px; background-color: {get_priority_color(step['priority'])}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px;">
+                            {step['priority']}
+                        </span>
+                    </div>
+                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">
+                        {step['action']}
+                    </div>
+                    <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
+                        ⏰ Deadline: {step['deadline']}
+                    </div>
+                    <div style="font-size: 14px; color: #444;">
+                        {step['details']}
+                    </div>
+                </div>
+                """
+                
+                st.markdown(timeline_html, unsafe_allow_html=True)
+            
+            # Add CSS for pulse animation
+            st.markdown("""
+            <style>
+            @keyframes pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+                }
+                50% {
+                    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+                }
+                100% {
+                    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+                }
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("---")
+            
+            # Summary statistics
+            st.subheader("📊 Progress Summary")
+            
+            completed_count = sum(1 for step in all_steps if st.session_state.completed_tasks.get(f"{selected_tx['transaction_id']}_{step['step_number']}", False))
+            total_steps = len(all_steps)
+            progress_pct = (completed_count / total_steps * 100) if total_steps > 0 else 0
+            
+            col_x, col_y, col_z = st.columns(3)
+            
+            with col_x:
+                st.metric("Completed Steps", f"{completed_count}/{total_steps}")
+            
+            with col_y:
+                st.metric("Progress", f"{progress_pct:.0f}%")
+            
+            with col_z:
+                st.metric("Current Step", f"Step {current_step_num}")
+            
+            st.progress(progress_pct / 100)
+    
+    with tab4:
         st.header("Clause-by-Clause Comparison")
         
         # Try to extract clause comparison from analysis
@@ -644,7 +942,7 @@ def main():
         except Exception as e:
             st.warning(f"⚠️ Could not load clause comparison: {e}")
     
-    with tab4:
+    with tab5:
         st.header("Raw Data")
         
         # Display full JSON

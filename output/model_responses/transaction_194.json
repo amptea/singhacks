@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating"
+  ],
+  "explanation": "The transaction exceeds the high amount threshold and involves a customer with a high risk rating, both of which are strong indicators of potential money laundering activity. No other mitigating factors are present, leading to a high risk assessment."
+}

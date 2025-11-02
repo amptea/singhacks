@@ -1,0 +1,11 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "KYC Not Updated",
+    "Ongoing Monitoring Violation"
+  ],
+  "explanation": "The transaction is high\u2011value (S$1.3m) but the customer\u2019s KYC was last completed on 25/12/2021, well beyond the due date of 23/06/2022, indicating a lapse in ongoing monitoring and risk assessment. No other clauses (CDD, sanctions, travel rule, value transfer, or suspicious activity) are violated.",
+  "transaction_id": "135cef35-c054-46f0-8d8d-daedb7429de4",
+  "index": 0
+}

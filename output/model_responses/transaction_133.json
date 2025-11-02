@@ -1,0 +1,9 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold and triggered a potential sanctions hit, both strong indicators of money\u2011laundering risk. No EDD gap or daily cash structuring is present, but the combination of a large value and sanctions concern warrants a high risk label."
+}

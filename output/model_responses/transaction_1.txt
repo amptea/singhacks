@@ -1,0 +1,1 @@
+{"risk_label":"High","score":80,"matched_rules":["High Transaction Amount"],"explanation":"The transaction amount (£1,319,007.62) far exceeds the high‑amount threshold of £17,343.58, which is a key indicator of suspicious activity. No other red‑flag rules are triggered, but the sheer size of the transaction alone

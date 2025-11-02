@@ -490,13 +490,21 @@ STRUCTURE:
     
     def _log_analysis_completion(self, results: Dict[str, Any]):
         """Log the completion summary to the audit trail"""
-        ai = results['ai_analysis']
+        ai = results.get("ai_analysis", {})
+
+        if isinstance(ai, list):
+            if ai:
+                ai = ai[0]
+            else:
+                ai = {}
         
         log_message = (
-            f"ANALYSIS COMPLETED | ID: {results['analysis_id']} | Document: {results['document']} | "
-            f"Risk Level: {ai['risk_level']} | Score: {ai['risk_score']}/10 | "
+            f"ANALYSIS COMPLETED | ID: {results.get('analysis_id', 'N/A')} | "
+            f"Document: {results.get('document', 'Unknown')} | "
+            f"Risk Level: {ai.get('risk_level', 'N/A')} | "
+            f"Score: {ai.get('risk_score', 'N/A')}/10 | "
             f"Recommendation: {ai.get('recommendations', {}).get('approval_recommendation', 'REVIEW')} | "
-            f"Duration: {results['duration_seconds']:.2f}s"
+            f"Duration: {results.get('duration_seconds', 0):.2f}s"
         )
         logger.info("=" * 80)
         logger.info(log_message)

@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction exceeds the $10,000 daily cash threshold, a known structuring indicator, but lacks other red flags such as high customer risk rating, sanctions hits, or missing KYC/EDD. Therefore it is assessed as medium risk."
+}

@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":65,"matched_rules":["High Customer Risk Rating","High Daily Cash Total for Customer"],"explanation":"The transaction triggers two moderate‑risk indicators: the customer is rated 'High' risk

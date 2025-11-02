@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":60,"matched_rules":["High Daily Cash Total for Customer","Incomplete Travel Rule Information"],"explanation":"The transaction exceeds the daily cash

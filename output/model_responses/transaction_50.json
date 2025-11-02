@@ -1,0 +1,11 @@
+{
+  "risk_label": "High",
+  "score": 90,
+  "matched_rules": [
+    "High Transaction Amount",
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit",
+    "EDD Required but Not Performed"
+  ],
+  "explanation": "The transaction exceeds the high amount threshold, involves a high\u2011risk customer, triggered a potential sanctions hit, and lacks required EDD. These combined factors indicate a high likelihood of money\u2011laundering activity."
+}

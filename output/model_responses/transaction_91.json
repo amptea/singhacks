@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 45,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction triggered a potential sanctions screening hit, which is a significant red flag. However, the amount is below the high transaction threshold, the customer risk rating is low, and other controls such as EDD were performed. Overall, the transaction presents a medium risk of money laundering."
+}
