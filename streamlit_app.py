@@ -1,28 +1,24 @@
 """
 Comprehensive Fraud Detection & Compliance Verification System
-Streamlit Interface for Compliance Officers
+Enhanced with Multi-Format Support, Advanced Image Analysis, and Audit Trail
 """
 
 import streamlit as st
 import sys
-# Adjust path insertion if 'src' contains other dependencies like extractor and validator
-# Assuming all necessary files (parse_pdf_ocr, ai_fraud_detector, etc.) are in the same directory or accessible via system path
-# If document_parser_jigsawstack.py was in 'src', removing this line might break other imports if not adjusted.
-# Keeping the sys.path.insert for other assumed modules, but commenting out the specific JigsawStack import.
-sys.path.insert(0, 'src') 
-
-# from document_parser_jigsawstack import JigsawDocumentParser # REMOVED JigsawStack dependency
-from structured_extractor import StructuredFieldExtractor
-from enhanced_validator import EnhancedDocumentValidator
-from external_verification import ExternalVerificationAgent
-from ai_fraud_detector import AIFraudDetector
-# from groq_agent import FraudDetectionAgent # Not used in analyze_document, keeping for completeness if needed elsewhere
-from parse_pdf_ocr import parse_pdf_to_text # ADDED dependency on local OCR parser
 import json
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
-import fitz # PyMuPDF is needed to get page count and other metadata (like size)
+
+# Add src to path
+sys.path.insert(0, 'src')
+
+# Import components
+from universal_document_parser import UniversalDocumentParser
+from structured_extractor import StructuredFieldExtractor
+from enhanced_validator import EnhancedDocumentValidator
+from advanced_image_analyzer import AdvancedImageAnalyzer
+from firestore_audit_logger import FirestoreAuditLogger
 
 # Page config
 st.set_page_config(
@@ -49,48 +45,87 @@ if 'analysis_complete' not in st.session_state:
     st.session_state.analysis_complete = False
 if 'results' not in st.session_state:
     st.session_state.results = None
+if 'audit_logger' not in st.session_state:
+    st.session_state.audit_logger = FirestoreAuditLogger(fallback_to_local=True)
 
 
 def main():
-    st.title("🔍 Compliance Verification System")
-    st.markdown("**Automated Document Fraud Detection & Entity Verification**")
+    st.title("🔍 Enhanced Compliance Verification System")
+    st.markdown("**Automated Document Fraud Detection with Advanced Image Analysis & Audit Trail**")
     
     # Sidebar
     with st.sidebar:
         st.header("Analysis Steps")
         st.markdown("""
-        1. **Upload Document**
-        2. **Parse & Extract (Local OCR)**
-        3. **Validate Format**
-        4. **Verify Externally**
+        1. **Upload Document** (PDF/Image/Text/DOCX)
+        2. **Parse & Extract** (Universal Parser)
+        3. **Image Analysis** (AI Detection, Metadata, Reverse Search)
+        4. **Validate Format** (List ALL issues)
         5. **Generate Report**
+        6. **Audit Trail** (Firestore)
         """)
-        
+
         st.divider()
-        
+
         st.header("Settings")
         document_type = st.selectbox(
             "Document Type",
             ["general", "statement", "invoice", "contract"]
         )
-        
-        use_external_verification = st.checkbox(
-            "External Verification",
-            value=True,
-            help="Query company registers and sanction lists"
-        )
-        
-        # New setting for OCR DPI scale
+
+        # External verification removed from UI; default to False
+        use_external_verification = False
+
+        # OCR DPI scale
         ocr_dpi_scale = st.slider(
             "OCR DPI Scale",
             min_value=1,
             max_value=5,
-            value=3,
-            help="Higher scale (e.g., 3 = 216 DPI) results in better OCR but slower processing. Default is 3."
+            value=2,
+            help="Higher scale = better OCR but slower"
         )
 
         st.divider()
-        
+        st.subheader("🖼️ Image Analysis")
+
+        enable_image_analysis = st.checkbox(
+            "Enable Advanced Image Analysis",
+            value=True,
+            help="Analyze images for fraud indicators"
+        )
+
+        if enable_image_analysis:
+            check_reverse_search = st.checkbox(
+                "Reverse Image Search",
+                value=True,
+                help="Check if image is stolen/reused (requires SerpAPI)"
+            )
+
+            check_ai_generated = st.checkbox(
+                "AI-Generated Detection",
+                value=True,
+                help="Detect AI-generated images"
+            )
+
+            check_metadata_tampering = st.checkbox(
+                "Metadata Tampering",
+                value=True,
+                help="Check EXIF metadata for manipulation"
+            )
+
+            check_pixel_anomalies = st.checkbox(
+                "Pixel Anomaly Detection",
+                value=True,
+                help="Detect cloning, splicing, and other manipulations"
+            )
+        else:
+            check_reverse_search = False
+            check_ai_generated = False
+            check_metadata_tampering = False
+            check_pixel_anomalies = False
+
+        st.divider()
+
         if st.session_state.analysis_complete:
             if st.button("🔄 New Analysis"):
                 st.session_state.analysis_complete = False
@@ -99,20 +134,38 @@ def main():
     
     # Main content
     if not st.session_state.analysis_complete:
-        show_upload_interface(document_type, use_external_verification, ocr_dpi_scale)
+        show_upload_interface(
+            document_type,
+            use_external_verification,
+            ocr_dpi_scale,
+            enable_image_analysis,
+            check_reverse_search,
+            check_ai_generated,
+            check_metadata_tampering,
+            check_pixel_anomalies
+        )
     else:
         show_results_interface()
 
 
-def show_upload_interface(document_type, use_external_verification, ocr_dpi_scale):
+def show_upload_interface(
+    document_type,
+    use_external_verification,
+    ocr_dpi_scale,
+    enable_image_analysis,
+    check_reverse_search,
+    check_ai_generated,
+    check_metadata_tampering,
+    check_pixel_anomalies
+):
     """Document upload and analysis interface"""
     
     st.header("📄 Step 1: Upload Document")
     
     uploaded_file = st.file_uploader(
         "Upload document for analysis",
-        type=['pdf', 'jpg', 'jpeg', 'png', 'txt'],
-        help="Supported: PDF, JPG, PNG, TXT (PDF is required for current parsing logic)"
+        type=['pdf', 'jpg', 'jpeg', 'png', 'txt', 'docx'],
+        help="Supported: PDF, Images (JPG/PNG), Text files (TXT), Word documents (DOCX)"
     )
     
     if uploaded_file:
@@ -136,21 +189,33 @@ def show_upload_interface(document_type, use_external_verification, ocr_dpi_scal
         
         # Analyze button
         if st.button("🚀 Start Comprehensive Analysis", type="primary"):
-            # Check for PDF compatibility
-            if uploaded_file.type != "application/pdf":
-                st.error("❌ The current local OCR parsing only fully supports PDF files. Please upload a PDF.")
-                st.stop()
-            
             analyze_document(
                 str(temp_path),
                 document_type,
                 use_external_verification,
-                ocr_dpi_scale
+                ocr_dpi_scale,
+                enable_image_analysis,
+                check_reverse_search,
+                check_ai_generated,
+                check_metadata_tampering,
+                check_pixel_anomalies
             )
 
 
-def analyze_document(file_path, document_type, use_external_verification, ocr_dpi_scale):
-    """Run comprehensive document analysis, modified to use parse_pdf_to_text"""
+def analyze_document(
+    file_path,
+    document_type,
+    use_external_verification,
+    ocr_dpi_scale,
+    enable_image_analysis,
+    check_reverse_search,
+    check_ai_generated,
+    check_metadata_tampering,
+    check_pixel_anomalies
+):
+    """Run comprehensive document analysis with audit trail"""
+    
+    audit_logger = st.session_state.audit_logger
     
     results = {
         'file_path': file_path,
@@ -160,53 +225,96 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
         'stages': {}
     }
     
+    # Log analysis start
+    audit_logger.log_document_analysis_start(
+        file_path,
+        document_type,
+        {
+            'external_verification': use_external_verification,
+            'ocr_dpi_scale': ocr_dpi_scale,
+            'image_analysis_enabled': enable_image_analysis
+        }
+    )
+    
     # Progress tracking
     progress_bar = st.progress(0)
     status_text = st.empty()
     
+    start_time = datetime.now()
+    
     try:
-        # Stage 1: Parse Document using local OCR
-        status_text.text("📄 Stage 1/5: Parsing document with local OCR...")
-        progress_bar.progress(20)
+        # Stage 1: Parse Document with Universal Parser
+        status_text.text("📄 Stage 1/6: Parsing document (Universal Parser)...")
+        progress_bar.progress(15)
         
-        # Determine page count for status display
-        page_count = 0
-        try:
-            doc = fitz.open(file_path)
-            page_count = len(doc)
-            doc.close()
-        except Exception:
-            # Continue even if page count fails, as text extraction might still work
-            page_count = 1 
-            st.warning("⚠️ Could not reliably determine page count.")
-            
-        with st.spinner(f"Parsing document with Tesseract OCR (DPI Scale: {ocr_dpi_scale})..."):
-            extracted_text = parse_pdf_to_text(file_path, output_path=None, dpi_scale=ocr_dpi_scale)
-            
-            # Manually construct a 'parsed' structure for downstream compatibility
-            parsed = {
-                'success': True,
-                'text': extracted_text,
-                'page_count': page_count,
-                'pages_processed': page_count, # Assume all pages are processed by the internal loop in parse_pdf_to_text
-                'parser_used': f'local_ocr (DPI:{72 * ocr_dpi_scale})',
-                'file_name': results['file_name'],
-                'warning': 'Local OCR might be less accurate than commercial OCR for complex documents.'
-            }
+        with st.spinner(f"Parsing document (DPI Scale: {ocr_dpi_scale})..."):
+            parser = UniversalDocumentParser(dpi_scale=ocr_dpi_scale)
+            parsed = parser.parse_document(file_path)
             results['stages']['parsing'] = parsed
+            
+            # Log parsing
+            audit_logger.log_parsing(
+                parser_name='UniversalDocumentParser',
+                file_path=file_path,
+                text_extracted=parsed.get('text', ''),
+                metadata_extracted=parsed.get('metadata', {}),
+                success=parsed.get('success', False)
+            )
         
-        # Check if text was extracted
-        if not extracted_text or extracted_text.strip() == "":
-            st.error("❌ Document parsing failed: No text extracted. Check Tesseract installation or document quality.")
-            st.info("💡 Tip: Ensure Tesseract OCR is correctly installed and accessible on your system.")
+        if not parsed.get('success') or not parsed.get('text'):
+            st.error("❌ Document parsing failed: No text extracted")
             st.stop()
         
-        pages_info = f"{parsed['page_count']} page(s)"
-        st.success(f"✓ Extracted {len(parsed['text'])} characters from {pages_info} using {parsed['parser_used']}")
+        st.success(f"✓ Extracted {len(parsed['text'])} characters using {parsed.get('parser_used', 'unknown')}")
         
-        # Stage 2: Extract Structured Fields
-        status_text.text("🔍 Stage 2/5: Extracting structured fields...")
-        progress_bar.progress(40)
+        # Stage 2: Advanced Image Analysis (if image document or PDF with images)
+        if enable_image_analysis and (parsed.get('is_image_document') or parsed.get('images')):
+            status_text.text("🖼️ Stage 2/6: Advanced image analysis...")
+            progress_bar.progress(30)
+            
+            with st.spinner("Analyzing images for manipulation..."):
+                image_analyzer = AdvancedImageAnalyzer()
+                
+                # Analyze based on document type
+                if parsed.get('format') == 'pdf' and parsed.get('images'):
+                    # PDF with images - analyze all images
+                    image_analysis = image_analyzer.analyze_pdf_images(
+                        file_path,
+                        check_reverse_search=check_reverse_search,
+                        check_ai_generated=check_ai_generated,
+                        check_metadata_tampering=check_metadata_tampering,
+                        check_pixel_anomalies=check_pixel_anomalies
+                    )
+                elif parsed.get('is_image_document'):
+                    # Direct image file
+                    image_analysis = image_analyzer.analyze_image(
+                        file_path,
+                        check_reverse_search=check_reverse_search,
+                        check_ai_generated=check_ai_generated,
+                        check_metadata_tampering=check_metadata_tampering,
+                        check_pixel_anomalies=check_pixel_anomalies
+                    )
+                else:
+                    image_analysis = {'skipped': True, 'reason': 'No images found'}
+                
+                results['stages']['image_analysis'] = image_analysis
+                
+                # Log image analysis
+                audit_logger.log_image_analysis(
+                    analyzer_name='AdvancedImageAnalyzer',
+                    image_path=file_path,
+                    analysis_results=image_analysis,
+                    checks_performed=image_analysis.get('analysis_performed', [])
+                )
+            
+            st.success("✓ Image analysis complete")
+        else:
+            results['stages']['image_analysis'] = {'skipped': True, 'reason': 'Image analysis disabled or no images'}
+            progress_bar.progress(30)
+        
+        # Stage 3: Extract Structured Fields
+        status_text.text("🔍 Stage 3/6: Extracting structured fields...")
+        progress_bar.progress(45)
         
         with st.spinner("Extracting structured data with AI..."):
             extractor = StructuredFieldExtractor()
@@ -216,8 +324,8 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
         if extracted['success']:
             st.success(f"✓ Extracted {extracted['fields_found']} data fields")
         
-        # Stage 3: Enhanced Validation
-        status_text.text("✅ Stage 3/5: Validating document quality...")
+        # Stage 4: Enhanced Validation (LIST ALL ISSUES)
+        status_text.text("✅ Stage 4/6: Validating document (listing ALL issues)...")
         progress_bar.progress(60)
         
         with st.spinner("Running comprehensive validation..."):
@@ -228,39 +336,64 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
                 extracted.get('extracted_fields')
             )
             results['stages']['validation'] = validation
-        
-        st.success(f"✓ Validation Check: {validation.get('overall_quality', 'N/A')}")
-        
-        # Stage 4: External Verification (if enabled)
-        if use_external_verification:
-            status_text.text("🌐 Stage 4/5: Verifying with external sources...")
-            progress_bar.progress(75)
             
-            with st.spinner("Checking company registers and sanction lists..."):
-                verifier = ExternalVerificationAgent()
-                verification = verifier.verify_entity(extracted)
-                results['stages']['verification'] = verification
-            
-            st.success(f"✓ Verification Check: {verification.get('overall_status', 'N/A')}")
-        else:
-            results['stages']['verification'] = {'skipped': True}
-            progress_bar.progress(75)
+            # Log validation
+            audit_logger.log_validation(
+                validator_name='EnhancedDocumentValidator',
+                document_text=parsed['text'],
+                validation_results=validation
+            )
         
-        # Stage 5: AI Fraud Analysis
-        status_text.text("🤖 Stage 5/5: AI fraud analysis...")
+        total_issues = validation.get('total_issues_found', sum([
+            len(validation.get('formatting_issues', [])),
+            len(validation.get('content_issues', [])),
+            len(validation.get('structure_issues', []))
+        ]))
+        
+        st.success(f"✓ Validation: {validation.get('overall_quality', 'N/A')} ({total_issues} total issues)")
+        
+        # Stage 5: External Verification intentionally skipped/disabled
+        results['stages']['verification'] = {'skipped': True}
+        progress_bar.progress(75)
+        
+        # Stage 6: AI Fraud Analysis has been removed/disabled for this build.
+        status_text.text("🤖 Stage 6/6: AI fraud analysis (disabled)...")
         progress_bar.progress(90)
-        
-        with st.spinner("AI analyzing all findings..."):
-            # AIFraudDetector internally calls _extract_document_data which uses parse_pdf_to_text again
-            detector = AIFraudDetector()
-            fraud_analysis = detector.analyze_document(file_path)
+        with st.spinner("Skipping AI analysis (disabled)..."):
+            fraud_analysis = {
+                'ai_analysis': {
+                    'overall_summary': 'AI analysis has been disabled in this build.',
+                    'risk_score': 0,
+                    'risk_level': 'UNKNOWN',
+                    'confidence': 0.0,
+                    'key_findings': [],
+                    'recommendations': {}
+                }
+            }
             results['stages']['fraud_analysis'] = fraud_analysis
-        
-        st.success("✓ AI analysis complete")
+            # Log a placeholder AI analysis entry
+            try:
+                audit_logger.log_ai_analysis(
+                    model_name='disabled',
+                    input_prompt=f"AI analysis disabled for {Path(file_path).name}",
+                    output_analysis={}
+                )
+            except Exception:
+                # If audit logger doesn't support this call in some environments, ignore
+                pass
+        st.success("✓ AI analysis skipped")
         
         # Complete
         progress_bar.progress(100)
         status_text.text("✅ Analysis Complete!")
+        
+        # Log completion
+        duration = (datetime.now() - start_time).total_seconds()
+        audit_logger.log_document_analysis_complete(
+            file_path,
+            results,
+            duration
+        )
         
         # Save results to session state
         st.session_state.results = results
@@ -271,45 +404,55 @@ def analyze_document(file_path, document_type, use_external_verification, ocr_dp
         
     except Exception as e:
         st.error(f"❌ Analysis failed: {str(e)}")
+        
+        # Log error
+        import traceback
+        audit_logger.log_error(
+            component='analyze_document',
+            error_message=str(e),
+            error_traceback=traceback.format_exc(),
+            context={'file_path': file_path}
+        )
+        
         st.exception(e)
-        st.stop() # Stop execution if a major error occurs
+        st.stop()
 
 
 def show_results_interface():
-    """Display comprehensive results interface for compliance officers"""
+    """Display comprehensive results interface"""
     
     results = st.session_state.results
     
     st.header("📊 Analysis Results")
     st.markdown(f"**Document:** {results['file_name']} | **Type:** {results['document_type']}")
     
-    # Create tabs for different views
+    # Create tabs (External Verification & AI Analysis removed)
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "📋 Overview",
+        "🖼️ Image Analysis",
         "🔍 Extracted Data",
         "✅ Validation Issues",
-        "🌐 External Verification",
-        "🤖 AI Analysis",
-        "📄 Reports"
+        "📄 Reports",
+        "📜 Audit Trail"
     ])
-    
+
     with tab1:
         show_overview_tab(results)
-    
+
     with tab2:
-        show_extracted_data_tab(results)
-    
+        show_image_analysis_tab(results)
+
     with tab3:
-        show_validation_tab(results)
-    
+        show_extracted_data_tab(results)
+
     with tab4:
-        show_verification_tab(results)
-    
+        show_validation_tab(results)
+
     with tab5:
-        show_ai_analysis_tab(results)
-    
-    with tab6:
         show_reports_tab(results)
+
+    with tab6:
+        show_audit_trail_tab()
 
 
 def show_overview_tab(results):
@@ -321,6 +464,7 @@ def show_overview_tab(results):
     fraud = results['stages'].get('fraud_analysis', {}).get('ai_analysis', {})
     verification = results['stages'].get('verification', {})
     validation = results['stages'].get('validation', {})
+    image_analysis = results['stages'].get('image_analysis', {})
     
     # Risk score display
     risk_score = fraud.get('risk_score', 0)
@@ -351,6 +495,29 @@ def show_overview_tab(results):
     
     st.divider()
     
+    # Image manipulation indicators
+    if not image_analysis.get('skipped'):
+        st.subheader("🖼️ Image Manipulation Assessment")
+        
+        if 'manipulation_indicators' in image_analysis:
+            manip = image_analysis['manipulation_indicators']
+            st.markdown(f"**Verdict:** {manip.get('verdict', 'UNKNOWN')}")
+            st.markdown(f"**Manipulation Score:** {manip.get('combined_manipulation_score', 0):.2%}")
+            st.markdown(f"**Recommendation:** {manip.get('recommendation', 'N/A')}")
+            
+            if manip.get('indicators'):
+                st.markdown("**Indicators:**")
+                for indicator in manip['indicators']:
+                    st.markdown(f"• {indicator}")
+        elif 'images_analyzed' in image_analysis:
+            st.markdown(f"**Images Analyzed:** {len(image_analysis['images_analyzed'])}")
+            for img_result in image_analysis['images_analyzed']:
+                if 'manipulation_indicators' in img_result:
+                    manip = img_result['manipulation_indicators']
+                    st.markdown(f"• Page {img_result.get('pdf_page', 'N/A')}: {manip.get('verdict', 'UNKNOWN')}")
+    
+    st.divider()
+    
     # Key findings
     st.subheader("Key Findings")
     key_findings = fraud.get('key_findings', [])
@@ -378,6 +545,124 @@ def show_overview_tab(results):
         st.markdown(f"1. {action}")
 
 
+def show_image_analysis_tab(results):
+    """Show detailed image analysis"""
+    
+    st.subheader("🖼️ Advanced Image Analysis Results")
+    
+    image_analysis = results['stages'].get('image_analysis', {})
+    
+    if image_analysis.get('skipped'):
+        st.info(f"Image analysis skipped: {image_analysis.get('reason', 'Unknown')}")
+        return
+    
+    # Check if single image or PDF with multiple images
+    if 'images_analyzed' in image_analysis:
+        # PDF with multiple images
+        st.markdown(f"**Total Images Analyzed:** {image_analysis['images_found']}")
+        
+        for i, img_result in enumerate(image_analysis['images_analyzed'], 1):
+            with st.expander(f"Image {i} - Page {img_result.get('pdf_page', 'N/A')}", expanded=i==1):
+                display_single_image_analysis(img_result)
+    else:
+        # Single image
+        display_single_image_analysis(image_analysis)
+
+
+def display_single_image_analysis(analysis):
+    """Display analysis for a single image"""
+    
+    # Manipulation indicators summary
+    if 'manipulation_indicators' in analysis:
+        manip = analysis['manipulation_indicators']
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Verdict", manip.get('verdict', 'UNKNOWN'))
+        with col2:
+            st.metric("Manipulation Score", f"{manip.get('combined_manipulation_score', 0):.0%}")
+        with col3:
+            st.metric("Confidence", f"{manip.get('confidence', 0):.0%}")
+        
+        st.markdown(f"**Recommendation:** {manip.get('recommendation', 'N/A')}")
+        
+        if manip.get('indicators'):
+            st.markdown("**Manipulation Indicators:**")
+            for indicator in manip['indicators']:
+                st.warning(f"⚠️ {indicator}")
+    
+    st.divider()
+    
+    # Detailed analysis sections
+    
+    # 1. Reverse Image Search
+    if 'reverse_search' in analysis:
+        with st.expander("🔍 Reverse Image Search"):
+            rs = analysis['reverse_search']
+            if rs.get('success'):
+                st.markdown(f"**Matches Found:** {rs.get('matches_found', 0)}")
+                st.markdown(f"**Stolen Image Likelihood:** {rs.get('stolen_image_likelihood', 'UNKNOWN')}")
+                if rs.get('warning'):
+                    st.info(rs['warning'])
+            else:
+                st.error(f"Error: {rs.get('error', 'Unknown')}")
+    
+    # 2. AI-Generated Detection
+    if 'ai_detection' in analysis:
+        with st.expander("🤖 AI-Generated Detection"):
+            ai = analysis['ai_detection']
+            st.markdown(f"**Verdict:** {ai.get('verdict', 'UNKNOWN')}")
+            st.markdown(f"**AI Confidence:** {ai.get('ai_generated_confidence', 0):.0%}")
+            st.markdown(f"**Models Tested:** {', '.join(ai.get('models_tested', []))}")
+            
+            if ai.get('details'):
+                st.json(ai['details'])
+    
+    # 3. Metadata Tampering
+    if 'metadata_analysis' in analysis:
+        with st.expander("📋 Metadata Tampering Analysis"):
+            meta = analysis['metadata_analysis']
+            if meta.get('success'):
+                st.markdown(f"**Verdict:** {meta.get('verdict', 'UNKNOWN')}")
+                st.markdown(f"**Tampering Risk Score:** {meta.get('tampering_risk_score', 0):.0%}")
+                st.markdown(f"**EXIF Data Present:** {'Yes' if meta.get('exif_data_present') else 'No'}")
+                st.markdown(f"**Total EXIF Tags:** {meta.get('total_exif_tags', 0)}")
+                
+                if meta.get('tampering_indicators'):
+                    st.markdown(f"**Tampering Indicators Found:** {len(meta['tampering_indicators'])}")
+                    for indicator in meta['tampering_indicators']:
+                        severity = indicator.get('severity', 'LOW')
+                        if severity == 'HIGH':
+                            st.error(f"🔴 {indicator.get('indicator')}: {indicator.get('description')}")
+                        elif severity == 'MEDIUM':
+                            st.warning(f"🟡 {indicator.get('indicator')}: {indicator.get('description')}")
+                        else:
+                            st.info(f"🟢 {indicator.get('indicator')}: {indicator.get('description')}")
+            else:
+                st.error(f"Error: {meta.get('error', 'Unknown')}")
+    
+    # 4. Pixel Anomalies
+    if 'pixel_analysis' in analysis:
+        with st.expander("🔬 Pixel-Level Anomaly Detection"):
+            pixel = analysis['pixel_analysis']
+            if pixel.get('success'):
+                st.markdown(f"**Verdict:** {pixel.get('verdict', 'UNKNOWN')}")
+                st.markdown(f"**Anomaly Score:** {pixel.get('anomaly_score', 0):.0%}")
+                st.markdown(f"**Anomalies Detected:** {pixel.get('total_anomalies', 0)}")
+                
+                if pixel.get('anomalies_detected'):
+                    for anomaly in pixel['anomalies_detected']:
+                        severity = anomaly.get('severity', 'LOW')
+                        if severity == 'HIGH':
+                            st.error(f"🔴 {anomaly.get('type')}: {anomaly.get('description')}")
+                        elif severity == 'MEDIUM':
+                            st.warning(f"🟡 {anomaly.get('type')}: {anomaly.get('description')}")
+                        else:
+                            st.info(f"🟢 {anomaly.get('type')}: {anomaly.get('description')}")
+            else:
+                st.error(f"Error: {pixel.get('error', 'Unknown')}")
+
+
 def show_extracted_data_tab(results):
     """Show extracted structured data"""
     
@@ -386,7 +671,6 @@ def show_extracted_data_tab(results):
     extracted = results['stages'].get('extraction', {}).get('extracted_fields', {})
     
     if extracted:
-        # Display as expandable sections
         for category, fields in extracted.items():
             with st.expander(f"📁 {category.replace('_', ' ').title()}", expanded=True):
                 if isinstance(fields, dict):
@@ -398,7 +682,6 @@ def show_extracted_data_tab(results):
                 else:
                     st.json(fields)
         
-        # Export option
         if st.button("📥 Export as JSON"):
             st.download_button(
                 "Download JSON",
@@ -411,14 +694,14 @@ def show_extracted_data_tab(results):
 
 
 def show_validation_tab(results):
-    """Show validation issues"""
+    """Show validation issues - ALL OF THEM"""
     
-    st.subheader("Document Validation Results")
+    st.subheader("Document Validation Results (ALL Issues Listed)")
     
     validation = results['stages'].get('validation', {})
     
     # Summary metrics
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Completeness", f"{validation.get('completeness_score', 0)}%")
     with col2:
@@ -426,10 +709,17 @@ def show_validation_tab(results):
     with col3:
         quality = validation.get('overall_quality', 'Unknown')
         st.metric("Quality", quality.title())
+    with col4:
+        total = validation.get('total_issues_found', sum([
+            len(validation.get('formatting_issues', [])),
+            len(validation.get('content_issues', [])),
+            len(validation.get('structure_issues', []))
+        ]))
+        st.metric("Total Issues", total)
     
     st.divider()
     
-    # Issues by category
+    # Issues by category - LIST ALL
     issue_categories = [
         ('Formatting Issues', 'formatting_issues', '📝'),
         ('Content Issues', 'content_issues', '📄'),
@@ -440,9 +730,9 @@ def show_validation_tab(results):
         issues = validation.get(key, [])
         
         if issues:
-            st.subheader(f"{icon} {title} ({len(issues)})")
+            st.subheader(f"{icon} {title} ({len(issues)} issues)")
             
-            # Create table
+            # Create table - SHOW ALL ISSUES
             issue_data = []
             for issue in issues:
                 issue_data.append({
@@ -465,7 +755,8 @@ def show_validation_tab(results):
             st.dataframe(
                 df.style.apply(highlight_severity, axis=1),
                 use_container_width=True,
-                hide_index=True
+                hide_index=True,
+                height=min(400, len(issues) * 35 + 38)  # Adjust height based on number of issues
             )
 
 
@@ -480,7 +771,6 @@ def show_verification_tab(results):
         st.info("External verification was skipped")
         return
     
-    # Overall status
     status = verification.get('overall_status', 'UNKNOWN')
     confidence = verification.get('match_confidence', 0)
     
@@ -525,21 +815,8 @@ def show_verification_tab(results):
     else:
         st.success("✓ No sanctions hits")
     
-    # Show details
     with st.expander("Sanctions Check Details"):
         st.json(sanctions)
-    
-    # AI reasoning
-    st.divider()
-    st.subheader("🤖 AI Verification Analysis")
-    st.markdown(verification.get('ai_analysis', 'No analysis available'))
-    
-    # Discrepancies
-    discrepancies = verification.get('discrepancies', [])
-    if discrepancies:
-        st.subheader("⚠️ Discrepancies Found")
-        for disc in discrepancies:
-            st.warning(disc)
 
 
 def show_ai_analysis_tab(results):
@@ -586,24 +863,22 @@ def show_reports_tab(results):
     
     st.subheader("📄 Generate Compliance Reports")
     
-    # Report generation
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("### Executive Summary Report")
-        st.markdown("Management-ready summary with key findings and recommendations")
+        st.markdown("Management-ready summary")
         if st.button("Generate Executive Report"):
             generate_executive_report(results)
     
     with col2:
         st.markdown("### Detailed Compliance Report")
-        st.markdown("Complete analysis for compliance files")
+        st.markdown("Complete analysis")
         if st.button("Generate Detailed Report"):
             generate_detailed_report(results)
     
     st.divider()
     
-    # Export all data
     st.markdown("### Export Complete Analysis")
     
     if st.button("Export All Data (JSON)"):
@@ -615,9 +890,60 @@ def show_reports_tab(results):
         )
 
 
+def show_audit_trail_tab():
+    """Show audit trail"""
+    
+    st.subheader("📜 Audit Trail")
+    
+    audit_logger = st.session_state.audit_logger
+    
+    st.markdown(f"**Session ID:** {audit_logger.session_id}")
+    
+    # Get session logs
+    logs = audit_logger.get_session_logs()
+    
+    if not logs:
+        st.info("No audit logs available for this session")
+        return
+    
+    st.markdown(f"**Total Actions Logged:** {len(logs)}")
+    
+    # Summary
+    action_types = {}
+    for log in logs:
+        action_type = log.get('action_type', 'unknown')
+        action_types[action_type] = action_types.get(action_type, 0) + 1
+    
+    st.markdown("### Action Summary")
+    summary_df = pd.DataFrame([
+        {'Action Type': k, 'Count': v}
+        for k, v in action_types.items()
+    ])
+    st.dataframe(summary_df, use_container_width=True, hide_index=True)
+    
+    st.divider()
+    
+    # Detailed logs
+    st.markdown("### Detailed Log Entries")
+    
+    for i, log in enumerate(logs, 1):
+        with st.expander(f"[{i}] {log.get('timestamp', 'N/A')} - {log.get('action_type', 'unknown')}"):
+            st.json(log)
+    
+    # Generate audit report
+    if st.button("Generate Audit Report"):
+        report = audit_logger.generate_audit_report()
+        
+        st.download_button(
+            "Download Audit Report",
+            data=report,
+            file_name=f"audit_report_{audit_logger.session_id}.txt",
+            mime="text/plain"
+        )
+
+
 def generate_executive_report(results):
     """Generate executive summary report"""
-    # Implementation in fraud detector already generates this
     fraud = results['stages'].get('fraud_analysis', {})
     reports = fraud.get('reports', {})
     

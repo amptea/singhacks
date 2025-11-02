@@ -1,0 +1,134 @@
+================================================================================
+ENHANCED FRAUD DETECTION SYSTEM - QUICK SETUP GUIDE
+================================================================================
+
+STEP 1: INSTALL DEPENDENCIES
+----------------------------
+Run in terminal:
+    pip install -r requirements.txt
+
+This will install:
+- Core packages (Streamlit, Groq, PyMuPDF, etc.)
+- New packages (exifread, python-docx, firebase-admin, etc.)
+
+STEP 2: INSTALL TESSERACT OCR
+------------------------------
+WINDOWS:
+    1. Download: https://github.com/UB-Mannheim/tesseract/wiki
+    2. Run installer: tesseract-ocr-w64-setup-*.exe
+    3. Install to: C:\Program Files\Tesseract-OCR
+    4. System will auto-detect
+
+MAC:
+    brew install tesseract
+
+LINUX:
+    sudo apt-get install tesseract-ocr
+
+STEP 3: CONFIGURE API KEYS
+---------------------------
+Create a file named .env in the project root with:
+
+    # REQUIRED - Get at https://console.groq.com/keys
+    GROQ_API_KEY=your-groq-api-key-here
+    
+    # OPTIONAL - For advanced features
+    SERPAPI_KEY=your-serpapi-key-here
+    HUGGINGFACE_TOKEN=your-hf-token-here
+    FIREBASE_CREDENTIALS_PATH=/path/to/firebase-credentials.json
+
+STEP 4 (OPTIONAL): SETUP FIREBASE FOR AUDIT TRAIL
+--------------------------------------------------
+If you want cloud-based audit logging:
+
+    1. Go to: https://console.firebase.google.com/
+    2. Create new project
+    3. Enable Firestore Database
+    4. Go to: Project Settings > Service Accounts
+    5. Click "Generate New Private Key"
+    6. Save JSON file securely
+    7. Add path to .env:
+        FIREBASE_CREDENTIALS_PATH=/path/to/your-credentials.json
+
+NOTE: If you skip this, the system will automatically use local JSON logging
+      in the data/logs/audit_trail/ directory.
+
+STEP 5: RUN THE APPLICATION
+----------------------------
+Run in terminal:
+    streamlit run streamlit_app.py
+
+The app will open in your browser at: http://localhost:8501
+
+STEP 6: TEST WITH A DOCUMENT
+-----------------------------
+1. Upload any document (PDF, JPG, PNG, TXT, DOCX)
+2. Configure analysis settings in sidebar
+3. Click "Start Comprehensive Analysis"
+4. Review results in all tabs
+
+SUPPORTED DOCUMENT FORMATS:
+---------------------------
+✓ PDF - Scanned or native text
+✓ Images - JPG, PNG, TIFF, BMP
+✓ Text - TXT files
+✓ Word - DOCX documents
+
+NEW FEATURES:
+-------------
+✓ Multi-format document parsing
+✓ Advanced image analysis (AI detection, reverse search, tampering)
+✓ Complete validation (lists ALL issues)
+✓ Firestore audit trail (or local JSON fallback)
+
+TROUBLESHOOTING:
+----------------
+Problem: "Tesseract not found"
+Solution: Install Tesseract (see Step 2)
+
+Problem: "GROQ_API_KEY not found"
+Solution: Create .env file with your API key (see Step 3)
+
+Problem: "Firebase connection failed"
+Solution: Check credentials path or let system use local logging
+
+Problem: "Module not found"
+Solution: Run: pip install -r requirements.txt
+
+GETTING API KEYS:
+-----------------
+GROQ (Required - Free tier available):
+    https://console.groq.com/keys
+
+SERPAPI (Optional - 100 free searches/month):
+    https://serpapi.com/
+
+HUGGING FACE (Optional - Free tier available):
+    https://huggingface.co/settings/tokens
+
+FIREBASE (Optional - Free Spark plan):
+    https://console.firebase.google.com/
+
+PERFORMANCE TIPS:
+-----------------
+- Use DPI Scale 2-3 for balanced speed/quality
+- Disable image analysis for text-only documents
+- Higher DPI = better OCR but slower processing
+
+DOCUMENTATION:
+--------------
+- IMPLEMENTATION_GUIDE.md - Complete technical guide
+- FEATURES_SUMMARY.md - Quick feature reference
+- This file - Quick setup steps
+
+NEED HELP?
+----------
+1. Check IMPLEMENTATION_GUIDE.md for detailed info
+2. Review audit logs in data/logs/audit_trail/
+3. Ensure all dependencies are installed
+4. Verify API keys are correct
+
+================================================================================
+You're ready to go! Run: streamlit run streamlit_app.py
+================================================================================
+
