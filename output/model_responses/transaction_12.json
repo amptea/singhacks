@@ -1,8 +1,12 @@
 {
-  "risk_label": "Medium",
-  "score": 60,
+  "risk_label": "High",
+  "score": 85,
   "matched_rules": [
-    "Potential Sanctions Hit"
+    "Potential Sanctions Screening Hit",
+    "Simplified CDD Violation",
+    "Suspicious Transaction Reporting Violation"
   ],
-  "explanation": "The transaction triggered a potential sanctions hit, which is a significant red flag. However, the amount is low, the customer has a low risk rating, no EDD gap, and daily cash totals are well below structuring thresholds. These mitigating factors suggest a moderate overall risk rather than a high one."
+  "explanation": "The transaction is a high\u2011value cash withdrawal (S$23,862.98) from a high\u2011risk customer (originator country Russia, high risk rating). While enhanced due diligence (EDD) was performed, the sanctions screening returned a potential hit and no suspicion flag or STR was filed, violating clause\u202f6.2 and the STR obligations. Additionally, simplified CDD was applied to a high\u2011risk customer, breaching clause\u202f7.4. These compliance breaches elevate the risk to a high level.",
+  "transaction_id": "d508071d-1e95-4a25-a5cc-f936d7402bda",
+  "index": 12
 }

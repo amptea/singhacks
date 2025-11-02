@@ -1,11 +1,10 @@
 {
-  "risk_label": "High",
-  "score": 90,
+  "risk_label": "Medium",
+  "score": 50,
   "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating",
-    "EDD Required but Not Performed",
-    "High Daily Cash Total for Customer"
+    "KYC Due Date Exceeded"
   ],
-  "explanation": "The transaction exceeds the high amount threshold, involves a high\u2011risk customer, lacks required EDD, and the customer\u2019s daily cash total is well above the structuring limit. These factors collectively indicate a high likelihood of money\u2011laundering activity."
+  "explanation": "The transaction satisfies all travel\u2011rule, CDD, and sanctions screening requirements. However, the customer\u2019s KYC was last completed on 25/11/2022 and the due date was 24/05/2023, which is now overdue. This represents a compliance gap that elevates the risk to medium.",
+  "transaction_id": "c390f020-bc18-49b2-9d8c-7cfb080761fe",
+  "index": 16
 }

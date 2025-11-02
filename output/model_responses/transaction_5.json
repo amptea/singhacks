@@ -1,8 +1,12 @@
 {
-  "risk_label": "Medium",
-  "score": 70,
+  "risk_label": "High",
+  "score": 85,
   "matched_rules": [
-    "High Transaction Amount"
+    "EDD Not Performed for High Risk Customer",
+    "Sanctions Screening Not Performed",
+    "KYC Overdue"
   ],
-  "explanation": "The transaction amount (CHF 1,991,250.25) exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No other red\u2011flag rules are triggered: the customer risk rating is medium, sanctions screening returned none, EDD is not required, daily cash total is zero, and travel rule data is complete. While the large amount alone raises concern, the absence of additional risk factors suggests a medium overall risk."
+  "explanation": "The transaction involves a high\u2011risk corporate customer from China to Japan with a cash deposit of CNY\u202f6,267.57. The bank\u2019s risk assessment requires enhanced due diligence (EDD) for high\u2011risk customers, yet EDD was not performed. Sanctions screening was not conducted, and the customer\u2019s KYC was overdue (due date 7/10/2023). These breaches of clauses 4, 6.3, 6.19\u20116.26, 6.39\u20116.42, and 8 constitute significant AML/CFT compliance failures, warranting a high\u2011risk classification.",
+  "transaction_id": "01572a13-834c-4119-8463-cfbcb36f50a3",
+  "index": 5
 }

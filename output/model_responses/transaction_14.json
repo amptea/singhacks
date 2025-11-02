@@ -1,9 +1,15 @@
 {
-  "risk_label": "Medium",
-  "score": 65,
+  "risk_label": "High",
+  "score": 85,
   "matched_rules": [
-    "High Customer Risk Rating",
-    "High Daily Cash Total for Customer"
+    "Suspicion Determined After Transaction",
+    "KYC Not Completed Before Transaction",
+    "Missing Travel Rule Information for Cross-Border Transfer",
+    "Failure to File Suspicious Transaction Report",
+    "Potential Sanctions Hit",
+    "High Transaction Amount"
   ],
-  "explanation": "The transaction involves a customer with a high risk rating and exceeds the daily cash threshold, indicating potential structuring or layering activity. However, the amount is below the high\u2011value threshold, sanctions screening returned no hits, and EDD was performed, mitigating some risk. Overall, the combination of high customer risk and high daily cash total warrants a medium risk assessment."
+  "explanation": "The transaction breaches several MAS Notice 626 clauses: suspicion was flagged only after the transaction was booked (Clause\u202f6.2), KYC was not completed before the transaction (Clause\u202f6.3), cross\u2011border wire transfer details (originator address/ID) required for amounts >S$1,500 are missing (Clause\u202f11), a potential sanctions hit was identified (Clause\u202f6.39\u20116.42), and there is no evidence of a Suspicious Transaction Report being filed (Clause\u202f14). These combined violations elevate the risk to high.",
+  "transaction_id": "9db0c15a-8d81-4f97-80aa-32edecc7068d",
+  "index": 14
 }

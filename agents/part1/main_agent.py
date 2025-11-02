@@ -6,6 +6,9 @@ import os
 import time
 from typing import Any, Dict, List
 
+# Import currency conversion agent
+from currency_conversion_agent import main as currency_converter
+
 load_dotenv()
 
 # directory
@@ -18,7 +21,7 @@ OUTPUT_CSV = os.path.join(OUTPUT_DIR, "transactions_analysis_results.csv")
 MODEL_RESPONSES_DIR = os.path.join(OUTPUT_DIR, "model_responses")
 
 # config
-NUM_ROWS = 5  # limit number of rows to process for testing
+NUM_ROWS = 20  # limit number of rows to process for testing
 
 # key
 KEY = os.getenv("GROQ_API_KEY")
@@ -28,10 +31,11 @@ MODEL = "openai/gpt-oss-20b"
 TEMPERATURE = 0.1
 SLEEP_SECONDS = 0.08  # Rate limiting delay between API calls
 
-# import the dataframe and filter regulator column if it is MAS
-df = pd.read_csv(TRANSACTIONS_CSV)
+# Convert all currencies to SGD using currency conversion agent
+print("Converting currencies to SGD...")
+df = currency_converter()
 df2 = df[df['regulator'] == 'MAS'].reset_index(drop=True)
-
+print(f"Loaded {len(df2)} MAS transactions with amounts in SGD")
 
 def load_rules(rules_path: str) -> Dict[str, Any]:
 	"""Load rules JSON from the given path and return as a Python dict.
