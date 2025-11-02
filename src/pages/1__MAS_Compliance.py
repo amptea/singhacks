@@ -9,6 +9,8 @@ import os
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
+import html
+import streamlit.components.v1 as components
 
 # Page configuration
 st.set_page_config(
@@ -79,6 +81,128 @@ st.markdown("""
         color: #ffc107;
         font-weight: bold;
     }
+    .timeline-container {
+        position: relative;
+        padding: 20px 0;
+        margin: 20px 0;
+    }
+    .timeline-line {
+        position: absolute;
+        left: 30px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+        z-index: 1;
+    }
+    .timeline-node {
+        position: relative;
+        margin-bottom: 40px;
+        padding-left: 70px;
+        z-index: 2;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: 20px;
+        top: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #007bff;
+        z-index: 3;
+    }
+    .timeline-dot.completed {
+        background: #28a745;
+        border-color: #28a745;
+    }
+    .timeline-content {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .timeline-content:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .timeline-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #212529;
+    }
+    .timeline-team {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+    }
+    .timeline-description {
+        color: #6c757d;
+        margin: 10px 0;
+        line-height: 1.6;
+    }
+    .timeline-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-top: 10px;
+    }
+    .timeline-add-btn {
+        position: relative;
+        text-align: center;
+        padding: 10px 0;
+        cursor: pointer;
+        z-index: 2;
+        margin-left: 70px;
+    }
+    .timeline-add-line {
+        position: relative;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 70px;
+        cursor: pointer;
+        opacity: 0.3;
+        transition: opacity 0.2s;
+    }
+    .timeline-add-line:hover {
+        opacity: 1;
+    }
+    .timeline-add-circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #6c757d;
+        position: absolute;
+        left: 23px;
+        z-index: 3;
+    }
+    .timeline-add-line:hover .timeline-add-circle {
+        background: #007bff;
+        width: 16px;
+        height: 16px;
+        left: 22px;
+    }
+    .priority-IMMEDIATE { background: #dc3545; }
+    .priority-HIGH { background: #fd7e14; }
+    .priority-MEDIUM { background: #ffc107; color: #212529; }
+    .priority-ROUTINE { background: #28a745; }
+    .team-FRONT { background: #007bff; }
+    .team-COMPLIANCE { background: #6610f2; }
+    .team-LEGAL { background: #e83e8c; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -762,149 +886,28 @@ def main():
             all_steps = selected_tx['next_steps']
             my_steps = [step for step in all_steps if step['team'] == selected_department]
             
-            # Display department-specific tasks
-            st.subheader(f"✅ Your Tasks ({selected_department} Team)")
+            # Initialize session state for tasks
+            if 'custom_tasks' not in st.session_state:
+                st.session_state.custom_tasks = {}
             
-            if not my_steps:
-                st.info(f"No tasks assigned to {selected_department} team for this transaction.")
-            else:
-                st.markdown(f"**{len(my_steps)} task(s) assigned to your department**")
-                
-                for step in my_steps:
-                    step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
-                    
-                    # Check if task is completed
-                    is_completed = st.session_state.completed_tasks.get(step_key, False)
-                    
-                    with st.expander(
-                        f"{'✅' if is_completed else '⬜'} Step {step['step_number']}: {step['action']}",
-                        expanded=not is_completed
-                    ):
-                        col_a, col_b = st.columns([3, 1])
-                        
-                        with col_a:
-                            st.markdown(f"**Priority:** `{step['priority']}`")
-                            st.markdown(f"**Deadline:** {step['deadline']}")
-                            st.markdown(f"**Details:**")
-                            st.write(step['details'])
-                        
-                        with col_b:
-                            # Completion checkbox
-                            if st.checkbox(
-                                "Mark Complete",
-                                value=is_completed,
-                                key=f"complete_{step_key}"
-                            ):
-                                st.session_state.completed_tasks[step_key] = True
-                                st.success("✅ Completed!")
-                            else:
-                                st.session_state.completed_tasks[step_key] = False
+            # Get transaction-specific custom tasks
+            tx_id = selected_tx['transaction_id']
+            if tx_id not in st.session_state.custom_tasks:
+                st.session_state.custom_tasks[tx_id] = []
             
-            st.markdown("---")
+            # Merge original steps with custom tasks
+            combined_steps = all_steps + st.session_state.custom_tasks[tx_id]
+            # Sort by step number
+            combined_steps = sorted(combined_steps, key=lambda x: x.get('step_number', 999))
             
-            # Timeline View
-            st.subheader("🕐 Action Timeline - All Teams")
-            st.caption("View the complete sequence of actions across all departments")
-            
-            # Create a key for tracking current step in session state
-            timeline_key = f"current_step_{selected_tx['transaction_id']}"
-            if timeline_key not in st.session_state:
-                st.session_state[timeline_key] = 1
-            
-            # Find the first incomplete step
-            current_step_num = st.session_state[timeline_key]
-            for step in all_steps:
-                step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
-                if not st.session_state.completed_tasks.get(step_key, False):
-                    current_step_num = step['step_number']
-                    st.session_state[timeline_key] = current_step_num
-                    break
-            
-            # Display timeline
-            for step in all_steps:
-                step_key = f"{selected_tx['transaction_id']}_{step['step_number']}"
-                is_completed = st.session_state.completed_tasks.get(step_key, False)
-                is_current = (step['step_number'] == current_step_num) and not is_completed
-                is_future = step['step_number'] > current_step_num
-                
-                # Determine styling
-                if is_completed:
-                    border_color = "#28a745"  # Green
-                    bg_color = "#d4edda"
-                    icon = "✅"
-                    opacity = "0.7"
-                elif is_current:
-                    border_color = get_team_color(step['team'])
-                    bg_color = "#fff3cd"
-                    icon = "🔄"  # Rotating effect
-                    opacity = "1.0"
-                else:
-                    border_color = "#6c757d"  # Gray
-                    bg_color = "#f8f9fa"
-                    icon = "⏳"
-                    opacity = "0.5"
-                
-                # Timeline entry with animation for current step
-                timeline_html = f"""
-                <div style="
-                    border-left: 4px solid {border_color};
-                    padding-left: 20px;
-                    margin-left: 20px;
-                    margin-bottom: 20px;
-                    background-color: {bg_color};
-                    border-radius: 5px;
-                    padding: 15px;
-                    opacity: {opacity};
-                    {'animation: pulse 2s infinite;' if is_current else ''}
-                ">
-                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                        <span style="font-size: 24px; margin-right: 10px;">{icon}</span>
-                        <span style="font-size: 20px; font-weight: bold;">Step {step['step_number']}</span>
-                        <span style="margin-left: auto; background-color: {get_team_color(step['team'])}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px;">
-                            {step['team']}
-                        </span>
-                        <span style="margin-left: 10px; background-color: {get_priority_color(step['priority'])}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px;">
-                            {step['priority']}
-                        </span>
-                    </div>
-                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">
-                        {step['action']}
-                    </div>
-                    <div style="font-size: 14px; color: #666; margin-bottom: 8px;">
-                        ⏰ Deadline: {step['deadline']}
-                    </div>
-                    <div style="font-size: 14px; color: #444;">
-                        {step['details']}
-                    </div>
-                </div>
-                """
-                
-                st.markdown(timeline_html, unsafe_allow_html=True)
-            
-            # Add CSS for pulse animation
-            st.markdown("""
-            <style>
-            @keyframes pulse {
-                0% {
-                    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-                }
-                50% {
-                    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
-                }
-                100% {
-                    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
-                }
-            }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            st.markdown("---")
+            # Show ALL tasks in timeline, but filter for department-specific metrics
+            my_combined_steps = [step for step in combined_steps if step['team'] == selected_department]
             
             # Summary statistics
             st.subheader("📊 Progress Summary")
             
-            completed_count = sum(1 for step in all_steps if st.session_state.completed_tasks.get(f"{selected_tx['transaction_id']}_{step['step_number']}", False))
-            total_steps = len(all_steps)
+            completed_count = sum(1 for step in combined_steps if st.session_state.completed_tasks.get(f"{tx_id}_{step['step_number']}", False))
+            total_steps = len(combined_steps)
             progress_pct = (completed_count / total_steps * 100) if total_steps > 0 else 0
             
             col_x, col_y, col_z = st.columns(3)
@@ -916,9 +919,136 @@ def main():
                 st.metric("Progress", f"{progress_pct:.0f}%")
             
             with col_z:
-                st.metric("Current Step", f"Step {current_step_num}")
+                my_completed = sum(1 for step in my_combined_steps if st.session_state.completed_tasks.get(f"{tx_id}_{step['step_number']}", False))
+                st.metric(f"{selected_department} Steps", f"{my_completed}/{len(my_combined_steps)}")
             
             st.progress(progress_pct / 100)
+            
+            st.markdown("---")
+            
+            # Timeline View - Show ALL tasks from ALL departments
+            st.subheader(f"📍 Complete Timeline (Viewing as {selected_department})")
+            st.caption("All departments' tasks are shown. You can add tasks for any team.")
+            
+            # Display timeline - USE combined_steps instead of my_combined_steps to show ALL tasks
+            if not combined_steps:
+                st.info(f"No tasks found for this transaction.")
+            else:
+                # Display timeline using Streamlit containers
+                for idx, step in enumerate(combined_steps):
+                    step_key = f"{tx_id}_{step['step_number']}"
+                    is_completed = st.session_state.completed_tasks.get(step_key, False)
+                    
+                    # Safe getters for optional fields
+                    action = str(step.get('action', 'No action'))
+                    description = str(step.get('description', step.get('action', 'No description')))
+                    estimated_time = str(step.get('estimated_time', 'TBD'))
+                    owner = str(step.get('owner', 'Unassigned'))
+                    team = str(step.get('team', 'N/A'))
+                    priority = str(step.get('priority', 'N/A'))
+                    step_num = step.get('step_number', 0)
+                    
+                    # Color coding
+                    if is_completed:
+                        status_color = "🟢"
+                    else:
+                        status_color = "🔵"
+                    
+                    priority_colors = {
+                        'IMMEDIATE': '🔴',
+                        'HIGH': '🟠',
+                        'MEDIUM': '🟡',
+                        'ROUTINE': '🟢'
+                    }
+                    priority_icon = priority_colors.get(priority, '⚪')
+                    
+                    # Display node
+                    with st.container():
+                        col1, col2 = st.columns([1, 20])
+                        with col1:
+                            st.markdown(f"### {status_color}")
+                        with col2:
+                            st.markdown(f"**Step {step_num}: {action}** | Team: **{team}**")
+                            st.markdown(f"*{description}*")
+                            st.caption(f"{priority_icon} Priority: {priority} | ⏱️ Est. Time: {estimated_time} | 👤 Owner: {owner}")
+                        
+                        # Checkbox for completion
+                        is_completed = st.checkbox(
+                            f"Mark as complete",
+                            value=st.session_state.completed_tasks.get(step_key, False),
+                            key=f"check_{step_key}"
+                        )
+                        st.session_state.completed_tasks[step_key] = is_completed
+                        
+                        # Add task button
+                        if st.button(f"➕ Add Task After This Step", key=f"btn_add_{step_key}"):
+                            st.session_state[f'show_add_form_{step_key}'] = True
+                            st.rerun()
+                        
+                        # Show add task form if button clicked
+                        if st.session_state.get(f'show_add_form_{step_key}', False):
+                            with st.form(key=f"form_{step_key}"):
+                                st.markdown(f"**Add New Task After Step {step_num}**")
+                                
+                                new_action = st.text_input("Task Title", key=f"action_{step_key}")
+                                new_description = st.text_area("Description", key=f"desc_{step_key}")
+                                
+                                form_col1, form_col2, form_col3, form_col4 = st.columns(4)
+                                
+                                with form_col1:
+                                    new_team = st.selectbox(
+                                        "Assign to Team",
+                                        options=['FRONT', 'COMPLIANCE', 'LEGAL'],
+                                        index=['FRONT', 'COMPLIANCE', 'LEGAL'].index(selected_department),
+                                        key=f"team_{step_key}"
+                                    )
+                                
+                                with form_col2:
+                                    new_priority = st.selectbox(
+                                        "Priority",
+                                        options=['IMMEDIATE', 'HIGH', 'MEDIUM', 'ROUTINE'],
+                                        key=f"priority_{step_key}"
+                                    )
+                                
+                                with form_col3:
+                                    new_est_time = st.text_input("Estimated Time", value="TBD", key=f"time_{step_key}")
+                                
+                                with form_col4:
+                                    new_owner = st.text_input("Owner", value="Team Member", key=f"owner_{step_key}")
+                                
+                                submit_col1, submit_col2 = st.columns(2)
+                                
+                                with submit_col1:
+                                    submitted = st.form_submit_button("Add Task", type="primary")
+                                
+                                with submit_col2:
+                                    cancelled = st.form_submit_button("Cancel")
+                                
+                                if submitted and new_action:
+                                    # Calculate new step number (insert after current step)
+                                    new_step_num = step['step_number'] + 0.5
+                                    
+                                    new_task = {
+                                        'step_number': new_step_num,
+                                        'action': new_action,
+                                        'description': new_description,
+                                        'team': new_team,
+                                        'priority': new_priority,
+                                        'estimated_time': new_est_time,
+                                        'owner': new_owner,
+                                        'custom': True
+                                    }
+                                    
+                                    st.session_state.custom_tasks[tx_id].append(new_task)
+                                    st.session_state[f'show_add_form_{step_key}'] = False
+                                    st.rerun()
+                                
+                                if cancelled:
+                                    st.session_state[f'show_add_form_{step_key}'] = False
+                                    st.rerun()
+                        
+                        st.divider()
+
     
     with tab4:
         st.header("Clause-by-Clause Comparison")

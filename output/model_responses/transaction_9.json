@@ -1,12 +1,12 @@
 {
-  "risk_label": "Medium",
-  "score": 55,
+  "risk_label": "Low",
+  "score": 20,
   "matched_rules": [
     "High Transaction Amount",
-    "Potential Sanctions Hit",
-    "Outdated KYC"
+    "Cross-Border Transfer",
+    "Sanctions Screening"
   ],
-  "explanation": "The wire transfer exceeds the S$20,000 threshold for non\u2011relationship customers, yet the KYC was last completed over a year ago, violating the requirement for recent CDD. Additionally, sanctions screening returned a potential hit, but no suspicious transaction report was filed, breaching the sanctions screening and STR obligations under MAS Notice 626. These infractions elevate the risk to a medium level.",
+  "explanation": "The transaction meets all applicable AML/CFT requirements: CDD was performed, KYC is recent, sanctions screening was conducted and documented, travel rule compliance is complete, and no suspicion or structuring issues were identified. No rule violations were found, resulting in a low risk assessment.",
   "transaction_id": "dc7425bc-fcce-49fa-b58f-7cd1dbf27319",
   "index": 9
 }

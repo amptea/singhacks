@@ -1,10 +1,8 @@
 {
   "risk_label": "Low",
   "score": 20,
-  "matched_rules": [
-    "Potential Sanctions Screening"
-  ],
-  "explanation": "The transaction meets all applicable AML/CFT requirements: CDD and EDD were performed for a PEP customer, sanctions screening was completed (though flagged as potential), travel\u2011rule information is complete, and no suspicious activity was identified. No regulatory violations were detected, resulting in a low\u2011risk assessment.",
+  "matched_rules": [],
+  "explanation": "All required CDD, EDD, sanctions screening, travel rule, and record\u2011keeping obligations have been satisfied. The transaction is a high\u2011value cross\u2011border FX conversion for a low\u2011risk PEP customer with up\u2011to\u2011date KYC and no suspicion flags. No clause violations were identified, resulting in a low\u2011risk assessment.",
   "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
   "index": 1
 }

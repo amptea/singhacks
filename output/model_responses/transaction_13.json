@@ -2,11 +2,10 @@
   "risk_label": "Medium",
   "score": 55,
   "matched_rules": [
-    "High Transaction Amount",
-    "Potential Sanctions Hit",
-    "Outdated KYC"
+    "KYC Overdue",
+    "Potential Sanctions Screening"
   ],
-  "explanation": "The transaction exceeds the S$20,000 threshold for a non\u2011relationship customer, yet the KYC was last completed over three years ago and the due date has passed, indicating a lapse in ongoing monitoring. The sanctions screening returned a potential hit, raising concern. No direct violation of travel\u2011rule or value\u2011transfer requirements was found, but the outdated KYC and potential sanctions flag elevate the risk to medium.",
+  "explanation": "The transaction involves a Medium\u2011risk customer with a KYC that expired on 13/08/2023, yet the transaction occurred on 07/09/2025, indicating overdue due diligence. Additionally, sanctions screening returned a potential hit, which requires further investigation. No other AML/CFT clauses are breached, so the overall risk is assessed as Medium.",
   "transaction_id": "125871f9-cc28-48b3-81f4-0515fd33f5cb",
   "index": 13
 }

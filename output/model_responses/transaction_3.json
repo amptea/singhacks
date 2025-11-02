@@ -2,10 +2,10 @@
   "risk_label": "Medium",
   "score": 55,
   "matched_rules": [
-    "Potential Sanctions Hit",
-    "High-Risk Country without EDD Required"
+    "Risk Assessment EDD Required",
+    "New Product Risk Assessment Missing"
   ],
-  "explanation": "The transaction involved a customer from a high\u2011risk jurisdiction (Russia) but the bank did not flag enhanced due diligence as required, and sanctions screening returned a potential hit. The transaction proceeded without filing a suspicious transaction report, indicating medium\u2011level AML/CFT risk.",
+  "explanation": "The transaction involves a high\u2011risk jurisdiction (Russia) and a medium\u2011risk customer, yet the risk assessment indicates that enhanced due diligence (EDD) was not required (edd_required=false) despite the high\u2011risk country, constituting a violation of Clause\u202f4. Additionally, the product is marked as complex (product_complex=true) but there is no evidence of a prior risk assessment for the new product, violating Clause\u202f5. No other AML/CFT clauses are breached, so the overall risk is assessed as medium.",
   "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
   "index": 3
 }

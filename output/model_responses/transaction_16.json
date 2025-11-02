@@ -1,10 +1,8 @@
 {
-  "risk_label": "Medium",
-  "score": 50,
-  "matched_rules": [
-    "KYC Due Date Exceeded"
-  ],
-  "explanation": "The transaction satisfies all travel\u2011rule, CDD, and sanctions screening requirements. However, the customer\u2019s KYC was last completed on 25/11/2022 and the due date was 24/05/2023, which is now overdue. This represents a compliance gap that elevates the risk to medium.",
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "All relevant clauses (risk assessment, CDD, enhanced CDD, wire transfer travel rule, value transfer, record keeping, suspicious transaction reporting) are satisfied. No sanctions hits, no suspicion flags, KYC and EDD are up to date, and travel rule compliance is indicated. Therefore the transaction poses no identified AML/CFT risk.",
   "transaction_id": "c390f020-bc18-49b2-9d8c-7cfb080761fe",
   "index": 16
 }

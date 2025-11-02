@@ -1,8 +1,11 @@
 {
-  "risk_label": "Low",
-  "score": 20,
-  "matched_rules": [],
-  "explanation": "All relevant clauses (CDD, risk assessment, wire transfer travel rule, sanctions screening, value transfer rules, enhanced CDD, simplified CDD, new product assessment, record keeping, suspicious transaction reporting) are satisfied. No violations detected.",
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "High Transaction Amount",
+    "KYC Outdated"
+  ],
+  "explanation": "The transaction is a high\u2011value cross\u2011border wire transfer (over S$20,000) and the KYC record is more than 12 months old, violating the requirement that KYC be recent for such transactions. No other rule violations were detected, so the risk is assessed as medium.",
   "transaction_id": "135cef35-c054-46f0-8d8d-daedb7429de4",
   "index": 0
 }

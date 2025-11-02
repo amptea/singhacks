@@ -1,14 +1,11 @@
 {
-  "risk_label": "Low",
-  "score": 20,
+  "risk_label": "Medium",
+  "score": 55,
   "matched_rules": [
-    "Risk Assessment",
-    "Customer Due Diligence",
-    "Enhanced Customer Due Diligence",
-    "Wire Transfer Travel Rule",
-    "Sanctions Screening"
+    "Potential Sanctions Hit",
+    "Suspicious Transaction Reporting Not Filed"
   ],
-  "explanation": "The transaction is a high\u2011value FX conversion involving a high\u2011risk, PEP customer from Japan to Vietnam. All required CDD, EDD, and travel\u2011rule compliance have been performed (KYC completed, EDD performed, originator/beneficiary details provided, travel rule complete). No suspicion has been determined and sanctions screening shows only a potential hit, not a confirmed hit. Therefore the transaction complies with all relevant MAS Notice 626 clauses and is assessed as low risk.",
+  "explanation": "The transaction involves a high\u2011risk PEP customer and a potential sanctions screening hit. While EDD was performed and the travel rule was complied with, the potential sanctions hit was not followed by an STR filing, violating the suspicious transaction reporting requirement. No other rule violations were detected, so the overall risk is assessed as medium.",
   "transaction_id": "015e2202-1c97-4f0f-9756-2c8fc85e7ac9",
   "index": 4
 }

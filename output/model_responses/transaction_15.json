@@ -1,8 +1,12 @@
 {
-  "risk_label": "Low",
-  "score": 20,
-  "matched_rules": [],
-  "explanation": "All AML/CFT controls applicable to the transaction are satisfied: the customer is a medium\u2011risk PEP with EDD performed, KYC completed, and all required screening and travel\u2011rule information are present. No suspicious activity or regulatory breaches were identified, resulting in a low\u2011risk assessment.",
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "Clause 6.3 CDD Timing Violation",
+    "Clause 6.19 KYC Due Date Violation",
+    "Clause 8 Enhanced CDD Source of Wealth Missing"
+  ],
+  "explanation": "The transaction triggers several compliance gaps: KYC was recorded after the booking date and the KYC due date precedes the last completed KYC, violating the timing requirements of Clause\u202f6.3 and Clause\u202f6.19. Additionally, for a PEP the Enhanced CDD (Clause\u202f8) requires documented source of wealth and funds, which is not present. These issues elevate the risk to a medium level.",
   "transaction_id": "4b3a34d7-1c0d-45f7-94c0-e8706c33fff5",
   "index": 15
 }

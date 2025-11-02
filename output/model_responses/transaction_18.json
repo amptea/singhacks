@@ -2,10 +2,10 @@
   "risk_label": "Medium",
   "score": 55,
   "matched_rules": [
-    "customer_due_diligence.clause_6.sub_clauses.6.3",
-    "customer_due_diligence.clause_6.sub_clauses.6.2"
+    "KYC Overdue for High Risk Customer",
+    "Potential Sanctions Screening Hit"
   ],
-  "explanation": "The transaction involves a high\u2011risk customer with a KYC that is overdue (last completed 22/4/2021, due 22/4/2023) and a potential sanctions screening hit. No other AML/CFT requirements are breached. The overdue KYC and potential sanctions flag raise the risk to medium.",
+  "explanation": "The transaction involves a high\u2011risk customer whose KYC was last completed on 22/4/2021, well beyond the due date of 22/4/2023, violating ongoing monitoring requirements. The sanctions screening returned a potential hit, which requires further investigation. No other major clause violations were identified, so the overall risk is assessed as medium.",
   "transaction_id": "1b2e5d4b-0ea1-465f-8b0a-6af8c4a01868",
   "index": 18
 }

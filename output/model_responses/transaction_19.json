@@ -1,8 +1,8 @@
 {
   "risk_label": "Low",
-  "score": 10,
+  "score": 20,
   "matched_rules": [],
-  "explanation": "The transaction complies with all relevant MAS Notice 626 clauses. It is a cross\u2011border wire transfer below the S$1,500 threshold for travel\u2011rule requirements, with all required originator/beneficiary details present and travel\u2011rule completion flagged. No sanctions hits, no suspicion flags, and all CDD and EDD requirements are satisfied for a low\u2011risk customer. No rule violations were identified.",
+  "explanation": "The transaction is a low\u2011risk cash deposit of EUR\u202f5,708.34 from a domiciliary company in France to a beneficiary in Thailand. All relevant AML/CFT controls\u2014customer identification, KYC, sanctions screening, and simplified CDD\u2014have been satisfied. No suspicious activity, no high\u2011risk jurisdiction, no PEP, and no digital\u2011asset exposure. Therefore no rule violations are detected, resulting in a low\u2011risk assessment.",
   "transaction_id": "b9e32ea8-e895-4172-970b-b174fe4fb4eb",
   "index": 19
 }

@@ -1,12 +1,12 @@
 {
   "risk_label": "High",
-  "score": 85,
+  "score": 80,
   "matched_rules": [
-    "Potential Sanctions Screening Hit",
-    "Simplified CDD Violation",
-    "Suspicious Transaction Reporting Violation"
+    "CDD Not Recent for High-Value Transaction",
+    "KYC Overdue for High-Risk Customer",
+    "Missing Travel Rule Information for Cross-Border Wire Transfer"
   ],
-  "explanation": "The transaction is a high\u2011value cash withdrawal (S$23,862.98) from a high\u2011risk customer (originator country Russia, high risk rating). While enhanced due diligence (EDD) was performed, the sanctions screening returned a potential hit and no suspicion flag or STR was filed, violating clause\u202f6.2 and the STR obligations. Additionally, simplified CDD was applied to a high\u2011risk customer, breaching clause\u202f7.4. These compliance breaches elevate the risk to a high level.",
+  "explanation": "The transaction exceeds the S$20,000 threshold for a non-relationship customer, but the customer\u2019s KYC was last completed almost three years ago and is overdue, violating the ongoing monitoring and CDD requirements. Additionally, the cross\u2011border wire transfer lacks the mandatory originator address/ID information required for amounts above S$1,500, breaching the Travel Rule provisions. These multiple compliance gaps elevate the risk to high.",
   "transaction_id": "d508071d-1e95-4a25-a5cc-f936d7402bda",
   "index": 12
 }

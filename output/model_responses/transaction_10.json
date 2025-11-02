@@ -1,10 +1,11 @@
 {
   "risk_label": "Medium",
-  "score": 55,
+  "score": 60,
   "matched_rules": [
-    "KYC Due Date Overdue"
+    "Travel Rule Incomplete",
+    "KYC Overdue"
   ],
-  "explanation": "The transaction is a high\u2011value domestic wire transfer between individuals in Vietnam. The bank has performed CDD and EDD, and all required information for the wire transfer is present. However, the KYC data for the customer is overdue (last completed 28/12/2020, due 28/12/2022), which violates the ongoing monitoring requirement of Clause\u202f6.19\u20116.26. No other rule violations were detected, so the overall risk is assessed as Medium.",
+  "explanation": "The transaction is a cross\u2011border wire transfer of S$307,132.95 (CHF 307,132.95) which exceeds the S$1,500 threshold for the Travel Rule. The record shows travel_rule_complete=false and no originator residential address or ID, violating clause\u202f11 requirements. Additionally, the customer\u2019s KYC was last completed on 28/12/2020, with a due date of 28/12/2022, meaning the CDD is overdue for a non\u2011relationship customer, violating clause\u202f6.19\u20116.26. These regulatory breaches elevate the transaction to a medium risk level. No PEP or sanctions hits were identified, and the transaction otherwise meets other CDD and screening obligations.",
   "transaction_id": "0a117a64-3896-407e-b136-fdc3cad7d509",
   "index": 10
 }

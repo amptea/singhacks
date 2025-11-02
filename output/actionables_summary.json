@@ -1,325 +1,111 @@
 {
-  "generated_at": "2025-11-01 18:55:14",
-  "total_high_risk_transactions": 3,
+  "generated_at": "2025-11-02 11:13:04",
+  "total_high_risk_transactions": 1,
   "transactions": [
     {
       "next_steps": [
         {
           "step_number": 1,
-          "action": "Freeze the transaction and prevent further activity",
+          "action": "Freeze the transaction and notify the customer",
           "team": "FRONT",
           "priority": "IMMEDIATE",
-          "details": "To prevent potential money laundering and comply with MAS regulations, it's crucial to immediately freeze the transaction and prevent any further activity related to this transaction. This action ensures that no additional funds can be moved or laundered while the investigation is ongoing.",
+          "details": "To prevent potential money laundering, the transaction must be frozen immediately. The customer should be notified of the freeze and the reason for it, which is to comply with MAS Notice 626 and AML/CFT regulations. This action is necessary to prevent further suspicious activity and to allow for a thorough investigation.",
           "deadline": "Within 1 hour"
         },
         {
           "step_number": 2,
-          "action": "Conduct an enhanced customer due diligence review",
+          "action": "Conduct a thorough investigation of the transaction",
           "team": "COMPLIANCE",
           "priority": "HIGH",
-          "details": "Given the high-risk nature of the transaction and the involvement of a PEP, an enhanced due diligence review is necessary to understand the customer's risk profile better and to verify the legitimacy of the transaction. This includes reviewing KYC documents, transaction history, and any other relevant information.",
+          "details": "The compliance team should conduct a thorough investigation of the transaction, including reviewing the customer's KYC status, transaction history, and any other relevant information. This investigation will help determine if the transaction is indeed suspicious and if it poses a risk of money laundering. The team should also review sanctions screening results and check for any pattern indicators such as structuring or unusual activity.",
           "deadline": "Within 24 hours"
         },
         {
           "step_number": 3,
-          "action": "Investigate sanctions screening results and verify the potential hit",
+          "action": "Review and verify customer KYC information",
           "team": "COMPLIANCE",
           "priority": "HIGH",
-          "details": "The potential sanctions hit flagged during the screening process needs to be thoroughly investigated. This involves verifying the accuracy of the screening results, checking for any updates in sanctions lists, and determining if the transaction indeed involves a sanctioned entity or individual.",
+          "details": "The compliance team should review and verify the customer's KYC information to ensure it is up-to-date and accurate. This includes checking the customer's identity, address, and other relevant information. If the KYC information is incomplete or outdated, the team should request updated information from the customer.",
           "deadline": "Within 24 hours"
         },
         {
           "step_number": 4,
-          "action": "File a Suspicious Transaction Report (STR) with the relevant authorities",
+          "action": "Determine if a suspicious transaction report (STR) is required",
           "team": "COMPLIANCE",
           "priority": "HIGH",
-          "details": "Since the transaction has been flagged for suspicion of money laundering and there was a failure to file an STR initially, it is essential to file a report with the relevant authorities as soon as possible. This report should include all relevant details about the transaction, the customer, and the reasons for suspicion.",
+          "details": "Based on the investigation and review of the transaction, the compliance team should determine if a suspicious transaction report (STR) is required. If the transaction is deemed suspicious and poses a risk of money laundering, an STR should be filed with the relevant authorities.",
           "deadline": "Within 24 hours"
         },
         {
           "step_number": 5,
-          "action": "Review and update internal policies and procedures for AML/CFT",
-          "team": "COMPLIANCE",
-          "priority": "MEDIUM",
-          "details": "The breach in AML compliance, specifically the failure to file an STR and the potential violation of clauses 6.2, 6.39–6.42, and 14 of MAS Notice 626, indicates a need to review and possibly update internal policies and procedures. This ensures that similar breaches do not occur in the future and that the institution remains compliant with MAS regulations.",
-          "deadline": "Within 3 days"
-        },
-        {
-          "step_number": 6,
-          "action": "Provide training to relevant staff on updated procedures and AML/CFT regulations",
+          "action": "Document and close the case",
           "team": "COMPLIANCE",
           "priority": "ROUTINE",
-          "details": "To prevent future compliance breaches, it's essential to provide training to the relevant staff members on the updated procedures and to refresh their knowledge of AML/CFT regulations, including the importance of timely filing of STRs and adherence to sanctions screening protocols.",
+          "details": "Once the investigation is complete and any necessary actions have been taken, the compliance team should document the case and close it. This includes updating the customer's records and ensuring that all relevant information is retained for future reference.",
           "deadline": "Within 1 week"
         }
       ],
-      "recommended_outcome": "Transaction to be reported to the authorities, customer relationship to be reviewed for potential termination, and internal controls to be strengthened to prevent similar incidents.",
-      "estimated_resolution_time": "7-10 working days",
-      "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
-      "risk_score": 85,
-      "index": 1
-    },
-    {
-      "next_steps": [
-        {
-          "step_number": 1,
-          "action": "Freeze the transaction and prevent further activity",
-          "team": "FRONT",
-          "priority": "IMMEDIATE",
-          "details": "To prevent potential money laundering, it's crucial to immediately freeze the transaction to prevent any further movement of funds. This action is necessary to mitigate risk and comply with MAS regulations.",
-          "deadline": "Within 1 hour"
-        },
-        {
-          "step_number": 2,
-          "action": "Conduct an initial review of the customer's risk profile and transaction history",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "The compliance team should review the customer's risk rating, KYC status, and transaction history to identify any patterns or red flags that may indicate money laundering activity. This review will inform the next steps in the investigation.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 3,
-          "action": "Perform sanctions screening on the transaction parties",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "Sanctions screening is a critical component of AML/CFT compliance. The compliance team must perform sanctions screening on the transaction parties to ensure they are not listed on any sanctions lists. This step is necessary to comply with MAS regulations and prevent potential sanctions breaches.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 4,
-          "action": "Update the customer's KYC information and perform ongoing monitoring",
-          "team": "FRONT",
-          "priority": "HIGH",
-          "details": "The customer's KYC information is outdated, which is a breach of MAS Notice 626 requirements. The front office staff must update the customer's KYC information and perform ongoing monitoring to ensure compliance with regulatory requirements.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 5,
-          "action": "Investigate the transaction for potential structuring or unusual activity",
-          "team": "COMPLIANCE",
-          "priority": "MEDIUM",
-          "details": "The compliance team should investigate the transaction to determine if it exhibits any characteristics of structuring or unusual activity. This step is necessary to identify potential money laundering patterns and comply with AML/CFT regulations.",
-          "deadline": "Within 3 days"
-        },
-        {
-          "step_number": 6,
-          "action": "File a suspicious transaction report (STR) with the Financial Intelligence Unit",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "Given the high-risk nature of the transaction, it is necessary to file an STR with the Financial Intelligence Unit. This step is required to comply with MAS regulations and report potential money laundering activity.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 7,
-          "action": "Document the investigation and outcome",
-          "team": "COMPLIANCE",
-          "priority": "ROUTINE",
-          "details": "The compliance team must document the investigation, including all steps taken and the outcome. This documentation is necessary for audit and regulatory purposes, and to demonstrate compliance with MAS regulations.",
-          "deadline": "Within 1 week"
-        }
-      ],
-      "recommended_outcome": "Reject the transaction and file a suspicious transaction report",
-      "estimated_resolution_time": "5-7 days",
+      "recommended_outcome": "File a suspicious transaction report (STR) if the transaction is deemed suspicious and poses a risk of money laundering",
+      "estimated_resolution_time": "3-5 days",
       "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
       "risk_score": 85,
       "index": 2
-    },
-    {
-      "next_steps": [
-        {
-          "step_number": 1,
-          "action": "Freeze the transaction and prevent further activity",
-          "team": "FRONT",
-          "priority": "IMMEDIATE",
-          "details": "To prevent potential money laundering and comply with MAS Notice 626, it's crucial to immediately freeze the transaction and prevent any further activity related to the flagged transaction. This action ensures that no additional funds are moved or transactions are conducted that could exacerbate the potential money laundering risk.",
-          "deadline": "Within 1 hour"
-        },
-        {
-          "step_number": 2,
-          "action": "Conduct an enhanced customer due diligence review",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "Given the high-risk nature of the transaction and the potential sanctions hit, an enhanced due diligence review is necessary to understand the customer's activities, sources of funds, and connections to sanctioned entities or individuals. This review will help in assessing the legitimacy of the transaction and the customer's risk profile.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 3,
-          "action": "Investigate the transaction and gather additional information",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "The compliance team should investigate the transaction details, including the purpose of the fund subscription, the involvement of any intermediaries, and the ultimate beneficial owners. This step is essential for understanding the transaction's context and identifying any potential red flags or indicators of money laundering.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 4,
-          "action": "File a suspicious transaction report (STR) with the relevant authorities",
-          "team": "COMPLIANCE",
-          "priority": "HIGH",
-          "details": "Since the transaction has been flagged for potential sanctions hits and there are reasonable grounds for suspicion, filing an STR is mandatory under MAS Notice 626. This report will inform the authorities about the suspicious activity, allowing for further investigation and potential action.",
-          "deadline": "Within 24 hours"
-        },
-        {
-          "step_number": 5,
-          "action": "Review and update the customer's KYC status and risk rating",
-          "team": "COMPLIANCE",
-          "priority": "MEDIUM",
-          "details": "Following the investigation and the filing of the STR, the customer's KYC status and risk rating should be reviewed and updated accordingly. This ensures that the customer's profile reflects the latest information and risk assessment, which is crucial for ongoing monitoring and future transaction screening.",
-          "deadline": "Within 3 days"
-        },
-        {
-          "step_number": 6,
-          "action": "Document all actions taken and decisions made",
-          "team": "COMPLIANCE",
-          "priority": "ROUTINE",
-          "details": "Maintaining detailed records of all actions taken, decisions made, and justifications for those decisions is essential for audit trails and demonstrating compliance with regulatory requirements. This documentation will also be useful for future reference and in case of regulatory inquiries.",
-          "deadline": "Within 1 week"
-        }
-      ],
-      "recommended_outcome": "Escalate to the authorities for further investigation and consider terminating the business relationship if the customer is found to be involved in money laundering activities",
-      "estimated_resolution_time": "5-7 working days",
-      "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-      "risk_score": 85,
-      "index": 3
     }
   ],
   "team_breakdown": {
     "FRONT": {
-      "total_actions": 4,
+      "total_actions": 1,
       "actions": [
         {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
-          "risk_score": 85,
-          "step": {
-            "step_number": 1,
-            "action": "Freeze the transaction and prevent further activity",
-            "team": "FRONT",
-            "priority": "IMMEDIATE",
-            "details": "To prevent potential money laundering and comply with MAS regulations, it's crucial to immediately freeze the transaction and prevent any further activity related to this transaction. This action ensures that no additional funds can be moved or laundered while the investigation is ongoing.",
-            "deadline": "Within 1 hour"
-          }
-        },
-        {
           "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
           "risk_score": 85,
           "step": {
             "step_number": 1,
-            "action": "Freeze the transaction and prevent further activity",
+            "action": "Freeze the transaction and notify the customer",
             "team": "FRONT",
             "priority": "IMMEDIATE",
-            "details": "To prevent potential money laundering, it's crucial to immediately freeze the transaction to prevent any further movement of funds. This action is necessary to mitigate risk and comply with MAS regulations.",
-            "deadline": "Within 1 hour"
-          }
-        },
-        {
-          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
-          "risk_score": 85,
-          "step": {
-            "step_number": 4,
-            "action": "Update the customer's KYC information and perform ongoing monitoring",
-            "team": "FRONT",
-            "priority": "HIGH",
-            "details": "The customer's KYC information is outdated, which is a breach of MAS Notice 626 requirements. The front office staff must update the customer's KYC information and perform ongoing monitoring to ensure compliance with regulatory requirements.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 1,
-            "action": "Freeze the transaction and prevent further activity",
-            "team": "FRONT",
-            "priority": "IMMEDIATE",
-            "details": "To prevent potential money laundering and comply with MAS Notice 626, it's crucial to immediately freeze the transaction and prevent any further activity related to the flagged transaction. This action ensures that no additional funds are moved or transactions are conducted that could exacerbate the potential money laundering risk.",
+            "details": "To prevent potential money laundering, the transaction must be frozen immediately. The customer should be notified of the freeze and the reason for it, which is to comply with MAS Notice 626 and AML/CFT regulations. This action is necessary to prevent further suspicious activity and to allow for a thorough investigation.",
             "deadline": "Within 1 hour"
           }
         }
       ]
     },
     "COMPLIANCE": {
-      "total_actions": 15,
+      "total_actions": 4,
       "actions": [
         {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
+          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
           "risk_score": 85,
           "step": {
             "step_number": 2,
-            "action": "Conduct an enhanced customer due diligence review",
+            "action": "Conduct a thorough investigation of the transaction",
             "team": "COMPLIANCE",
             "priority": "HIGH",
-            "details": "Given the high-risk nature of the transaction and the involvement of a PEP, an enhanced due diligence review is necessary to understand the customer's risk profile better and to verify the legitimacy of the transaction. This includes reviewing KYC documents, transaction history, and any other relevant information.",
+            "details": "The compliance team should conduct a thorough investigation of the transaction, including reviewing the customer's KYC status, transaction history, and any other relevant information. This investigation will help determine if the transaction is indeed suspicious and if it poses a risk of money laundering. The team should also review sanctions screening results and check for any pattern indicators such as structuring or unusual activity.",
             "deadline": "Within 24 hours"
           }
         },
         {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
+          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
           "risk_score": 85,
           "step": {
             "step_number": 3,
-            "action": "Investigate sanctions screening results and verify the potential hit",
+            "action": "Review and verify customer KYC information",
             "team": "COMPLIANCE",
             "priority": "HIGH",
-            "details": "The potential sanctions hit flagged during the screening process needs to be thoroughly investigated. This involves verifying the accuracy of the screening results, checking for any updates in sanctions lists, and determining if the transaction indeed involves a sanctioned entity or individual.",
+            "details": "The compliance team should review and verify the customer's KYC information to ensure it is up-to-date and accurate. This includes checking the customer's identity, address, and other relevant information. If the KYC information is incomplete or outdated, the team should request updated information from the customer.",
             "deadline": "Within 24 hours"
           }
         },
         {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
+          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
           "risk_score": 85,
           "step": {
             "step_number": 4,
-            "action": "File a Suspicious Transaction Report (STR) with the relevant authorities",
+            "action": "Determine if a suspicious transaction report (STR) is required",
             "team": "COMPLIANCE",
             "priority": "HIGH",
-            "details": "Since the transaction has been flagged for suspicion of money laundering and there was a failure to file an STR initially, it is essential to file a report with the relevant authorities as soon as possible. This report should include all relevant details about the transaction, the customer, and the reasons for suspicion.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
-          "risk_score": 85,
-          "step": {
-            "step_number": 5,
-            "action": "Review and update internal policies and procedures for AML/CFT",
-            "team": "COMPLIANCE",
-            "priority": "MEDIUM",
-            "details": "The breach in AML compliance, specifically the failure to file an STR and the potential violation of clauses 6.2, 6.39–6.42, and 14 of MAS Notice 626, indicates a need to review and possibly update internal policies and procedures. This ensures that similar breaches do not occur in the future and that the institution remains compliant with MAS regulations.",
-            "deadline": "Within 3 days"
-          }
-        },
-        {
-          "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
-          "risk_score": 85,
-          "step": {
-            "step_number": 6,
-            "action": "Provide training to relevant staff on updated procedures and AML/CFT regulations",
-            "team": "COMPLIANCE",
-            "priority": "ROUTINE",
-            "details": "To prevent future compliance breaches, it's essential to provide training to the relevant staff members on the updated procedures and to refresh their knowledge of AML/CFT regulations, including the importance of timely filing of STRs and adherence to sanctions screening protocols.",
-            "deadline": "Within 1 week"
-          }
-        },
-        {
-          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
-          "risk_score": 85,
-          "step": {
-            "step_number": 2,
-            "action": "Conduct an initial review of the customer's risk profile and transaction history",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "The compliance team should review the customer's risk rating, KYC status, and transaction history to identify any patterns or red flags that may indicate money laundering activity. This review will inform the next steps in the investigation.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
-          "risk_score": 85,
-          "step": {
-            "step_number": 3,
-            "action": "Perform sanctions screening on the transaction parties",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "Sanctions screening is a critical component of AML/CFT compliance. The compliance team must perform sanctions screening on the transaction parties to ensure they are not listed on any sanctions lists. This step is necessary to comply with MAS regulations and prevent potential sanctions breaches.",
+            "details": "Based on the investigation and review of the transaction, the compliance team should determine if a suspicious transaction report (STR) is required. If the transaction is deemed suspicious and poses a risk of money laundering, an STR should be filed with the relevant authorities.",
             "deadline": "Within 24 hours"
           }
         },
@@ -328,94 +114,10 @@
           "risk_score": 85,
           "step": {
             "step_number": 5,
-            "action": "Investigate the transaction for potential structuring or unusual activity",
-            "team": "COMPLIANCE",
-            "priority": "MEDIUM",
-            "details": "The compliance team should investigate the transaction to determine if it exhibits any characteristics of structuring or unusual activity. This step is necessary to identify potential money laundering patterns and comply with AML/CFT regulations.",
-            "deadline": "Within 3 days"
-          }
-        },
-        {
-          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
-          "risk_score": 85,
-          "step": {
-            "step_number": 6,
-            "action": "File a suspicious transaction report (STR) with the Financial Intelligence Unit",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "Given the high-risk nature of the transaction, it is necessary to file an STR with the Financial Intelligence Unit. This step is required to comply with MAS regulations and report potential money laundering activity.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
-          "risk_score": 85,
-          "step": {
-            "step_number": 7,
-            "action": "Document the investigation and outcome",
+            "action": "Document and close the case",
             "team": "COMPLIANCE",
             "priority": "ROUTINE",
-            "details": "The compliance team must document the investigation, including all steps taken and the outcome. This documentation is necessary for audit and regulatory purposes, and to demonstrate compliance with MAS regulations.",
-            "deadline": "Within 1 week"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 2,
-            "action": "Conduct an enhanced customer due diligence review",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "Given the high-risk nature of the transaction and the potential sanctions hit, an enhanced due diligence review is necessary to understand the customer's activities, sources of funds, and connections to sanctioned entities or individuals. This review will help in assessing the legitimacy of the transaction and the customer's risk profile.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 3,
-            "action": "Investigate the transaction and gather additional information",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "The compliance team should investigate the transaction details, including the purpose of the fund subscription, the involvement of any intermediaries, and the ultimate beneficial owners. This step is essential for understanding the transaction's context and identifying any potential red flags or indicators of money laundering.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 4,
-            "action": "File a suspicious transaction report (STR) with the relevant authorities",
-            "team": "COMPLIANCE",
-            "priority": "HIGH",
-            "details": "Since the transaction has been flagged for potential sanctions hits and there are reasonable grounds for suspicion, filing an STR is mandatory under MAS Notice 626. This report will inform the authorities about the suspicious activity, allowing for further investigation and potential action.",
-            "deadline": "Within 24 hours"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 5,
-            "action": "Review and update the customer's KYC status and risk rating",
-            "team": "COMPLIANCE",
-            "priority": "MEDIUM",
-            "details": "Following the investigation and the filing of the STR, the customer's KYC status and risk rating should be reviewed and updated accordingly. This ensures that the customer's profile reflects the latest information and risk assessment, which is crucial for ongoing monitoring and future transaction screening.",
-            "deadline": "Within 3 days"
-          }
-        },
-        {
-          "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
-          "risk_score": 85,
-          "step": {
-            "step_number": 6,
-            "action": "Document all actions taken and decisions made",
-            "team": "COMPLIANCE",
-            "priority": "ROUTINE",
-            "details": "Maintaining detailed records of all actions taken, decisions made, and justifications for those decisions is essential for audit trails and demonstrating compliance with regulatory requirements. This documentation will also be useful for future reference and in case of regulatory inquiries.",
+            "details": "Once the investigation is complete and any necessary actions have been taken, the compliance team should document the case and close it. This includes updating the customer's records and ensuring that all relevant information is retained for future reference.",
             "deadline": "Within 1 week"
           }
         }

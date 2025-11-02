@@ -1,18 +1,14 @@
 {
   "risk_label": "High",
-  "score": 90,
+  "score": 100,
   "matched_rules": [
-    "risk_assessment.clause_4",
-    "customer_due_diligence.clause_6.sub_clauses.6.2",
-    "customer_due_diligence.clause_6.sub_clauses.6.3",
-    "customer_due_diligence.clause_6.sub_clauses.6.19_to_6.26",
-    "customer_due_diligence.clause_6.sub_clauses.6.39_to_6.42",
-    "simplified_cdd.clause_7",
-    "enhanced_cdd.clause_8",
-    "wire_transfers.clause_11",
-    "suspicious_transaction_reporting.clause_14"
+    "Enhanced Due Diligence Not Performed",
+    "Travel Rule Not Completed",
+    "Simplified CDD Applied to High Risk Customer",
+    "New Product Risk Assessment Missing",
+    "Outdated KYC for High Risk Customer"
   ],
-  "explanation": "The transaction involves a high\u2011risk customer for whom enhanced due diligence (EDD) is required but was not performed. The KYC was last completed over two years ago, and sanctions screening returned a potential hit. The cross\u2011border wire transfer failed to complete the Travel Rule, and the customer was processed under simplified CDD despite a high risk rating. These multiple breaches of MAS Notice 626 clauses indicate a high likelihood of money\u2011laundering risk.",
+  "explanation": "The transaction involves a high\u2011risk customer (high risk rating, originating from JP to TH) and a large wire transfer of HKD\u202f439,477.04. EDD was required but not performed, the travel rule was incomplete for a cross\u2011border wire transfer, simplified CDD was applied to a high\u2011risk customer, no documented risk assessment exists for the complex product channel, and the last KYC was completed almost three years ago. These multiple violations trigger a high\u2011risk assessment with a score of 100.",
   "transaction_id": "0f03f53b-7e05-4479-8375-018720c4760a",
   "index": 7
 }

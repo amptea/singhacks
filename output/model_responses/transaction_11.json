@@ -1,12 +1,11 @@
 {
-  "risk_label": "High",
-  "score": 85,
+  "risk_label": "Medium",
+  "score": 65,
   "matched_rules": [
-    "Potential Sanctions Hit",
-    "KYC Outdated",
-    "Suspicious Transaction Not Reported"
+    "customer_due_diligence.clause_6.sub_clauses.6.3",
+    "customer_due_diligence.clause_6.sub_clauses.6.19_to_6.26"
   ],
-  "explanation": "The transaction involves a high\u2011risk customer and a potential sanctions hit, yet the KYC was last completed over a year ago and no suspicious transaction report was filed. These compliance gaps trigger high\u2011risk flags under MAS Notice 626, warranting a high\u2011risk assessment.",
+  "explanation": "The transaction involves a high\u2011risk customer and a large amount, yet the KYC was last completed over two years ago and the ongoing monitoring due date has passed, violating the CDD and monitoring requirements of clauses 6.3 and 6.19\u20116.26. No other rule violations were detected, so the overall risk is assessed as medium.",
   "transaction_id": "93d3933e-5716-40ba-9cea-1f5ac87e64a5",
   "index": 11
 }

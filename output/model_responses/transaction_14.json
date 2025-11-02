@@ -1,15 +1,11 @@
 {
-  "risk_label": "High",
-  "score": 85,
+  "risk_label": "Medium",
+  "score": 55,
   "matched_rules": [
-    "Suspicion Determined After Transaction",
-    "KYC Not Completed Before Transaction",
-    "Missing Travel Rule Information for Cross-Border Transfer",
-    "Failure to File Suspicious Transaction Report",
-    "Potential Sanctions Hit",
-    "High Transaction Amount"
+    "Suspicion Determined After Booking",
+    "Potential Sanctions Hit"
   ],
-  "explanation": "The transaction breaches several MAS Notice 626 clauses: suspicion was flagged only after the transaction was booked (Clause\u202f6.2), KYC was not completed before the transaction (Clause\u202f6.3), cross\u2011border wire transfer details (originator address/ID) required for amounts >S$1,500 are missing (Clause\u202f11), a potential sanctions hit was identified (Clause\u202f6.39\u20116.42), and there is no evidence of a Suspicious Transaction Report being filed (Clause\u202f14). These combined violations elevate the risk to high.",
+  "explanation": "The transaction triggers a violation of Clause 6.2 \u2013 the bank proceeded with the transaction after suspicion was determined and a potential sanctions hit was identified. No other major AML/CFT rule breaches are evident, so the overall risk is assessed as Medium.",
   "transaction_id": "9db0c15a-8d81-4f97-80aa-32edecc7068d",
   "index": 14
 }

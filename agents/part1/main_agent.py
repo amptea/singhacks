@@ -6,9 +6,6 @@ import os
 import time
 from typing import Any, Dict, List
 
-# Import currency conversion agent
-from currency_conversion_agent import main as currency_converter
-
 load_dotenv()
 
 # directory
@@ -21,7 +18,7 @@ OUTPUT_CSV = os.path.join(OUTPUT_DIR, "transactions_analysis_results.csv")
 MODEL_RESPONSES_DIR = os.path.join(OUTPUT_DIR, "model_responses")
 
 # config
-NUM_ROWS = 20  # limit number of rows to process for testing
+NUM_ROWS = 5  # limit number of rows to process for testing
 
 # key
 KEY = os.getenv("GROQ_API_KEY")
@@ -31,11 +28,11 @@ MODEL = "openai/gpt-oss-20b"
 TEMPERATURE = 0.1
 SLEEP_SECONDS = 0.08  # Rate limiting delay between API calls
 
-# Convert all currencies to SGD using currency conversion agent
-print("Converting currencies to SGD...")
-df = currency_converter()
+# Load dataframe directly from CSV
+df = pd.read_csv(TRANSACTIONS_CSV)
 df2 = df[df['regulator'] == 'MAS'].reset_index(drop=True)
-print(f"Loaded {len(df2)} MAS transactions with amounts in SGD")
+print(f"Loaded {len(df2)} MAS transactions from CSV")
+
 
 def load_rules(rules_path: str) -> Dict[str, Any]:
 	"""Load rules JSON from the given path and return as a Python dict.
@@ -230,6 +227,22 @@ Response must be valid JSON format with no other text.
         risk_counts = results_df['risk_label'].value_counts().to_dict()
         for risk_level, count in risk_counts.items():
             print(f"   {risk_level}: {count}")
+    
+    # Check if there are any high-risk transactions
+    high_risk_count = risk_counts.get('High', 0)
+    if high_risk_count > 0:
+        print(f"\n🚨 Found {high_risk_count} high-risk transaction(s)")
+        print("📋 Generating actionable next steps...")
+        
+        try:
+            # Import and run actionables agent
+            from actionablesAgent import process_high_risk_transactions
+            process_high_risk_transactions()
+        except Exception as e:
+            print(f"⚠️ Error generating actionables: {e}")
+            print("   You can manually run: python agents/part1/actionablesAgent.py")
+    else:
+        print("\n✅ No high-risk transactions detected - no actionables needed")
             
 if __name__ == "__main__":
     main_agent()

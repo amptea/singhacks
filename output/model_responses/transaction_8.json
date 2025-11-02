@@ -1,12 +1,8 @@
 {
-  "risk_label": "High",
-  "score": 80,
-  "matched_rules": [
-    "Risk Assessment for High-Risk Jurisdiction",
-    "Enhanced Due Diligence Not Applied for High-Risk Country",
-    "Potential Sanctions Hit Without STR"
-  ],
-  "explanation": "The transaction involves a beneficiary in Iran, a FATF counter\u2011measure jurisdiction, yet the risk assessment rates the customer as Medium and EDD is marked as not required. This violates Clause\u202f4 and Clause\u202f8 requirements for high\u2011risk customers. Additionally, sanctions screening returned a potential hit but no suspicious transaction report was filed, breaching Clause\u202f6.2 and Clause\u202f14. These multiple breaches warrant a high\u2011risk classification.",
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "The cash deposit of S$5,562.81 from a medium\u2011risk corporate customer (originator TH, beneficiary IR) falls below the S$20,000 CDD trigger and is not a digital\u2011token transaction. EDD was performed as required, sanctions screening returned a potential match but not a confirmed hit, and no suspicion flag or STR was triggered. All relevant clauses (risk assessment, CDD, simplified CDD, sanctions screening, record\u2011keeping) are satisfied, so no violations are identified.",
   "transaction_id": "c2d0711d-9c0b-40ee-a4e5-845124d9e45b",
   "index": 8
 }

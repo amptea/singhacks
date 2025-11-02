@@ -2,11 +2,13 @@
   "risk_label": "High",
   "score": 85,
   "matched_rules": [
-    "EDD Not Performed for High Risk Customer",
-    "Sanctions Screening Not Performed",
-    "KYC Overdue"
+    "risk_assessment.clause_4",
+    "customer_due_diligence.clause_6.sub_clauses.6.3",
+    "customer_due_diligence.clause_6.sub_clauses.6.19_to_6.26",
+    "enhanced_cdd.clause_8",
+    "wire_transfers.clause_11"
   ],
-  "explanation": "The transaction involves a high\u2011risk corporate customer from China to Japan with a cash deposit of CNY\u202f6,267.57. The bank\u2019s risk assessment requires enhanced due diligence (EDD) for high\u2011risk customers, yet EDD was not performed. Sanctions screening was not conducted, and the customer\u2019s KYC was overdue (due date 7/10/2023). These breaches of clauses 4, 6.3, 6.19\u20116.26, 6.39\u20116.42, and 8 constitute significant AML/CFT compliance failures, warranting a high\u2011risk classification.",
+  "explanation": "The transaction involves a high\u2011risk corporate customer from China to Japan, exceeding the S$1,500 cross\u2011border wire transfer threshold. While basic CDD was completed, the bank failed to perform the required Enhanced Due Diligence (EDD) for a high\u2011risk customer, violating clauses 4, 6.3, 6.19\u201126, and 8. The wire transfer meets Travel Rule requirements, but the missing EDD constitutes a significant compliance breach, warranting a high\u2011risk label.",
   "transaction_id": "01572a13-834c-4119-8463-cfbcb36f50a3",
   "index": 5
 }

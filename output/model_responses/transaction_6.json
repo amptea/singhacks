@@ -1,11 +1,8 @@
 {
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "6.3.b",
-    "6.19-6.26"
-  ],
-  "explanation": "The transaction is a cross\u2011border wire transfer exceeding S$1,500. The KYC last completed date (26/8/2021) is older than the acceptable period for a low\u2011risk corporate customer, violating the requirement to keep KYC recent for such transfers. No other clauses are breached, so the transaction is assessed as medium risk.",
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "All relevant clauses (risk assessment, CDD, screening, travel rule, and reporting) are satisfied. No sanctions hit, no suspicion, and all required information is present. Therefore the transaction poses low AML/CFT risk.",
   "transaction_id": "3f4edd2a-4c2e-463a-b497-b415b3fbe5f4",
   "index": 6
 }

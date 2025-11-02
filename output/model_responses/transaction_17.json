@@ -1,11 +1,8 @@
 {
-  "risk_label": "Medium",
-  "score": 55,
-  "matched_rules": [
-    "Simplified CDD applied to PEP",
-    "KYC overdue"
-  ],
-  "explanation": "The transaction involves a PEP customer, yet simplified CDD was applied, which is prohibited for PEPs under Clause\u202f7. Additionally, the KYC was last completed on 20/8/2020 with a due date of 20/8/2021, making it overdue and violating ongoing monitoring requirements under Clause\u202f6.19\u20116.26. No other major violations were identified, so the risk is assessed as medium.",
+  "risk_label": "Low",
+  "score": 10,
+  "matched_rules": [],
+  "explanation": "All relevant clauses are satisfied: the customer is a PEP but has undergone EDD, KYC is up\u2011to\u2011date, no suspicion or sanctions hits are recorded, the transaction is a low\u2011value cash deposit within limits, and all required due diligence and record\u2011keeping are in place.",
   "transaction_id": "b36d1638-b257-4460-96f1-4aa391f4c12c",
   "index": 17
 }
