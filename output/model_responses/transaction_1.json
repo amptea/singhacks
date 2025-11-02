@@ -1,0 +1,11 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "KYC Outdated",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction meets most AML/CFT requirements: appropriate CDD, EDD, travel\u2011rule compliance, and no structuring. However, the customer\u2019s KYC was last completed on 20/10/2023, which is more than 12 months before the booking date (03/12/2024), exceeding the acceptable period for a low\u2011risk customer. Additionally, sanctions screening returned a potential hit, indicating a possible sanctions violation that warrants heightened scrutiny. No other rule violations were identified, so the overall risk is assessed as medium.",
+  "transaction_id": "66f1c2c5-6585-40e9-9b9d-4ec10c6fdbae",
+  "index": 1
+}

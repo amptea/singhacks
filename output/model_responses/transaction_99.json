@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, EDD was performed, daily cash total is negligible, and travel\u2011rule data is complete. These mitigating factors suggest a moderate, not high, money\u2011laundering risk."
+}

@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 45,
+  "matched_rules": [
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction exceeds the daily cash threshold of $10,000, indicating a potential structuring activity. However, other red\u2011flag criteria such as high amount, high risk rating, sanctions hit, or missing travel rule data are not present, and the customer is rated low risk with completed KYC. Therefore the overall risk is assessed as medium."
+}

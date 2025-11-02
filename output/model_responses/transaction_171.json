@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction triggers two AML rules: the customer has a high risk rating and the daily cash total exceeds the $10,000 threshold. The amount is below the high transaction threshold and there are no sanctions hits or EDD gaps. These factors suggest a moderate risk of money laundering activity."
+}

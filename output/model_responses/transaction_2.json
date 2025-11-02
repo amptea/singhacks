@@ -1,0 +1,11 @@
+{
+  "risk_label": "Medium",
+  "score": 65,
+  "matched_rules": [
+    "value_transfers.clause_11A - Missing va_disclosure_provided",
+    "value_transfers.clause_11A - Missing Additional Originator Info for >S$1,500"
+  ],
+  "explanation": "The transaction is a high\u2011value digital token transfer (product_has_va_exposure=true). Clause 11A requires a value\u2011transfer disclosure and, for amounts exceeding S$1,500, additional originator details (address, ID or date/place of birth). Both are missing, constituting two violations of the Travel Rule for value transfers. No other major AML/CFT breaches are evident, so the risk is assessed as Medium.",
+  "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
+  "index": 2
+}

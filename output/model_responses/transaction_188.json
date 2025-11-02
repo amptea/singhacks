@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction exceeds the high amount threshold, but other risk indicators are low or absent, so overall risk is moderate."
+}

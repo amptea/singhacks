@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 45,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction only triggers the sanctions screening potential rule. The amount is low, the customer risk rating is medium, and there are no other red\u2011flag conditions such as high amount, high risk rating, or EDD gaps. Therefore the overall risk is assessed as moderate."
+}

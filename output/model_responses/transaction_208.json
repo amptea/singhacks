@@ -1,0 +1,10 @@
+{
+  "risk_label": "High",
+  "score": 85,
+  "matched_rules": [
+    "High Customer Risk Rating",
+    "Potential Sanctions Hit",
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction involves a high\u2011risk customer, triggered a potential sanctions hit, and the customer\u2019s daily cash total exceeds the structuring threshold. These factors collectively indicate a high likelihood of money\u2011laundering activity."
+}

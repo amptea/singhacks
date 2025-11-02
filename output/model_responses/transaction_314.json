@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 60,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, but the customer is only medium risk, EDD was performed, sanctions screening cleared, travel rule data complete, and daily cash total is negligible. These mitigating factors reduce the overall risk to a medium level."
+}

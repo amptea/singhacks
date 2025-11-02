@@ -1,0 +1,10 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "EDD Required for High Risk Jurisdiction"
+  ],
+  "explanation": "The transaction involves a high\u2011risk jurisdiction (Russia) and a medium\u2011risk customer, yet the risk assessment indicates that Enhanced Due Diligence (EDD) was not required (edd_required=false). Under MAS Notice 626, high\u2011risk jurisdictions mandate EDD, so this is a compliance violation. No other clauses (e.g., sanctions screening, travel rule, or suspicious activity) are breached. The single violation places the transaction in the medium\u2011risk category with a score of 55.",
+  "transaction_id": "e8db37cf-2a87-404b-af55-bc48ed06a1e1",
+  "index": 3
+}

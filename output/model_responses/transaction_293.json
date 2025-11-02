@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "High Daily Cash Total for Customer"
+  ],
+  "explanation": "The transaction triggers only the High Daily Cash Total for Customer rule (daily cash total of 16,439.14 HKD exceeds the 10,000 threshold). No other high\u2011risk indicators (large amount, high customer risk, sanctions hit, EDD gap, or incomplete travel rule data) are present, and the customer is rated Low risk. Therefore the transaction is considered medium risk, reflecting the smurfing indicator but lacking additional red flags."
+}

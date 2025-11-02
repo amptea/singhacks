@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold (HKD\u202f1,177,687.83 >\u202f17,343.58), which is a key indicator of suspicious activity. However, the customer is rated low risk, there is no sanctions hit, no EDD gap, and daily cash totals are negligible. These mitigating factors reduce the overall risk, resulting in a medium\u2011level assessment."
+}

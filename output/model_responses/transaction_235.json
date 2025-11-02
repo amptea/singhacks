@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 45,
+  "matched_rules": [
+    "High Customer Risk Rating"
+  ],
+  "explanation": "The transaction triggers only the High Customer Risk Rating rule. The amount is below the high\u2011transaction threshold, there are no sanctions hits, EDD was performed, daily cash totals are negligible, and travel\u2011rule data is complete. These factors suggest a moderate risk of money laundering, but the lack of additional red flags keeps the overall risk from being classified as high."
+}

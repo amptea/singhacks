@@ -1,0 +1,1 @@
+{"risk_label":"Medium","score":70,"matched_rules":["High Transaction Amount"],"explanation":"The transaction exceeds the high‑amount threshold (2,183,956.14 CNY > 

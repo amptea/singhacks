@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold, which is a common indicator of suspicious activity. However, the customer is rated low risk, there are no sanctions hits, EDD is not required, and daily cash totals are negligible. These mitigating factors reduce the overall risk, resulting in a medium assessment."
+}

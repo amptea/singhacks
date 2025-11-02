@@ -1,0 +1,9 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount",
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction exceeds the high\u2011amount threshold (CHF\u202f20,000 >\u202f17,343.58) and triggered a potential sanctions hit. While the customer is rated low risk, the combination of a large cash deposit and a sanctions screening flag raises concern for possible money\u2011laundering activity. No other red flags (e.g., structuring, PEP, incomplete travel rule) are present, so the risk is assessed as medium."
+}

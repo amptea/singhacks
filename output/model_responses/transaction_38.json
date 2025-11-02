@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 35,
+  "matched_rules": [
+    "High Customer Risk Rating"
+  ],
+  "explanation": "The transaction triggers the High Customer Risk Rating rule, indicating the customer is classified as high risk. However, the transaction amount is very low (102.83\u202fJPY), there is no sanctions hit, EDD was performed, and the daily cash total is well below structuring thresholds. These mitigating factors suggest a lower likelihood of money\u2011laundering activity, resulting in a medium risk assessment."
+}

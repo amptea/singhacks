@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 70,
+  "matched_rules": [
+    "High Transaction Amount"
+  ],
+  "explanation": "The transaction amount of \u00a3412,043.37 exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. No sanctions hit, EDD gap, daily cash structuring, or travel\u2011rule deficiencies are present, and the customer risk rating is medium. These mitigating factors reduce the overall risk to a medium level."
+}

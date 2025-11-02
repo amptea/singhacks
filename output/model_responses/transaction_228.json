@@ -1,0 +1,8 @@
+{
+  "risk_label": "Medium",
+  "score": 55,
+  "matched_rules": [
+    "Potential Sanctions Hit"
+  ],
+  "explanation": "The transaction triggers only the Potential Sanctions Hit rule, indicating a possible sanctions match. However, the amount is below the high\u2011value threshold, the customer has a low risk rating, daily cash total is modest, and travel\u2011rule data is complete. These mitigating factors suggest a moderate risk rather than a high\u2011risk money\u2011laundering scenario."
+}
