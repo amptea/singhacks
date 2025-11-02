@@ -1,11 +1,12 @@
 {
-  "risk_label": "Medium",
-  "score": 65,
+  "risk_label": "High",
+  "score": 85,
   "matched_rules": [
-    "value_transfers.clause_11A - Missing va_disclosure_provided",
-    "value_transfers.clause_11A - Missing Additional Originator Info for >S$1,500"
+    "Missing Sanctions Screening",
+    "Missing Originator Address/ID for Value Transfer >S$1,500",
+    "Missing Value Transfer Disclosure"
   ],
-  "explanation": "The transaction is a high\u2011value digital token transfer (product_has_va_exposure=true). Clause 11A requires a value\u2011transfer disclosure and, for amounts exceeding S$1,500, additional originator details (address, ID or date/place of birth). Both are missing, constituting two violations of the Travel Rule for value transfers. No other major AML/CFT breaches are evident, so the risk is assessed as Medium.",
+  "explanation": "The transaction is a cross\u2011border digital token transfer (product_has_va_exposure=true) exceeding the S$1,500 threshold. The bank failed to provide originator address/ID or unique ID (clause\u202f11A.6\u201111A.8), did not disclose value transfer information (clause\u202f11A.12\u201111A.15), and did not perform sanctions screening (clause\u202f6.39\u20116.42). These violations trigger a high\u2011risk assessment.",
   "transaction_id": "15ce0bc5-e37b-4279-90ee-e5d289713d46",
   "index": 2
 }

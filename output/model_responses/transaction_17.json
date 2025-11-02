@@ -1,9 +1,11 @@
 {
-  "risk_label": "High",
-  "score": 85,
+  "risk_label": "Medium",
+  "score": 55,
   "matched_rules": [
-    "High Transaction Amount",
-    "Potential Sanctions Hit"
+    "Simplified CDD applied to PEP",
+    "KYC overdue"
   ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold and triggered a potential sanctions hit, both strong indicators of money\u2011laundering risk. Although the customer is rated low risk and no EDD was required, the combination of a large transfer and sanctions screening concern warrants a high risk assessment."
+  "explanation": "The transaction involves a PEP customer, yet simplified CDD was applied, which is prohibited for PEPs under Clause\u202f7. Additionally, the KYC was last completed on 20/8/2020 with a due date of 20/8/2021, making it overdue and violating ongoing monitoring requirements under Clause\u202f6.19\u20116.26. No other major violations were identified, so the risk is assessed as medium.",
+  "transaction_id": "b36d1638-b257-4460-96f1-4aa391f4c12c",
+  "index": 17
 }

@@ -1,10 +1,8 @@
 {
-  "risk_label": "High",
-  "score": 90,
-  "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating",
-    "Potential Sanctions Hit"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold, involves a customer with a high risk rating, and triggered a potential sanctions hit. These combined red flags indicate a high likelihood of money laundering activity."
+  "risk_label": "Low",
+  "score": 20,
+  "matched_rules": [],
+  "explanation": "All AML/CFT controls applicable to the transaction are satisfied: the customer is a medium\u2011risk PEP with EDD performed, KYC completed, and all required screening and travel\u2011rule information are present. No suspicious activity or regulatory breaches were identified, resulting in a low\u2011risk assessment.",
+  "transaction_id": "4b3a34d7-1c0d-45f7-94c0-e8706c33fff5",
+  "index": 15
 }

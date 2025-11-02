@@ -1,12 +1,11 @@
 {
-  "risk_label": "High",
-  "score": 90,
+  "risk_label": "Medium",
+  "score": 55,
   "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating",
-    "Potential Sanctions Hit",
-    "EDD Required but Not Performed",
-    "Incomplete Travel Rule Information"
+    "customer_due_diligence.clause_6.sub_clauses.6.3",
+    "customer_due_diligence.clause_6.sub_clauses.6.2"
   ],
-  "explanation": "The transaction exceeds the high\u2011amount threshold, involves a high\u2011risk customer, triggered a potential sanctions hit, lacks required EDD, and has incomplete travel rule data\u2014all strong indicators of money\u2011laundering risk. Hence it is classified as high risk with a score of 90."
+  "explanation": "The transaction involves a high\u2011risk customer with a KYC that is overdue (last completed 22/4/2021, due 22/4/2023) and a potential sanctions screening hit. No other AML/CFT requirements are breached. The overdue KYC and potential sanctions flag raise the risk to medium.",
+  "transaction_id": "1b2e5d4b-0ea1-465f-8b0a-6af8c4a01868",
+  "index": 18
 }

@@ -1,8 +1,12 @@
 {
   "risk_label": "Medium",
-  "score": 60,
+  "score": 55,
   "matched_rules": [
-    "High Transaction Amount"
+    "High Transaction Amount",
+    "Potential Sanctions Hit",
+    "Outdated KYC"
   ],
-  "explanation": "The transaction amount of CHF 20,000 exceeds the high transaction threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, no EDD requirement, and the daily cash total is negligible. These mitigating factors suggest a moderate risk rather than a high one."
+  "explanation": "The wire transfer exceeds the S$20,000 threshold for non\u2011relationship customers, yet the KYC was last completed over a year ago, violating the requirement for recent CDD. Additionally, sanctions screening returned a potential hit, but no suspicious transaction report was filed, breaching the sanctions screening and STR obligations under MAS Notice 626. These infractions elevate the risk to a medium level.",
+  "transaction_id": "dc7425bc-fcce-49fa-b58f-7cd1dbf27319",
+  "index": 9
 }

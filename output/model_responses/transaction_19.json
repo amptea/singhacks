@@ -1,11 +1,8 @@
 {
-  "risk_label": "High",
-  "score": 90,
-  "matched_rules": [
-    "High Transaction Amount",
-    "High Customer Risk Rating",
-    "Potential Sanctions Hit",
-    "EDD Required but Not Performed"
-  ],
-  "explanation": "The transaction exceeds the high amount threshold, involves a high\u2011risk customer, triggered a potential sanctions hit, and required EDD that was not performed. These combined factors strongly indicate a high money\u2011laundering risk."
+  "risk_label": "Low",
+  "score": 10,
+  "matched_rules": [],
+  "explanation": "The transaction complies with all relevant MAS Notice 626 clauses. It is a cross\u2011border wire transfer below the S$1,500 threshold for travel\u2011rule requirements, with all required originator/beneficiary details present and travel\u2011rule completion flagged. No sanctions hits, no suspicion flags, and all CDD and EDD requirements are satisfied for a low\u2011risk customer. No rule violations were identified.",
+  "transaction_id": "b9e32ea8-e895-4172-970b-b174fe4fb4eb",
+  "index": 19
 }
