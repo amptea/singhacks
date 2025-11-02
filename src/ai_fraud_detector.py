@@ -328,6 +328,120 @@ Be thorough, specific, and precise. If you find fraud indicators, explain exactl
         except Exception as e:
             logger.error(f"Error during AI API call: {e}")
             raise
+
+    def analyze_from_aggregated(self, aggregated: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Analyze an already-assembled set of stage results (parser, image_analysis,
+        extraction, validation). This avoids re-parsing the document and lets the
+        LLM reason across all available evidence.
+
+        Args:
+            aggregated: dict containing keys like 'file_path','file_name', 'stages'
+
+        Returns:
+            ai_analysis dict (same shape as _ai_comprehensive_analysis output)
+        """
+        # Prepare a compact but comprehensive context from the aggregated results
+        try:
+            ctx_parts = []
+
+            # File info
+            ctx_parts.append(f"FILE: {aggregated.get('file_name') or aggregated.get('file_path')}")
+            ctx_parts.append(f"TIMESTAMP: {aggregated.get('timestamp', '')}")
+
+            stages = aggregated.get('stages', {})
+
+            # OCR / extracted text
+            parsing = stages.get('parsing', {})
+            text = parsing.get('text', '')
+            ctx_parts.append("\n--- EXTRACTED TEXT (first 3000 chars) ---\n")
+            ctx_parts.append(text[:3000])
+
+            # Structured extraction
+            extraction = stages.get('extraction', {})
+            ctx_parts.append("\n--- EXTRACTED FIELDS ---\n")
+            try:
+                ctx_parts.append(json.dumps(extraction.get('extracted_fields', extraction), indent=2))
+            except Exception:
+                ctx_parts.append(str(extraction))
+
+            # Validation
+            validation = stages.get('validation', {})
+            ctx_parts.append("\n--- VALIDATION RESULTS ---\n")
+            try:
+                ctx_parts.append(json.dumps(validation, indent=2))
+            except Exception:
+                ctx_parts.append(str(validation))
+
+            # Image analysis
+            image_analysis = stages.get('image_analysis', {})
+            ctx_parts.append("\n--- IMAGE ANALYSIS ---\n")
+            try:
+                ctx_parts.append(json.dumps(image_analysis, indent=2))
+            except Exception:
+                ctx_parts.append(str(image_analysis))
+
+            # Verification (if present)
+            verification = stages.get('verification', {})
+            ctx_parts.append("\n--- EXTERNAL VERIFICATION (if any) ---\n")
+            try:
+                ctx_parts.append(json.dumps(verification, indent=2))
+            except Exception:
+                ctx_parts.append(str(verification))
+
+            # Compose final context
+            context = "\n".join(ctx_parts)
+
+            prompt = f"""You are an expert forensic document analyst and compliance officer.\n\nUse the supplied evidence to decide whether the document is fraudulent, manipulated, or authentic. Reason across all inputs (OCR/extracted text, structured fields, validation issues, image analysis, and any verification data). Provide a concise JSON output containing: overall_assessment with fraud_likelihood (LOW/MEDIUM/HIGH), risk_score (0-10), risk_level (LOW/MEDIUM/HIGH/CRITICAL), confidence (0-1), key_findings (list), critical_issues (list), recommendations (dict with approval_recommendation and justification), and a short overall_summary. Also include detailed sections for format_validation, image_analysis, metadata_analysis, and content_analysis if applicable.\n\nEVIDENCE:\n{context}\n\nProvide JSON only."""
+
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are an expert forensic document analyst. Output valid JSON only."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.0,
+                max_tokens=4000,
+                response_format={"type": "json_object"}
+            )
+
+            analysis_text = response.choices[0].message.content
+            analysis = json.loads(analysis_text)
+
+            overall = analysis.get('overall_assessment', {})
+
+            return {
+                'fraud_likelihood': overall.get('fraud_likelihood', 'UNKNOWN'),
+                'risk_score': overall.get('risk_score', 5.0),
+                'risk_level': overall.get('risk_level', 'MEDIUM'),
+                'confidence': overall.get('confidence', 0.5),
+                'key_findings': overall.get('key_findings', []),
+                'critical_issues': overall.get('critical_issues', []),
+                'primary_concerns': overall.get('primary_concerns', []),
+                'overall_summary': overall.get('overall_summary', ''),
+                'format_validation': analysis.get('format_validation', {}),
+                'image_analysis': analysis.get('image_analysis', {}),
+                'metadata_analysis': analysis.get('metadata_analysis', {}),
+                'content_analysis': analysis.get('content_analysis', {}),
+                'recommendations': analysis.get('recommendations', {}),
+                'detailed_analysis': analysis.get('detailed_analysis', ''),
+                'full_analysis': analysis
+            }
+
+        except json.JSONDecodeError as e:
+            logger.warning(f"JSON parsing error from AI response: {e}")
+            return {
+                'fraud_likelihood': 'UNKNOWN',
+                'risk_score': 5.0,
+                'risk_level': 'MEDIUM',
+                'confidence': 0.3,
+                'key_findings': ['AI analysis error - manual review required'],
+                'error': str(e),
+                'raw_response': analysis_text if 'analysis_text' in locals() else ''
+            }
+        except Exception as e:
+            logger.error(f"Error in analyze_from_aggregated: {e}")
+            raise
     
     def _prepare_ai_context(self, doc_data: Dict[str, Any]) -> str:
         """Prepare document data as context for AI"""

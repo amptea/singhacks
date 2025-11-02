@@ -18,6 +18,7 @@ from universal_document_parser import UniversalDocumentParser
 from structured_extractor import StructuredFieldExtractor
 from enhanced_validator import EnhancedDocumentValidator
 from advanced_image_analyzer import AdvancedImageAnalyzer
+from ai_fraud_detector import AIFraudDetector
 from firestore_audit_logger import FirestoreAuditLogger
 
 # Page config
@@ -356,32 +357,39 @@ def analyze_document(
         results['stages']['verification'] = {'skipped': True}
         progress_bar.progress(75)
         
-        # Stage 6: AI Fraud Analysis has been removed/disabled for this build.
-        status_text.text("🤖 Stage 6/6: AI fraud analysis (disabled)...")
+        # Stage 6: AI Fraud Analysis (Groq) - analyze using aggregated pipeline results
+        status_text.text("🤖 Stage 6/6: AI fraud analysis with Groq...")
         progress_bar.progress(90)
-        with st.spinner("Skipping AI analysis (disabled)..."):
-            fraud_analysis = {
-                'ai_analysis': {
-                    'overall_summary': 'AI analysis has been disabled in this build.',
-                    'risk_score': 0,
-                    'risk_level': 'UNKNOWN',
-                    'confidence': 0.0,
-                    'key_findings': [],
-                    'recommendations': {}
-                }
-            }
-            results['stages']['fraud_analysis'] = fraud_analysis
-            # Log a placeholder AI analysis entry
+
+        with st.spinner("AI analyzing all findings (Groq)..."):
             try:
-                audit_logger.log_ai_analysis(
-                    model_name='disabled',
-                    input_prompt=f"AI analysis disabled for {Path(file_path).name}",
-                    output_analysis={}
-                )
-            except Exception:
-                # If audit logger doesn't support this call in some environments, ignore
-                pass
-        st.success("✓ AI analysis skipped")
+                detector = AIFraudDetector()
+                # Provide the aggregated results (all stages) so the model can reason across them
+                fraud_analysis = detector.analyze_from_aggregated(results)
+                # keep compatibility with expected structure
+                results['stages']['fraud_analysis'] = {'ai_analysis': fraud_analysis}
+
+                # Log AI analysis
+                try:
+                    audit_logger.log_ai_analysis(
+                        model_name=detector.model,
+                        input_prompt=f"Aggregated analysis for {Path(file_path).name}",
+                        output_analysis=fraud_analysis
+                    )
+                except Exception:
+                    logger = None
+
+                st.success("✓ AI analysis complete")
+            except Exception as e:
+                st.error(f"❌ AI analysis failed: {e}")
+                # Fallback: set a conservative default
+                results['stages']['fraud_analysis'] = {'ai_analysis': {
+                    'overall_summary': 'AI analysis failed - manual review required',
+                    'risk_score': 5,
+                    'risk_level': 'MEDIUM',
+                    'confidence': 0.3,
+                    'key_findings': ['AI analysis error - see logs']
+                }}
         
         # Complete
         progress_bar.progress(100)
