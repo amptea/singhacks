@@ -57,7 +57,6 @@ def main():
         "Do NOT show any output other than the response format."
     )
     response = prompt_groq(prompt)
-    print("Raw response:", response)
     exchange_rates = dict(response_part.strip().split(": ") for response_part in response.split(","))
     exchange_rates = {k: float(v) for k, v in exchange_rates.items()}
     print("Exchange rates:", exchange_rates)

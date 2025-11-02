@@ -11,3 +11,4 @@ singhacks-8a285-firebase-adminsdk-fbsvc-25af7b9118.json
 outputs/
 temp/
 data/logs/audit_trail.log
+data/logs/audit_trail/
