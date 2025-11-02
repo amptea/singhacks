@@ -1,22 +1,29 @@
 """
-AI-Powered Fraud Detection & PDF OCR
-Streamlit-based interface with JigsawStack OCR and AI fraud detection
+Comprehensive Fraud Detection & Compliance Verification System
+Enhanced with Multi-Format Support, Advanced Image Analysis, and Audit Trail
 """
 
 import streamlit as st
-import os
 import sys
-import tempfile
-from pathlib import Path
-import time
 import json
+from pathlib import Path
+import pandas as pd
+from datetime import datetime
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# Add src to path
+sys.path.insert(0, 'src')
 
-# Page configuration
+# Import components
+from universal_document_parser import UniversalDocumentParser
+from structured_extractor import StructuredFieldExtractor
+from enhanced_validator import EnhancedDocumentValidator
+from advanced_image_analyzer import AdvancedImageAnalyzer
+from ai_fraud_detector import AIFraudDetector
+from firestore_audit_logger import FirestoreAuditLogger
+
+# Page config
 st.set_page_config(
-    page_title="AI Fraud Detection & PDF OCR",
+    page_title="Compliance Verification System",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -25,479 +32,959 @@ st.set_page_config(
 # Custom CSS
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .success-box {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        border-radius: 5px;
-        padding: 1rem;
-        margin: 1rem 0;
-    }
-    .warning-box {
-        background-color: #fff3cd;
-        border: 1px solid #ffc107;
-        border-radius: 5px;
-        padding: 1rem;
-        margin: 1rem 0;
-    }
-    .error-box {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        border-radius: 5px;
-        padding: 1rem;
-        margin: 1rem 0;
-    }
-    .risk-high {
-        background-color: #ff4444;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    .risk-medium {
-        background-color: #ff9800;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    .risk-low {
-        background-color: #4caf50;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
+    .stAlert {margin-top: 1rem;}
+    .risk-critical {background-color: #ff4444; color: white; padding: 10px; border-radius: 5px;}
+    .risk-high {background-color: #ff8800; color: white; padding: 10px; border-radius: 5px;}
+    .risk-medium {background-color: #ffbb33; color: black; padding: 10px; border-radius: 5px;}
+    .risk-low {background-color: #00C851; color: white; padding: 10px; border-radius: 5px;}
+    .issue-table {font-size: 14px;}
 </style>
 """, unsafe_allow_html=True)
 
-# Import AI fraud detector
-try:
-    from document_parser_jigsawstack import JigsawDocumentParser
-    from ai_fraud_detector import AIFraudDetector
-    from structured_extractor import StructuredFieldExtractor
-    from enhanced_validator import EnhancedDocumentValidator
-    from external_verification import ExternalVerificationAgent
-    
-    IMPORTS_OK = True
-except ImportError as e:
-    st.error(f"❌ Missing dependencies: {e}")
-    st.info("Please ensure all required modules are installed")
-    IMPORTS_OK = False
+# Initialize session state
+if 'analysis_complete' not in st.session_state:
+    st.session_state.analysis_complete = False
+if 'results' not in st.session_state:
+    st.session_state.results = None
+if 'audit_logger' not in st.session_state:
+    st.session_state.audit_logger = FirestoreAuditLogger(fallback_to_local=True)
 
-def display_risk_badge(risk_level, risk_score):
-    """Display colored risk badge"""
-    if risk_score >= 7:
-        risk_class = "risk-high"
-        emoji = "🔴"
-    elif risk_score >= 4:
-        risk_class = "risk-medium"
-        emoji = "🟡"
-    else:
-        risk_class = "risk-low"
-        emoji = "🟢"
-    
-    return f'{emoji} <span class="{risk_class}">{risk_level} ({risk_score}/10)</span>'
 
 def main():
-    """Main Streamlit application"""
-    
-    # Header
-    st.markdown('<div class="main-header">🔍 AI-Powered Fraud Detection System</div>', unsafe_allow_html=True)
-    st.markdown("### Upload documents for comprehensive fraud detection analysis powered by AI")
+    st.title("🔍 Enhanced Compliance Verification System")
+    st.markdown("**Automated Document Fraud Detection with Advanced Image Analysis & Audit Trail**")
     
     # Sidebar
     with st.sidebar:
-        st.header("⚙️ Configuration")
-        
-        # Document type selection
-        doc_type = st.selectbox(
-            "Document Type",
-            [
-                "statement",
-                "invoice",
-                "contract",
-                "certificate",
-                "identity",
-                "financial_report",
-                "receipt",
-                "other"
-            ],
-            help="Select the type of document for specialized analysis"
-        )
-        
-        # Analysis options
-        st.subheader("📊 Analysis Options")
-        use_external_verification = st.checkbox(
-            "External Verification",
-            value=False,
-            help="Query company registers and sanction lists (takes longer)"
-        )
-        
-        show_debug = st.checkbox(
-            "Show Debug Info",
-            value=False,
-            help="Display detailed API responses and processing logs"
-        )
-        
-        st.markdown("---")
-        
-        # API Key status
-        st.subheader("🔑 API Status")
-        
-        # Check for API keys
-        from dotenv import load_dotenv
-        load_dotenv()
-        
-        groq_key = os.getenv("GROQ_API_KEY")
-        jigsaw_key = os.getenv("JIGSAWSTACK_API_KEY")
-        
-        if groq_key:
-            st.success("✅ Groq API")
-        else:
-            st.error("❌ Groq API Key Missing")
-        
-        if jigsaw_key:
-            st.success("✅ JigsawStack API")
-        else:
-            st.error("❌ JigsawStack API Key Missing")
-        
-        st.markdown("---")
-        st.info("""
-        **How it works:**
-        1. Upload PDF/image document
-        2. JigsawStack OCR extracts text
-        3. AI extracts structured data
-        4. AI validates format & content
-        5. Optional external verification
-        6. AI generates fraud risk report
+        st.header("Analysis Steps")
+        st.markdown("""
+        1. **Upload Document** (PDF/Image/Text/DOCX)
+        2. **Parse & Extract** (Universal Parser)
+        3. **Image Analysis** (AI Detection, Metadata, Reverse Search)
+        4. **Validate Format** (List ALL issues)
+        5. **Generate Report**
+        6. **Audit Trail** (Firestore)
         """)
+
+        st.divider()
+
+        st.header("Settings")
+        document_type = st.selectbox(
+            "Document Type",
+            ["general", "statement", "invoice", "contract"]
+        )
+
+        # External verification removed from UI; default to False
+        use_external_verification = False
+
+        # OCR DPI scale
+        ocr_dpi_scale = st.slider(
+            "OCR DPI Scale",
+            min_value=1,
+            max_value=5,
+            value=2,
+            help="Higher scale = better OCR but slower"
+        )
+
+        st.divider()
+        st.subheader("🖼️ Image Analysis")
+
+        enable_image_analysis = st.checkbox(
+            "Enable Advanced Image Analysis",
+            value=True,
+            help="Analyze images for fraud indicators"
+        )
+
+        if enable_image_analysis:
+            check_reverse_search = st.checkbox(
+                "Reverse Image Search",
+                value=True,
+                help="Check if image is stolen/reused (requires SerpAPI)"
+            )
+
+            check_ai_generated = st.checkbox(
+                "AI-Generated Detection",
+                value=True,
+                help="Detect AI-generated images"
+            )
+
+            check_metadata_tampering = st.checkbox(
+                "Metadata Tampering",
+                value=True,
+                help="Check EXIF metadata for manipulation"
+            )
+
+            check_pixel_anomalies = st.checkbox(
+                "Pixel Anomaly Detection",
+                value=True,
+                help="Detect cloning, splicing, and other manipulations"
+            )
+        else:
+            check_reverse_search = False
+            check_ai_generated = False
+            check_metadata_tampering = False
+            check_pixel_anomalies = False
+
+        st.divider()
+
+        if st.session_state.analysis_complete:
+            if st.button("🔄 New Analysis"):
+                st.session_state.analysis_complete = False
+                st.session_state.results = None
+                st.rerun()
     
     # Main content
-    if not IMPORTS_OK:
-        st.error("Cannot proceed without required dependencies")
-        return
+    if not st.session_state.analysis_complete:
+        show_upload_interface(
+            document_type,
+            use_external_verification,
+            ocr_dpi_scale,
+            enable_image_analysis,
+            check_reverse_search,
+            check_ai_generated,
+            check_metadata_tampering,
+            check_pixel_anomalies
+        )
+    else:
+        show_results_interface()
+
+
+def show_upload_interface(
+    document_type,
+    use_external_verification,
+    ocr_dpi_scale,
+    enable_image_analysis,
+    check_reverse_search,
+    check_ai_generated,
+    check_metadata_tampering,
+    check_pixel_anomalies
+):
+    """Document upload and analysis interface"""
     
-    # File uploader
-    st.subheader("📤 Upload Document")
+    st.header("📄 Step 1: Upload Document")
     
     uploaded_file = st.file_uploader(
-        "Drag and drop your document here (PDF, JPG, PNG, TXT)",
-        type=['pdf', 'jpg', 'jpeg', 'png', 'txt'],
-        help="Upload a document for AI-powered fraud detection analysis"
+        "Upload document for analysis",
+        type=['pdf', 'jpg', 'jpeg', 'png', 'txt', 'docx'],
+        help="Supported: PDF, Images (JPG/PNG), Text files (TXT), Word documents (DOCX)"
     )
     
-    if uploaded_file is not None:
-        # File info
+    if uploaded_file:
+        # Display file info
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Filename", uploaded_file.name)
+            st.metric("File Name", uploaded_file.name)
         with col2:
-            st.metric("Size", f"{uploaded_file.size / 1024:.2f} KB")
+            st.metric("File Size", f"{uploaded_file.size / 1024:.1f} KB")
         with col3:
-            st.metric("Type", uploaded_file.type)
+            st.metric("File Type", uploaded_file.type)
+        
+        # Save uploaded file
+        temp_path = Path("temp") / uploaded_file.name
+        temp_path.parent.mkdir(exist_ok=True)
+        
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.getvalue())
+        
+        st.success(f"✓ File uploaded: {uploaded_file.name}")
         
         # Analyze button
-        if st.button("🚀 Analyze Document", type="primary", use_container_width=True):
-            # Create temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix=Path(uploaded_file.name).suffix) as tmp_file:
-                tmp_file.write(uploaded_file.getvalue())
-                tmp_path = tmp_file.name
-            
-            try:
-                # Progress tracking
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                # Initialize results container
-                results = {
-                    'stages': {},
-                    'overall_risk': None,
-                    'processing_time': 0
-                }
-                
-                start_time = time.time()
-                
-                # Stage 1: Parse Document
-                status_text.text("📄 Stage 1/5: Parsing document with JigsawStack OCR...")
-                progress_bar.progress(20)
-                
-                with st.spinner("Extracting text from document..."):
-                    parser = JigsawDocumentParser()
-                    parsed = parser.parse_document(tmp_path)
-                    results['stages']['parsing'] = parsed
-                
-                if not parsed.get('success', False):
-                    st.error(f"❌ Document parsing failed: {parsed.get('error', 'Unknown error')}")
-                    st.info("💡 Check your JigsawStack API key in .env file")
-                    os.unlink(tmp_path)
-                    return
-                
-                parser_method = parsed.get('parser_used', 'jigsawstack')
-                if 'warning' in parsed:
-                    st.warning(f"⚠️ {parsed['warning']}")
-                
-                pages_info = f"{parsed['page_count']} page(s)"
-                if parsed.get('pages_processed') and parsed.get('pages_processed') != parsed.get('page_count'):
-                    pages_info = f"{parsed['pages_processed']}/{parsed['page_count']} pages"
-                
-                st.success(f"✓ Extracted {len(parsed['text'])} characters from {pages_info} using {parser_method}")
-                
-                # Stage 2: Extract Structured Fields
-                status_text.text("🔍 Stage 2/5: Extracting structured fields...")
-                progress_bar.progress(40)
-                
-                with st.spinner("AI analyzing document structure..."):
-                    extractor = StructuredFieldExtractor()
-                    extracted = extractor.extract_fields(parsed['text'], document_type=doc_type)
-                    results['stages']['extraction'] = extracted
-                
-                if extracted['success']:
-                    st.success(f"✓ Extracted {extracted['fields_found']} data fields")
-                
-                # Stage 3: Enhanced Validation
-                status_text.text("✅ Stage 3/5: Validating document quality...")
-                progress_bar.progress(60)
-                
-                with st.spinner("AI checking format and content..."):
-                    validator = EnhancedDocumentValidator()
-                    validation = validator.validate_document(
-                        parsed['text'],
-                        doc_type,
-                        extracted.get('extracted_fields')
-                    )
-                    results['stages']['validation'] = validation
-                
-                st.success(f"✓ Validation complete: {validation.get('overall_quality', 'N/A')}")
-                
-                # Stage 4: External Verification (if enabled)
-                if use_external_verification:
-                    status_text.text("🌐 Stage 4/5: Verifying with external sources...")
-                    progress_bar.progress(75)
-                    
-                    with st.spinner("Checking company registers and sanction lists..."):
-                        verifier = ExternalVerificationAgent()
-                        verification = verifier.verify_entity(extracted)
-                        results['stages']['verification'] = verification
-                    
-                    st.success("✓ External verification complete")
-                else:
-                    st.info("⏭️ Skipping external verification (disabled)")
-                
-                # Stage 5: AI Fraud Analysis
-                status_text.text("🤖 Stage 5/5: AI fraud analysis...")
-                progress_bar.progress(90)
-                
-                with st.spinner("Generating comprehensive fraud detection report..."):
-                    detector = AIFraudDetector()
-                    fraud_analysis = detector.analyze_document(tmp_path)
-                    results['stages']['fraud_analysis'] = fraud_analysis
-                
-                # Complete
-                progress_bar.progress(100)
-                status_text.text("✅ Analysis complete!")
-                
-                results['processing_time'] = time.time() - start_time
-                results['overall_risk'] = fraud_analysis.get('ai_analysis', {})
-                
-                # Store in session state
-                st.session_state.results = results
-                st.session_state.filename = uploaded_file.name
-                
-                # Clean up
-                os.unlink(tmp_path)
-                
-                st.balloons()
-                
-            except Exception as e:
-                st.error(f"❌ Error during analysis: {str(e)}")
-                if show_debug:
-                    st.exception(e)
-                if os.path.exists(tmp_path):
-                    os.unlink(tmp_path)
-                return
+        if st.button("🚀 Start Comprehensive Analysis", type="primary"):
+            analyze_document(
+                str(temp_path),
+                document_type,
+                use_external_verification,
+                ocr_dpi_scale,
+                enable_image_analysis,
+                check_reverse_search,
+                check_ai_generated,
+                check_metadata_tampering,
+                check_pixel_anomalies
+            )
+
+
+def analyze_document(
+    file_path,
+    document_type,
+    use_external_verification,
+    ocr_dpi_scale,
+    enable_image_analysis,
+    check_reverse_search,
+    check_ai_generated,
+    check_metadata_tampering,
+    check_pixel_anomalies
+):
+    """Run comprehensive document analysis with audit trail"""
     
-    # Display Results
-    if 'results' in st.session_state:
-        st.markdown("---")
-        st.header("📊 Analysis Results")
+    audit_logger = st.session_state.audit_logger
+    
+    results = {
+        'file_path': file_path,
+        'file_name': Path(file_path).name,
+        'document_type': document_type,
+        'timestamp': datetime.now().isoformat(),
+        'stages': {}
+    }
+    
+    # Log analysis start
+    audit_logger.log_document_analysis_start(
+        file_path,
+        document_type,
+        {
+            'external_verification': use_external_verification,
+            'ocr_dpi_scale': ocr_dpi_scale,
+            'image_analysis_enabled': enable_image_analysis
+        }
+    )
+    
+    # Progress tracking
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    start_time = datetime.now()
+    
+    try:
+        # Stage 1: Parse Document with Universal Parser
+        status_text.text("📄 Stage 1/6: Parsing document (Universal Parser)...")
+        progress_bar.progress(15)
         
-        results = st.session_state.results
+        with st.spinner(f"Parsing document (DPI Scale: {ocr_dpi_scale})..."):
+            parser = UniversalDocumentParser(dpi_scale=ocr_dpi_scale)
+            parsed = parser.parse_document(file_path)
+            results['stages']['parsing'] = parsed
+            
+            # Log parsing
+            audit_logger.log_parsing(
+                parser_name='UniversalDocumentParser',
+                file_path=file_path,
+                text_extracted=parsed.get('text', ''),
+                metadata_extracted=parsed.get('metadata', {}),
+                success=parsed.get('success', False)
+            )
         
-        # Summary metrics
-        col1, col2, col3, col4 = st.columns(4)
+        if not parsed.get('success') or not parsed.get('text'):
+            st.error("❌ Document parsing failed: No text extracted")
+            st.stop()
         
-        with col1:
-            risk_score = results['overall_risk'].get('risk_score', 0)
-            st.metric("Risk Score", f"{risk_score}/10")
+        st.success(f"✓ Extracted {len(parsed['text'])} characters using {parsed.get('parser_used', 'unknown')}")
         
-        with col2:
-            risk_level = results['overall_risk'].get('risk_level', 'UNKNOWN')
-            st.metric("Risk Level", risk_level)
+        # Stage 2: Advanced Image Analysis (if image document or PDF with images)
+        if enable_image_analysis and (parsed.get('is_image_document') or parsed.get('images')):
+            status_text.text("🖼️ Stage 2/6: Advanced image analysis...")
+            progress_bar.progress(30)
+            
+            with st.spinner("Analyzing images for manipulation..."):
+                image_analyzer = AdvancedImageAnalyzer()
+                
+                # Analyze based on document type
+                if parsed.get('format') == 'pdf' and parsed.get('images'):
+                    # PDF with images - analyze all images
+                    image_analysis = image_analyzer.analyze_pdf_images(
+                        file_path,
+                        check_reverse_search=check_reverse_search,
+                        check_ai_generated=check_ai_generated,
+                        check_metadata_tampering=check_metadata_tampering,
+                        check_pixel_anomalies=check_pixel_anomalies
+                    )
+                elif parsed.get('is_image_document'):
+                    # Direct image file
+                    image_analysis = image_analyzer.analyze_image(
+                        file_path,
+                        check_reverse_search=check_reverse_search,
+                        check_ai_generated=check_ai_generated,
+                        check_metadata_tampering=check_metadata_tampering,
+                        check_pixel_anomalies=check_pixel_anomalies
+                    )
+                else:
+                    image_analysis = {'skipped': True, 'reason': 'No images found'}
+                
+                results['stages']['image_analysis'] = image_analysis
+                
+                # Log image analysis
+                audit_logger.log_image_analysis(
+                    analyzer_name='AdvancedImageAnalyzer',
+                    image_path=file_path,
+                    analysis_results=image_analysis,
+                    checks_performed=image_analysis.get('analysis_performed', [])
+                )
+            
+            st.success("✓ Image analysis complete")
+        else:
+            results['stages']['image_analysis'] = {'skipped': True, 'reason': 'Image analysis disabled or no images'}
+            progress_bar.progress(30)
         
-        with col3:
-            fields_found = results['stages'].get('extraction', {}).get('fields_found', 0)
-            st.metric("Fields Extracted", fields_found)
+        # Stage 3: Extract Structured Fields
+        status_text.text("🔍 Stage 3/6: Extracting structured fields...")
+        progress_bar.progress(45)
         
-        with col4:
-            st.metric("Processing Time", f"{results['processing_time']:.1f}s")
+        with st.spinner("Extracting structured data with AI..."):
+            extractor = StructuredFieldExtractor()
+            extracted = extractor.extract_fields(parsed['text'], document_type)
+            results['stages']['extraction'] = extracted
         
-        # Risk Badge
-        st.markdown(
-            f"### Overall Assessment: {display_risk_badge(risk_level, risk_score)}",
-            unsafe_allow_html=True
+        if extracted['success']:
+            st.success(f"✓ Extracted {extracted['fields_found']} data fields")
+        
+        # Stage 4: Enhanced Validation (LIST ALL ISSUES)
+        status_text.text("✅ Stage 4/6: Validating document (listing ALL issues)...")
+        progress_bar.progress(60)
+        
+        with st.spinner("Running comprehensive validation..."):
+            validator = EnhancedDocumentValidator()
+            validation = validator.validate_document(
+                parsed['text'],
+                document_type,
+                extracted.get('extracted_fields')
+            )
+            results['stages']['validation'] = validation
+            
+            # Log validation
+            audit_logger.log_validation(
+                validator_name='EnhancedDocumentValidator',
+                document_text=parsed['text'],
+                validation_results=validation
+            )
+        
+        total_issues = validation.get('total_issues_found', sum([
+            len(validation.get('formatting_issues', [])),
+            len(validation.get('content_issues', [])),
+            len(validation.get('structure_issues', []))
+        ]))
+        
+        st.success(f"✓ Validation: {validation.get('overall_quality', 'N/A')} ({total_issues} total issues)")
+        
+        # Stage 5: External Verification intentionally skipped/disabled
+        results['stages']['verification'] = {'skipped': True}
+        progress_bar.progress(75)
+        
+        # Stage 6: AI Fraud Analysis (Groq) - analyze using aggregated pipeline results
+        status_text.text("🤖 Stage 6/6: AI fraud analysis with Groq...")
+        progress_bar.progress(90)
+
+        with st.spinner("AI analyzing all findings (Groq)..."):
+            try:
+                detector = AIFraudDetector()
+                # Provide the aggregated results (all stages) so the model can reason across them
+                fraud_analysis = detector.analyze_from_aggregated(results)
+                # keep compatibility with expected structure
+                results['stages']['fraud_analysis'] = {'ai_analysis': fraud_analysis}
+
+                # Log AI analysis
+                try:
+                    audit_logger.log_ai_analysis(
+                        model_name=detector.model,
+                        input_prompt=f"Aggregated analysis for {Path(file_path).name}",
+                        output_analysis=fraud_analysis
+                    )
+                except Exception:
+                    logger = None
+
+                st.success("✓ AI analysis complete")
+            except Exception as e:
+                st.error(f"❌ AI analysis failed: {e}")
+                # Fallback: set a conservative default
+                results['stages']['fraud_analysis'] = {'ai_analysis': {
+                    'overall_summary': 'AI analysis failed - manual review required',
+                    'risk_score': 5,
+                    'risk_level': 'MEDIUM',
+                    'confidence': 0.3,
+                    'key_findings': ['AI analysis error - see logs']
+                }}
+        
+        # Complete
+        progress_bar.progress(100)
+        status_text.text("✅ Analysis Complete!")
+        
+        # Log completion
+        duration = (datetime.now() - start_time).total_seconds()
+        audit_logger.log_document_analysis_complete(
+            file_path,
+            results,
+            duration
         )
         
-        # Tabs for detailed results
-        tabs = st.tabs([
-            "📋 Overview",
-            "🔍 Extracted Data",
-            "✅ Validation",
-            "🌐 Verification",
-            "🤖 AI Analysis",
-            "📄 Full Report"
-        ])
+        # Save results to session state
+        st.session_state.results = results
+        st.session_state.analysis_complete = True
         
-        # Tab 1: Overview
-        with tabs[0]:
-            st.subheader("Executive Summary")
-            
-            recommendations = results['overall_risk'].get('recommendations', [])
-            if recommendations:
-                st.markdown("**Recommendations:**")
-                for rec in recommendations:
-                    st.markdown(f"- {rec}")
-            
-            key_findings = results['overall_risk'].get('key_findings', [])
-            if key_findings:
-                st.markdown("**Key Findings:**")
-                for finding in key_findings:
-                    st.markdown(f"- {finding}")
+        # Auto-refresh to show results
+        st.rerun()
         
-        # Tab 2: Extracted Data
-        with tabs[1]:
-            st.subheader("Structured Fields")
-            
-            extraction = results['stages'].get('extraction', {})
-            if extraction.get('success'):
-                fields = extraction.get('extracted_fields', {})
-                
-                # Display in expanders by category
-                for category, data in fields.items():
-                    if data and data != {}:
-                        with st.expander(f"📁 {category.replace('_', ' ').title()}"):
-                            st.json(data)
-            else:
-                st.warning("No structured data extracted")
+    except Exception as e:
+        st.error(f"❌ Analysis failed: {str(e)}")
         
-        # Tab 3: Validation
-        with tabs[2]:
-            st.subheader("Document Validation Results")
-            
-            validation = results['stages'].get('validation', {})
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**Formatting Issues:**")
-                formatting = validation.get('formatting_issues', [])
-                if formatting:
-                    for issue in formatting:
-                        st.warning(f"⚠️ {issue.get('issue', 'Unknown')}: {issue.get('details', '')}")
-                else:
-                    st.success("✅ No formatting issues found")
-            
-            with col2:
-                st.markdown("**Content Issues:**")
-                content = validation.get('content_issues', [])
-                if content:
-                    for issue in content:
-                        st.warning(f"⚠️ {issue.get('issue', 'Unknown')}: {issue.get('details', '')}")
-                else:
-                    st.success("✅ No content issues found")
+        # Log error
+        import traceback
+        audit_logger.log_error(
+            component='analyze_document',
+            error_message=str(e),
+            error_traceback=traceback.format_exc(),
+            context={'file_path': file_path}
+        )
         
-        # Tab 4: Verification
-        with tabs[3]:
-            verification = results['stages'].get('verification', {})
-            
-            if verification:
-                st.subheader("External Verification Results")
-                
-                # Company Register
-                company_reg = verification.get('company_register', {})
-                if company_reg:
-                    with st.expander("🏢 Company Register"):
-                        st.json(company_reg)
-                
-                # Sanctions
-                sanctions = verification.get('sanctions', {})
-                if sanctions:
-                    with st.expander("🚫 Sanctions Check"):
-                        st.json(sanctions)
-            else:
-                st.info("External verification was not performed")
-        
-        # Tab 5: AI Analysis
-        with tabs[4]:
-            st.subheader("Comprehensive AI Fraud Detection")
-            
-            ai_analysis = results['overall_risk']
-            
-            st.markdown("**Analysis Categories:**")
-            
-            # Format Analysis
-            with st.expander("📋 Format Analysis"):
-                format_analysis = ai_analysis.get('format_analysis', {})
-                st.write(format_analysis.get('summary', 'No analysis available'))
-                
-                issues = format_analysis.get('issues', [])
-                if issues:
-                    for issue in issues:
-                        st.warning(f"⚠️ {issue}")
-            
-            # Image Analysis
-            with st.expander("🖼️ Image Analysis"):
-                image_analysis = ai_analysis.get('image_analysis', {})
-                st.write(image_analysis.get('summary', 'No analysis available'))
-            
-            # Content Analysis
-            with st.expander("📝 Content Analysis"):
-                content_analysis = ai_analysis.get('content_analysis', {})
-                st.write(content_analysis.get('summary', 'No analysis available'))
-        
-        # Tab 6: Full Report
-        with tabs[5]:
-            st.subheader("Complete Analysis Report")
-            
-            # Generate downloadable report
-            report = {
-                'filename': st.session_state.filename,
-                'analysis_date': time.strftime("%Y-%m-%d %H:%M:%S"),
-                'risk_score': risk_score,
-                'risk_level': risk_level,
-                'results': results
-            }
-            
-            report_json = json.dumps(report, indent=2, default=str)
-            
-            st.download_button(
-                label="📥 Download JSON Report",
-                data=report_json,
-                file_name=f"fraud_analysis_{int(time.time())}.json",
-                mime="application/json",
-                use_container_width=True
-            )
-            
-            st.json(report)
+        st.exception(e)
+        st.stop()
 
-    # Footer
-    st.markdown("---")
-    st.markdown("Powered by JigsawStack OCR + Groq AI | Built for SingHacks")
+
+def show_results_interface():
+    """Display comprehensive results interface"""
+    
+    results = st.session_state.results
+    
+    st.header("📊 Analysis Results")
+    st.markdown(f"**Document:** {results['file_name']} | **Type:** {results['document_type']}")
+    
+    # Create tabs (External Verification & AI Analysis removed)
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "📋 Overview",
+        "🖼️ Image Analysis",
+        "🔍 Extracted Data",
+        "✅ Validation Issues",
+        "📄 Reports",
+        "📜 Audit Trail"
+    ])
+
+    with tab1:
+        show_overview_tab(results)
+
+    with tab2:
+        show_image_analysis_tab(results)
+
+    with tab3:
+        show_extracted_data_tab(results)
+
+    with tab4:
+        show_validation_tab(results)
+
+    with tab5:
+        show_reports_tab(results)
+
+    with tab6:
+        show_audit_trail_tab()
+
+
+def show_overview_tab(results):
+    """Overview dashboard"""
+    
+    st.subheader("Risk Assessment Summary")
+    
+    # Get fraud analysis
+    fraud = results['stages'].get('fraud_analysis', {}).get('ai_analysis', {})
+    verification = results['stages'].get('verification', {})
+    validation = results['stages'].get('validation', {})
+    image_analysis = results['stages'].get('image_analysis', {})
+    
+    # Risk score display
+    risk_score = fraud.get('risk_score', 0)
+    risk_level = fraud.get('risk_level', 'UNKNOWN')
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Risk Score", f"{risk_score}/10")
+    with col2:
+        st.metric("Risk Level", risk_level)
+    with col3:
+        completeness = validation.get('completeness_score', 0)
+        st.metric("Completeness", f"{completeness}%")
+    with col4:
+        confidence = fraud.get('confidence', 0)
+        st.metric("AI Confidence", f"{confidence*100:.0f}%")
+    
+    # Risk indicator
+    if risk_level == "CRITICAL":
+        st.markdown('<div class="risk-critical">⛔ CRITICAL RISK - REJECT DOCUMENT</div>', unsafe_allow_html=True)
+    elif risk_level == "HIGH":
+        st.markdown('<div class="risk-high">⚠️ HIGH RISK - DO NOT APPROVE</div>', unsafe_allow_html=True)
+    elif risk_level == "MEDIUM":
+        st.markdown('<div class="risk-medium">⚡ MEDIUM RISK - ADDITIONAL VERIFICATION REQUIRED</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="risk-low">✓ LOW RISK - STANDARD PROCESS</div>', unsafe_allow_html=True)
+    
+    st.divider()
+    
+    # Image manipulation indicators
+    if not image_analysis.get('skipped'):
+        st.subheader("🖼️ Image Manipulation Assessment")
+        
+        if 'manipulation_indicators' in image_analysis:
+            manip = image_analysis['manipulation_indicators']
+            st.markdown(f"**Verdict:** {manip.get('verdict', 'UNKNOWN')}")
+            st.markdown(f"**Manipulation Score:** {manip.get('combined_manipulation_score', 0):.2%}")
+            st.markdown(f"**Recommendation:** {manip.get('recommendation', 'N/A')}")
+            
+            if manip.get('indicators'):
+                st.markdown("**Indicators:**")
+                for indicator in manip['indicators']:
+                    st.markdown(f"• {indicator}")
+        elif 'images_analyzed' in image_analysis:
+            st.markdown(f"**Images Analyzed:** {len(image_analysis['images_analyzed'])}")
+            for img_result in image_analysis['images_analyzed']:
+                if 'manipulation_indicators' in img_result:
+                    manip = img_result['manipulation_indicators']
+                    st.markdown(f"• Page {img_result.get('pdf_page', 'N/A')}: {manip.get('verdict', 'UNKNOWN')}")
+    
+    st.divider()
+    
+    # Key findings
+    st.subheader("Key Findings")
+    key_findings = fraud.get('key_findings', [])
+    if key_findings:
+        for finding in key_findings:
+            st.markdown(f"• {finding}")
+    else:
+        st.info("No significant findings")
+    
+    # Critical issues
+    critical = fraud.get('critical_issues', [])
+    if critical:
+        st.subheader("⚠️ Critical Issues")
+        for issue in critical:
+            st.error(f"❌ {issue}")
+    
+    # Recommendations
+    st.subheader("Recommended Actions")
+    recommendations = fraud.get('recommendations', {})
+    approval = recommendations.get('approval_recommendation', 'REVIEW')
+    
+    st.markdown(f"**Decision:** {approval}")
+    
+    for action in recommendations.get('immediate_actions', []):
+        st.markdown(f"1. {action}")
+
+
+def show_image_analysis_tab(results):
+    """Show detailed image analysis"""
+    
+    st.subheader("🖼️ Advanced Image Analysis Results")
+    
+    image_analysis = results['stages'].get('image_analysis', {})
+    
+    if image_analysis.get('skipped'):
+        st.info(f"Image analysis skipped: {image_analysis.get('reason', 'Unknown')}")
+        return
+    
+    # Check if single image or PDF with multiple images
+    if 'images_analyzed' in image_analysis:
+        # PDF with multiple images
+        st.markdown(f"**Total Images Analyzed:** {image_analysis['images_found']}")
+        
+        for i, img_result in enumerate(image_analysis['images_analyzed'], 1):
+            with st.expander(f"Image {i} - Page {img_result.get('pdf_page', 'N/A')}", expanded=i==1):
+                display_single_image_analysis(img_result)
+    else:
+        # Single image
+        display_single_image_analysis(image_analysis)
+
+
+def display_single_image_analysis(analysis):
+    """Display analysis for a single image"""
+    
+    # Manipulation indicators summary
+    if 'manipulation_indicators' in analysis:
+        manip = analysis['manipulation_indicators']
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Verdict", manip.get('verdict', 'UNKNOWN'))
+        with col2:
+            st.metric("Manipulation Score", f"{manip.get('combined_manipulation_score', 0):.0%}")
+        with col3:
+            st.metric("Confidence", f"{manip.get('confidence', 0):.0%}")
+        
+        st.markdown(f"**Recommendation:** {manip.get('recommendation', 'N/A')}")
+        
+        if manip.get('indicators'):
+            st.markdown("**Manipulation Indicators:**")
+            for indicator in manip['indicators']:
+                st.warning(f"⚠️ {indicator}")
+    
+    st.divider()
+    
+    # Detailed analysis sections
+    
+    # 1. Reverse Image Search
+    if 'reverse_search' in analysis:
+        with st.expander("🔍 Reverse Image Search"):
+            rs = analysis['reverse_search']
+            if rs.get('success'):
+                st.markdown(f"**Matches Found:** {rs.get('matches_found', 0)}")
+                st.markdown(f"**Stolen Image Likelihood:** {rs.get('stolen_image_likelihood', 'UNKNOWN')}")
+                if rs.get('warning'):
+                    st.info(rs['warning'])
+            else:
+                st.error(f"Error: {rs.get('error', 'Unknown')}")
+    
+    # 2. AI-Generated Detection
+    if 'ai_detection' in analysis:
+        with st.expander("🤖 AI-Generated Detection"):
+            ai = analysis['ai_detection']
+            st.markdown(f"**Verdict:** {ai.get('verdict', 'UNKNOWN')}")
+            st.markdown(f"**AI Confidence:** {ai.get('ai_generated_confidence', 0):.0%}")
+            st.markdown(f"**Models Tested:** {', '.join(ai.get('models_tested', []))}")
+            
+            if ai.get('details'):
+                st.json(ai['details'])
+    
+    # 3. Metadata Tampering
+    if 'metadata_analysis' in analysis:
+        with st.expander("📋 Metadata Tampering Analysis"):
+            meta = analysis['metadata_analysis']
+            if meta.get('success'):
+                st.markdown(f"**Verdict:** {meta.get('verdict', 'UNKNOWN')}")
+                st.markdown(f"**Tampering Risk Score:** {meta.get('tampering_risk_score', 0):.0%}")
+                st.markdown(f"**EXIF Data Present:** {'Yes' if meta.get('exif_data_present') else 'No'}")
+                st.markdown(f"**Total EXIF Tags:** {meta.get('total_exif_tags', 0)}")
+                
+                if meta.get('tampering_indicators'):
+                    st.markdown(f"**Tampering Indicators Found:** {len(meta['tampering_indicators'])}")
+                    for indicator in meta['tampering_indicators']:
+                        severity = indicator.get('severity', 'LOW')
+                        if severity == 'HIGH':
+                            st.error(f"🔴 {indicator.get('indicator')}: {indicator.get('description')}")
+                        elif severity == 'MEDIUM':
+                            st.warning(f"🟡 {indicator.get('indicator')}: {indicator.get('description')}")
+                        else:
+                            st.info(f"🟢 {indicator.get('indicator')}: {indicator.get('description')}")
+            else:
+                st.error(f"Error: {meta.get('error', 'Unknown')}")
+    
+    # 4. Pixel Anomalies
+    if 'pixel_analysis' in analysis:
+        with st.expander("🔬 Pixel-Level Anomaly Detection"):
+            pixel = analysis['pixel_analysis']
+            if pixel.get('success'):
+                st.markdown(f"**Verdict:** {pixel.get('verdict', 'UNKNOWN')}")
+                st.markdown(f"**Anomaly Score:** {pixel.get('anomaly_score', 0):.0%}")
+                st.markdown(f"**Anomalies Detected:** {pixel.get('total_anomalies', 0)}")
+                
+                if pixel.get('anomalies_detected'):
+                    for anomaly in pixel['anomalies_detected']:
+                        severity = anomaly.get('severity', 'LOW')
+                        if severity == 'HIGH':
+                            st.error(f"🔴 {anomaly.get('type')}: {anomaly.get('description')}")
+                        elif severity == 'MEDIUM':
+                            st.warning(f"🟡 {anomaly.get('type')}: {anomaly.get('description')}")
+                        else:
+                            st.info(f"🟢 {anomaly.get('type')}: {anomaly.get('description')}")
+            else:
+                st.error(f"Error: {pixel.get('error', 'Unknown')}")
+
+
+def show_extracted_data_tab(results):
+    """Show extracted structured data"""
+    
+    st.subheader("Extracted Structured Fields")
+    
+    extracted = results['stages'].get('extraction', {}).get('extracted_fields', {})
+    
+    if extracted:
+        for category, fields in extracted.items():
+            with st.expander(f"📁 {category.replace('_', ' ').title()}", expanded=True):
+                if isinstance(fields, dict):
+                    df = pd.DataFrame([
+                        {'Field': k.replace('_', ' ').title(), 'Value': v or 'N/A'}
+                        for k, v in fields.items()
+                    ])
+                    st.dataframe(df, use_container_width=True, hide_index=True)
+                else:
+                    st.json(fields)
+        
+        if st.button("📥 Export as JSON"):
+            st.download_button(
+                "Download JSON",
+                data=json.dumps(extracted, indent=2),
+                file_name=f"extracted_data_{results['file_name']}.json",
+                mime="application/json"
+            )
+    else:
+        st.info("No structured data extracted")
+
+
+def show_validation_tab(results):
+    """Show validation issues - ALL OF THEM"""
+    
+    st.subheader("Document Validation Results (ALL Issues Listed)")
+    
+    validation = results['stages'].get('validation', {})
+    
+    # Summary metrics
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Completeness", f"{validation.get('completeness_score', 0)}%")
+    with col2:
+        st.metric("Accuracy", f"{validation.get('accuracy_score', 0)}%")
+    with col3:
+        quality = validation.get('overall_quality', 'Unknown')
+        st.metric("Quality", quality.title())
+    with col4:
+        total = validation.get('total_issues_found', sum([
+            len(validation.get('formatting_issues', [])),
+            len(validation.get('content_issues', [])),
+            len(validation.get('structure_issues', []))
+        ]))
+        st.metric("Total Issues", total)
+    
+    st.divider()
+    
+    # Issues by category - LIST ALL
+    issue_categories = [
+        ('Formatting Issues', 'formatting_issues', '📝'),
+        ('Content Issues', 'content_issues', '📄'),
+        ('Structure Issues', 'structure_issues', '🏗️')
+    ]
+    
+    for title, key, icon in issue_categories:
+        issues = validation.get(key, [])
+        
+        if issues:
+            st.subheader(f"{icon} {title} ({len(issues)} issues)")
+            
+            # Create table - SHOW ALL ISSUES
+            issue_data = []
+            for issue in issues:
+                issue_data.append({
+                    'Severity': issue.get('severity', 'low').upper(),
+                    'Type': issue.get('type', 'unknown'),
+                    'Location': issue.get('location', 'N/A'),
+                    'Description': issue.get('description', '')
+                })
+            
+            df = pd.DataFrame(issue_data)
+            
+            # Color code by severity
+            def highlight_severity(row):
+                if row['Severity'] == 'HIGH':
+                    return ['background-color: #ff4444; color: white'] * len(row)
+                elif row['Severity'] == 'MEDIUM':
+                    return ['background-color: #ffbb33; color: black'] * len(row)
+                return [''] * len(row)
+            
+            st.dataframe(
+                df.style.apply(highlight_severity, axis=1),
+                use_container_width=True,
+                hide_index=True,
+                height=min(400, len(issues) * 35 + 38)  # Adjust height based on number of issues
+            )
+
+
+def show_verification_tab(results):
+    """Show external verification results"""
+    
+    st.subheader("External Verification Results")
+    
+    verification = results['stages'].get('verification', {})
+    
+    if verification.get('skipped'):
+        st.info("External verification was skipped")
+        return
+    
+    status = verification.get('overall_status', 'UNKNOWN')
+    confidence = verification.get('match_confidence', 0)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Verification Status", status)
+    with col2:
+        st.metric("Match Confidence", f"{confidence*100:.0f}%")
+    
+    st.divider()
+    
+    # Company registers
+    st.subheader("🏢 Company Registers")
+    company = verification.get('company_register', {})
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        oc = company.get('opencorporates', {})
+        st.metric("OpenCorporates", "✓ Found" if oc.get('found') else "Not Found")
+        if oc.get('found'):
+            st.json(oc)
+    
+    with col2:
+        gleif = company.get('gleif', {})
+        st.metric("GLEIF", "✓ Found" if gleif.get('found') else "Not Found")
+        if gleif.get('found'):
+            st.json(gleif)
+    
+    with col3:
+        eu = company.get('eu_business_register', {})
+        st.metric("EU Register", "✓ Found" if eu.get('found') else "Not Found")
+    
+    st.divider()
+    
+    # Sanctions check
+    st.subheader("⚠️ Sanctions & Watchlists")
+    sanctions = verification.get('sanctions', {})
+    
+    if sanctions.get('hit'):
+        st.error("🚨 SANCTIONS HIT DETECTED!")
+        st.warning("This entity appears on one or more sanctions lists. IMMEDIATE REVIEW REQUIRED.")
+    else:
+        st.success("✓ No sanctions hits")
+    
+    with st.expander("Sanctions Check Details"):
+        st.json(sanctions)
+
+
+def show_ai_analysis_tab(results):
+    """Show comprehensive AI analysis"""
+    
+    st.subheader("🤖 AI Fraud Detection Analysis")
+    
+    fraud = results['stages'].get('fraud_analysis', {})
+    ai_analysis = fraud.get('ai_analysis', {})
+    
+    # Overall summary
+    st.markdown("### Executive Summary")
+    st.info(ai_analysis.get('overall_summary', 'No summary available'))
+    
+    st.divider()
+    
+    # Detailed analysis by category
+    categories = [
+        ('Format Validation', 'format_validation'),
+        ('Image Analysis', 'image_analysis'),
+        ('Metadata Analysis', 'metadata_analysis'),
+        ('Content Analysis', 'content_analysis')
+    ]
+    
+    for title, key in categories:
+        category_data = ai_analysis.get(key, {})
+        if category_data:
+            with st.expander(f"📊 {title}"):
+                st.json(category_data)
+    
+    st.divider()
+    
+    # Detailed narrative
+    st.markdown("### Detailed Analysis")
+    detailed = ai_analysis.get('detailed_analysis', '')
+    if detailed:
+        st.markdown(detailed)
+    else:
+        st.info("No detailed analysis available")
+
+
+def show_reports_tab(results):
+    """Generate and download reports"""
+    
+    st.subheader("📄 Generate Compliance Reports")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Executive Summary Report")
+        st.markdown("Management-ready summary")
+        if st.button("Generate Executive Report"):
+            generate_executive_report(results)
+    
+    with col2:
+        st.markdown("### Detailed Compliance Report")
+        st.markdown("Complete analysis")
+        if st.button("Generate Detailed Report"):
+            generate_detailed_report(results)
+    
+    st.divider()
+    
+    st.markdown("### Export Complete Analysis")
+    
+    if st.button("Export All Data (JSON)"):
+        st.download_button(
+            "Download Complete Analysis",
+            data=json.dumps(results, indent=2, default=str),
+            file_name=f"complete_analysis_{results['file_name']}.json",
+            mime="application/json"
+        )
+
+
+def show_audit_trail_tab():
+    """Show audit trail"""
+    
+    st.subheader("📜 Audit Trail")
+    
+    audit_logger = st.session_state.audit_logger
+    
+    st.markdown(f"**Session ID:** {audit_logger.session_id}")
+    
+    # Get session logs
+    logs = audit_logger.get_session_logs()
+    
+    if not logs:
+        st.info("No audit logs available for this session")
+        return
+    
+    st.markdown(f"**Total Actions Logged:** {len(logs)}")
+    
+    # Summary
+    action_types = {}
+    for log in logs:
+        action_type = log.get('action_type', 'unknown')
+        action_types[action_type] = action_types.get(action_type, 0) + 1
+    
+    st.markdown("### Action Summary")
+    summary_df = pd.DataFrame([
+        {'Action Type': k, 'Count': v}
+        for k, v in action_types.items()
+    ])
+    st.dataframe(summary_df, use_container_width=True, hide_index=True)
+    
+    st.divider()
+    
+    # Detailed logs
+    st.markdown("### Detailed Log Entries")
+    
+    for i, log in enumerate(logs, 1):
+        with st.expander(f"[{i}] {log.get('timestamp', 'N/A')} - {log.get('action_type', 'unknown')}"):
+            st.json(log)
+    
+    # Generate audit report
+    if st.button("Generate Audit Report"):
+        report = audit_logger.generate_audit_report()
+        
+        st.download_button(
+            "Download Audit Report",
+            data=report,
+            file_name=f"audit_report_{audit_logger.session_id}.txt",
+            mime="text/plain"
+        )
+
+
+def generate_executive_report(results):
+    """Generate executive summary report"""
+    fraud = results['stages'].get('fraud_analysis', {})
+    reports = fraud.get('reports', {})
+    
+    if 'executive' in reports:
+        with open(reports['executive'], 'r') as f:
+            report_text = f.read()
+        
+        st.download_button(
+            "Download Executive Report",
+            data=report_text,
+            file_name=f"executive_report_{results['file_name']}.txt",
+            mime="text/plain"
+        )
+        st.success("✓ Report generated!")
+
+
+def generate_detailed_report(results):
+    """Generate detailed compliance report"""
+    fraud = results['stages'].get('fraud_analysis', {})
+    reports = fraud.get('reports', {})
+    
+    if 'detailed' in reports:
+        with open(reports['detailed'], 'r') as f:
+            report_text = f.read()
+        
+        st.download_button(
+            "Download Detailed Report",
+            data=report_text,
+            file_name=f"detailed_report_{results['file_name']}.txt",
+            mime="text/plain"
+        )
+        st.success("✓ Report generated!")
+
 
 if __name__ == "__main__":
     main()
