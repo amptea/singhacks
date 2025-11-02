@@ -1,8 +1,12 @@
 {
-  "risk_label": "Medium",
-  "score": 65,
+  "risk_label": "High",
+  "score": 85,
   "matched_rules": [
-    "High Transaction Amount"
+    "Potential Sanctions Hit",
+    "KYC Outdated",
+    "Suspicious Transaction Not Reported"
   ],
-  "explanation": "The transaction amount of CHF 1,891,975.54 exceeds the high\u2011amount threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, no EDD gap, daily cash total is zero, and travel\u2011rule data is complete, which mitigates the overall risk. Consequently, the transaction is assessed as medium risk with a score of 65."
+  "explanation": "The transaction involves a high\u2011risk customer and a potential sanctions hit, yet the KYC was last completed over a year ago and no suspicious transaction report was filed. These compliance gaps trigger high\u2011risk flags under MAS Notice 626, warranting a high\u2011risk assessment.",
+  "transaction_id": "93d3933e-5716-40ba-9cea-1f5ac87e64a5",
+  "index": 11
 }

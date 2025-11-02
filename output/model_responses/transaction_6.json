@@ -1,8 +1,11 @@
 {
   "risk_label": "Medium",
-  "score": 70,
+  "score": 55,
   "matched_rules": [
-    "High Transaction Amount"
+    "6.3.b",
+    "6.19-6.26"
   ],
-  "explanation": "The transaction amount of 299,182.31 CNY exceeds the high transaction threshold, triggering the \"High Transaction Amount\" rule. However, the customer has a low risk rating, no sanctions hit, EDD is not required, daily cash total is negligible, and travel rule information is complete. These mitigating factors reduce the overall risk, resulting in a medium risk assessment."
+  "explanation": "The transaction is a cross\u2011border wire transfer exceeding S$1,500. The KYC last completed date (26/8/2021) is older than the acceptable period for a low\u2011risk corporate customer, violating the requirement to keep KYC recent for such transfers. No other clauses are breached, so the transaction is assessed as medium risk.",
+  "transaction_id": "3f4edd2a-4c2e-463a-b497-b415b3fbe5f4",
+  "index": 6
 }

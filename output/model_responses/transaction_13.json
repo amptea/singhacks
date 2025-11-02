@@ -2,7 +2,11 @@
   "risk_label": "Medium",
   "score": 55,
   "matched_rules": [
-    "High Daily Cash Total for Customer"
+    "High Transaction Amount",
+    "Potential Sanctions Hit",
+    "Outdated KYC"
   ],
-  "explanation": "The transaction triggers the High Daily Cash Total for Customer rule (daily cash total $20,961.63 exceeds $10,000). No other AML rules are triggered: the amount is below the high\u2011transaction threshold, the customer risk rating is Low, sanctions screening is none, EDD is not required, and travel rule data is complete. The single trigger indicates a moderate risk of structuring or smurfing, warranting further monitoring but not an immediate high\u2011risk flag."
+  "explanation": "The transaction exceeds the S$20,000 threshold for a non\u2011relationship customer, yet the KYC was last completed over three years ago and the due date has passed, indicating a lapse in ongoing monitoring. The sanctions screening returned a potential hit, raising concern. No direct violation of travel\u2011rule or value\u2011transfer requirements was found, but the outdated KYC and potential sanctions flag elevate the risk to medium.",
+  "transaction_id": "125871f9-cc28-48b3-81f4-0515fd33f5cb",
+  "index": 13
 }
